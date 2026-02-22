@@ -1,0 +1,14 @@
+{%- comment -%}
+Trigger include for scrollytelling
+Usage: {% include trigger.html type="citation" id="citation_001" action="start" text=citation_text_variable %}
+{%- endcomment -%}
+
+<div 
+  data-trigger-type="{{ include.type | escape_once }}"
+  data-trigger-id="{{ include.id | escape_once }}"
+  data-trigger-action="{{ include.action | escape_once }}"
+  {%- if include.zoom %} data-trigger-zoom="{{ include.zoom | escape_once }}"{% endif -%}
+  {%- if include.coordinates %} data-trigger-coordinates="{{ include.coordinates | escape_once }}"{% endif -%}
+  {%- if include.text %} data-trigger-text="{{ include.text | escape_once }}"{% endif -%}
+  style="height:2px;background:transparent;margin:1rem 0;"
+></div>

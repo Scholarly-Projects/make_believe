@@ -1,0 +1,417 @@
+---
+layout: default
+gallery: true
+---
+
+{% include essay/header-scrollytelling.html %}
+
+{%- assign actual_essays = site.essay | where_exp: "item", "item.title and item.order" -%}
+{%- assign essay_count = actual_essays.size -%}
+
+{%- if essay_count == 1 -%}
+  <script src="{{ '/assets/lib/scrollama.js' | relative_url }}"></script>
+  {% include essay/off-canvas-menu.html %}
+{%- endif -%}
+
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────────────── */
+body {
+  background-color: #ffffff;
+  color: #111111;
+}
+
+/* ── Three-column home page ───────────────────────────────────────────── */
+#home-three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas: "left middle right";
+  /* 120px matches browse.html's padding-top for this same fixed header.
+     The header contains three stacked rows (hamburger bar, site title +
+     subtitle, chapter line) which together measure ~110-120px on desktop. */
+  min-height: calc(100vh - 120px);
+  margin-top: 120px;
+  background-color: #ffffff;
+}
+
+/* ── LEFT COLUMN ─────────────────────────────────────────────────────── */
+#home-col-left {
+  grid-area: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 2.5rem 3rem 3rem;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* All font sizes are the original values × 1.15 */
+.home-site-title {
+  font-size: clamp(3.22rem, 5.75vw, 5.18rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #111111;
+  margin: 0 0 1rem 0;
+}
+
+.home-site-tagline {
+  font-size: clamp(1.15rem, 2.07vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgba(17, 17, 17, 0.92);
+  margin: 0 0 0.75rem 0;
+}
+
+.home-site-author {
+  font-size: clamp(1.035rem, 1.495vw, 1.265rem);
+  font-weight: 300;
+  color: rgba(17, 17, 17, 0.75);
+  margin: 0 0 1.25rem 0;
+  letter-spacing: 0.01em;
+}
+
+.home-site-description {
+  font-size: clamp(0.92rem, 1.265vw, 1.09rem);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(17, 17, 17, 0.55);
+  margin: 0;
+}
+
+/* ── MIDDLE COLUMN — Table of Contents ───────────────────────────────── */
+#home-col-middle {
+  grid-area: middle;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 2rem 3rem 2.5rem;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.home-toc-heading {
+  font-size: 0.805rem;            /* 0.7 × 1.15 */
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+  margin: 0 0 1.5rem 0;
+}
+
+.home-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.home-toc-item {
+  margin-bottom: 0.1rem;
+}
+
+.home-toc-link {
+  display: block;
+  padding: 0.45rem 0.6rem;
+  color: rgba(0, 0, 0, 0.78);
+  text-decoration: none;
+  font-size: 1.058rem;            /* 0.92 × 1.15 */
+  font-weight: 400;
+  line-height: 1.4;
+  border-radius: 3px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.home-toc-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #111111;
+}
+
+/* Essays: indented to visually group them under the book's main nav */
+.home-toc-item.is-essay .home-toc-link {
+  padding-left: 1.4rem;
+  font-size: 1.012rem;            /* 0.88 × 1.15 */
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.home-toc-item.is-essay .home-toc-link:hover {
+  color: rgba(0, 0, 0, 0.95);
+}
+
+/* ── RIGHT COLUMN — Image + CTA ──────────────────────────────────────── */
+#home-col-right {
+  grid-area: right;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5rem 1rem 1rem;
+  /* Subtract both the fixed header (~120px) and fixed footer (~55px) so
+     nothing in this column is hidden behind either bar. */
+  height: calc(100vh - 120px - 55px);
+  max-height: calc(100vh - 120px - 55px);
+  overflow: hidden;
+}
+
+/* Image area: centres the square image and wraps tightly around it */
+.home-right-image-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 1.5rem;
+  /* No overflow:hidden — we want the container to shrink to the image */
+}
+
+.home-right-image-area img {
+  /* Square image: let the browser pick the largest square that fits
+     both the available width AND the available height.
+     aspect-ratio enforces the 1:1 shape; max-width/max-height cap it
+     to the container; width/height:auto let the browser solve the size. */
+  aspect-ratio: 1 / 1;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  /* Shrink if the column gets very short */
+  flex-shrink: 1;
+}
+
+/* Credit is a flex sibling of the img inside .home-right-image-area,
+   so it sits directly below the image with no intervening gap */
+.home-featured-credit {
+  flex: 0 0 auto;
+  font-size: 0.805rem;
+  color: rgba(0, 0, 0, 0.35);
+  line-height: 1.5;
+  margin-top: 0.3rem;
+  text-align: center;
+}
+
+/* CTA: grows to fill all remaining space below the credit.
+   flex-start + padding-top places the button just below the credit
+   rather than dead-center in the gap. */
+.home-right-cta {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 1.25rem;
+}
+
+.home-read-btn {
+  display: inline-block;
+  padding: 0.8rem 2.5rem;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  color: #111111;
+  font-size: 1.15rem;             /* 1rem × 1.15 */
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  text-align: center;
+}
+
+.home-read-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.9);
+  color: #111111;
+}
+
+/* ── MOBILE: stack left → right → middle ─────────────────────────────── */
+@media (max-width: 768px) {
+  #home-three-col {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "left"
+      "right"
+      "middle";
+    /* The mobile header wraps across 4 rows on narrow screens:
+       hamburger bar + title + subtitle/author (wraps) + page label ≈ 160px. */
+    margin-top: 160px;
+    min-height: unset;
+  }
+
+  #home-col-left {
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 1.5rem 1.5rem 2rem;
+    justify-content: flex-start;
+  }
+
+  #home-col-middle {
+    border-right: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 2rem 1.5rem 3rem;
+    justify-content: flex-start;
+    /* Push last TOC items clear of the fixed footer bar (~50px slim height
+       + a comfortable gap so nothing is hidden behind it) */
+    padding-bottom: 70px;
+  }
+
+  #home-col-right {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0.75rem 1.5rem 1rem;
+    /* Subtract corrected header (160px) + slim mobile footer (45px) */
+    height: calc(100vh - 160px - 45px);
+    max-height: calc(100vh - 160px - 45px);
+    overflow: hidden;
+  }
+
+  .home-right-image-area {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    padding-top: 0.5rem;
+  }
+
+  .home-right-cta {
+    flex: 1 1 auto;
+    padding-top: 1rem;
+  }
+
+  /* ── Compact footer on home page (matches scrolly.scss mobile style) ── */
+  /* The scrolly.scss rules are scoped to essay pages; duplicate the key
+     overrides here so the home page footer is equally slim on mobile. */
+  .scrolly-footer {
+    padding: 0.4rem 1.25rem !important;
+    min-height: unset !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .scrolly-footer .chapter-nav {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1.25rem !important;
+  }
+
+  /* Hide citations in the home footer — not relevant on the landing page */
+  .scrolly-footer .scrolly-citation-wrapper {
+    display: none !important;
+  }
+}
+
+/* ── Single-essay content (preserved from original) ──────────────────── */
+#single-essay-content {
+  margin-top: 2rem;
+}
+</style>
+
+{%- comment -%}
+Build the first-essay URL for the Read button, matching footer nav logic:
+first essay sorted by order, falling back to first config-nav essay entry.
+{%- endcomment -%}
+{%- assign sorted_essays = site.essay | sort: 'order' -%}
+{%- assign first_essay = sorted_essays | first -%}
+
+<div id="home-three-col">
+
+  <!-- ── LEFT: Site identity ─────────────────────────────────────────── -->
+  <div id="home-col-left">
+    <h1 class="home-site-title">{{ site.title }}</h1>
+
+    {% if site.tagline %}
+    <p class="home-site-tagline">{{ site.tagline }}</p>
+    {% endif %}
+
+    {% if site.author %}
+    <p class="home-site-author">{{ site.author }}</p>
+    {% endif %}
+
+    {% if site.description %}
+    <p class="home-site-description">{{ site.description }}</p>
+    {% endif %}
+  </div>
+
+  <!-- ── MIDDLE: Table of contents ──────────────────────────────────── -->
+  <div id="home-col-middle">
+    <p class="home-toc-heading">Contents</p>
+    <ul class="home-toc-list">
+
+      {%- comment -%}
+      Mirror the footer nav sequence exactly:
+        1. Home
+        2. Essays (sorted by front-matter `order`) — indented with .is-essay
+        3. Non-home, non-essay config-nav pages
+      {%- endcomment -%}
+
+      <li class="home-toc-item">
+        <a href="{{ '/' | relative_url }}" class="home-toc-link">Home</a>
+      </li>
+
+      {% assign sorted_essays_toc = site.essay | sort: 'order' %}
+      {% for item in sorted_essays_toc %}
+      <li class="home-toc-item is-essay">
+        <a href="{{ item.url | relative_url }}" class="home-toc-link">
+          {% if item.order %}{{ item.order }}. {% endif %}{{ item.title }}
+        </a>
+      </li>
+      {% endfor %}
+
+      {% for nav in site.data.config-nav %}
+        {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+      <li class="home-toc-item">
+        <a href="{{ nav.stub | relative_url }}" class="home-toc-link">{{ nav.display_name }}</a>
+      </li>
+        {% endunless %}
+      {% endfor %}
+
+    </ul>
+  </div>
+
+  <!-- ── RIGHT: Featured image + Read CTA ───────────────────────────── -->
+  <div id="home-col-right">
+    <div class="home-right-image-area">
+      {% if site.data.theme.featured-image %}
+      <img src="{{ site.data.theme.featured-image | relative_url }}"
+           alt="{{ site.data.theme.featured-image-alt-text | default: site.title }}">
+      {% endif %}
+
+      {% if site.data.theme.featured-image-credit %}
+      <p class="home-featured-credit">{{ site.data.theme.featured-image-credit }}</p>
+      {% endif %}
+    </div>
+
+    <div class="home-right-cta">
+      {%- if essay_count >= 1 and first_essay -%}
+      <a class="home-read-btn" href="{{ first_essay.url | relative_url }}">Read &raquo;</a>
+      {%- else -%}
+      <a class="home-read-btn" href="#single-essay-content">Read &raquo;</a>
+      {%- endif -%}
+    </div>
+  </div>
+
+</div>
+
+{%- comment -%}
+SINGLE ESSAY CONTENT
+Preserved: if only one essay exists, render it inline below the landing grid.
+{%- endcomment -%}
+{%- if essay_count == 1 -%}
+{%- assign single_essay = actual_essays[0] -%}
+
+<div id="single-essay-content" class="container my-5">
+  <div class="row">
+    <div id="scrolly" class="container my-4">
+      <article id="step0">
+        <h1 class="display-4 essay-main" id="page-title">{{ single_essay.title }}</h1>
+        <div class="row my-4 step visible-step">
+          <div class="essay-main">
+            {{ single_essay.content }}
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+{%- unless single_essay.scrollama == false -%}
+{% include essay/js/essay-scroll-js.html %}
+{%- endunless -%}
+{% include essay/js/spotlight-media-handler.html %}
+
+{%- endif -%}
+
+{% include essay/footer-scrollytelling.html %}

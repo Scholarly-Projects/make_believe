@@ -1,0 +1,274 @@
+/*
+essay - style tweaks related to essay layout and essay features
+*/
+
+p { 
+  margin-bottom: 1.3em; 
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  margin-top: 1.7em;
+  margin-bottom: 1.3rem;
+}
+
+/* Fading effects */
+/* Initially, steps are invisible */
+.step {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.visible-step {
+  opacity: 1 !important;
+}
+
+#step0 {
+  opacity: 1 !important;
+}
+
+.step.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
+}
+
+.step.fade-out {
+  opacity: 0;
+  transition: opacity 0.75s ease-out;
+}
+
+/* To make sure the first step starts visible */
+#scrolly article .step:first-child {
+  opacity: 1;
+}
+
+.step {
+  margin-top: 20px;
+}
+
+/* Print styles for steps */
+@media print {
+  .step {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    break-inside: avoid;
+  }
+}
+
+.essay-main {
+  max-width: 633px;
+  width: 60%;
+  margin: 0 17.5% 0;
+  
+  @media (max-width: 768px) {
+    width: 90%;
+    margin: 0 2%;
+  }
+}
+
+/* Marginal Notes on Desktop */
+aside, .aside {
+  display: inline;
+  float: right;
+  position: relative;
+  width: 20vw;
+  margin-right: -26vw;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Marginal Notes on mobile */
+@media (max-width: 768px) {
+  aside, .aside {
+    display: block;
+    float: none;
+    margin: 5% 10%;
+    width: 80%;
+    font-size: 15px;
+    font-style: italic;
+  }
+}
+
+p {
+  line-height: 1.6;
+}
+
+.text-justify { 
+  text-align: justify !important; 
+}
+
+video::cue {
+  font-family: "Libre Bodoni ", serif;
+  font-size: 1.04em;
+  line-height: 1.2;
+  padding: 0 0.5em;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.lg-video {
+  width: 800px !important;
+  height: auto;
+  
+  @media (max-width: 868px) {
+    width: 100% !important;
+  }
+}
+
+.btn-link {
+  color: rgb(12, 16, 93);
+}
+
+.mini {
+  font-size: .75em;
+}
+
+.blockquote-footer {
+  color: #383A42;
+}
+
+.bg-success {
+  background-color: #3d7b53 !important;
+}
+
+.title-container {
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: visible;
+  
+  @media screen and (max-width: 768px) {
+    height: 67vh;
+  }
+}
+
+.title {
+  opacity: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-style: italic;
+  line-height: .8em;
+  font-size: 13em;
+  
+  @media screen and (max-width: 1200px) {
+    font-size: 10em;
+  }
+  
+  @media screen and (max-width: 768px) {
+    font-size: 5.5em;
+  }
+  
+  @media screen and (max-width: 528px) {
+    font-size: 4.5em;
+  }
+}
+
+.letter {
+  display: inline-block;
+  transform: translate(0, 0);
+  opacity: 0;
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.letter.animate {
+  opacity: 1;
+  transform: translate(0, 0) !important;
+}
+
+.gradient-fade-out {
+  height: 333px;
+  background-image: linear-gradient(to bottom, #3d7b53, white);
+  position: relative;
+  margin-top: -1px; /* To avoid any gap between sections */
+}
+
+.gradient-fade-in {
+  height: 133px;
+  background-image: linear-gradient(to bottom, white, #3d7b53);
+  position: relative;
+  margin-top: -1px; /* To avoid any gap between sections */
+}
+
+/* -------------------------------------------------------
+   TRIGGER MARKERS (INVISIBLE LOGIC)
+   -------------------------------------------------------
+   These styles ensure that liquid triggers (images/coords)
+   do not take up visual space or render lines/text, 
+   while remaining detectable by JavaScript.
+*/
+
+/* Remove the pseudo-element labels (e.g., "start", "end") */
+.trigger-marker::before,
+[data-trigger-type]::before {
+  content: none;
+  display: none;
+}
+
+/* EXCEPTION: Hydrated Images in FULL Layout Container with FULL Layout Block
+   This is a very specific selector to ensure it only applies when:
+   1. The container has layout-full class AND
+   2. The block has data-layout="full" AND
+   3. The trigger is inside that block
+   
+   This prevents conflicts when full-layout blocks appear in non-full containers
+*/
+.scrolly-container.layout-full .chapter-content-block[data-layout="full"] [data-trigger-type="image"] {
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+  width: 100% !important;
+  opacity: 1 !important;
+  margin: 8rem 0 !important;
+  padding-top: 2rem;
+}
+
+/* Images inside triggers should always be visible (handled by JS) */
+[data-trigger-type="image"] img {
+  visibility: visible;
+  opacity: 1;
+  display: block;
+}
+
+/* ------------------------------------------------------- */
+
+/* Citation styles */
+.scrolly-citation {
+  font-size: 0.9em;
+  color: var(--scrolly-citation-color);
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+  border-left: 3px solid var(--scrolly-citation-border);
+}
+
+.scrolly-citation a {
+  color: var(--scrolly-link-color);
+}
+
+.scrolly-container.light-mode .scrolly-citation {
+  color: rgba(0, 0, 0, 0.7);
+  border-left-color: rgba(0, 0, 0, 0.2);
+}
+
+.scrolly-container.light-mode .scrolly-citation a {
+  color: var(--bs-link-color);
+}
+
+:root {
+  --scrolly-bg-color: #111111;
+  --scrolly-text-color: #f0f0f0;
+  --scrolly-border-color: rgba(255, 255, 255, 0.1);
+  --scrolly-citation-color: rgba(255, 255, 255, 0.8);
+  --scrolly-citation-border: rgba(255, 255, 255, 0.3);
+  --scrolly-link-color: #6ea8fe;
+}
+
+:root.light-mode {
+  --scrolly-bg-color: #ffffff;
+  --scrolly-text-color: #191919;
+  --scrolly-border-color: rgba(0, 0, 0, 0.1);
+  --scrolly-citation-color: rgba(0, 0, 0, 0.7);
+  --scrolly-citation-border: rgba(0, 0, 0, 0.2);
+  --scrolly-link-color: #0d6efd;
+}

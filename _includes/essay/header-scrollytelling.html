@@ -1,0 +1,378 @@
+<style>
+/* Scrollytelling header styles */
+.scrolly-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(10px);
+  /*
+   * Single flex row. align-items: flex-start anchors everything to the
+   * top edge of the row. The title block is then pushed down by exactly
+   * half the hamburger height (10px) so the title's first line starts
+   * at the buttons' visual midpoint.
+   */
+  padding: calc(0.65rem + 20px) 1.5rem 0.85rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/*
+ * Site title block — grows to fill space between the two hamburgers.
+ * margin-top: 10px = half the hamburger height (20px), which places the
+ * title's first line at the vertical midpoint of the hamburger icons.
+ */
+.scrolly-site-info {
+  text-align: center;
+  flex: 1 1 auto;
+  margin: 10px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.scrolly-site-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.scrolly-site-title:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.scrolly-site-subtitle {
+  font-size: 0.8em;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.scrolly-chapter-title {
+  font-size: 0.8em;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  font-weight: normal;
+  line-height: 1.3;
+  transition: opacity 0.3s ease;
+}
+
+/* Hamburger menu */
+.hamburger-menu {
+  position: relative;
+  width: 24px;
+  height: 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Off-canvas menus */
+.offcanvas-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 300px;
+  background-color: rgba(17, 17, 17, 0.98);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1002;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.offcanvas-menu.active {
+  display: block;
+  transform: translateX(0);
+}
+
+.offcanvas-menu.right {
+  right: 0;
+  left: auto;
+  transform: translateX(100%);
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.offcanvas-menu.right.active {
+  transform: translateX(0);
+}
+
+.offcanvas-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 0.25rem;
+  z-index: 1003;
+}
+
+.offcanvas-title {
+  font-size: 1.3em;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.offcanvas-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.offcanvas-menu-item {
+  margin-bottom: 0.5rem;
+}
+
+.offcanvas-menu-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.offcanvas-menu-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.offcanvas-menu-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: bold;
+}
+
+/* Backdrop for off-canvas */
+.offcanvas-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1001;
+}
+
+.offcanvas-backdrop.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .scrolly-header {
+    padding: 0.55rem 1rem 0.7rem;
+  }
+
+  .scrolly-site-info {
+    margin-top: 8px; /* hamburger is still 20px tall on mobile; 10px is fine but 8px feels less tight */
+  }
+
+  .scrolly-site-title {
+    font-size: 0.95em;
+  }
+
+  .scrolly-site-subtitle {
+    font-size: 0.72em;
+  }
+
+  .scrolly-chapter-title {
+    font-size: 0.72em;
+  }
+}
+</style>
+
+<!-- Chapters Offcanvas Menu (Left) -->
+<div class="offcanvas-menu" id="offcanvas-chapters">
+  <button class="offcanvas-close" id="close-chapters" aria-label="Close chapters menu">&times;</button>
+  <h3 class="offcanvas-title">Chapters</h3>
+  <ul class="offcanvas-menu-list">
+    {% assign essays = site.essay | sort: 'order' %}
+    {% for item in essays %}
+    <li class="offcanvas-menu-item">
+      <a href="{{ item.url | relative_url }}" class="offcanvas-menu-link {% if item.url == page.url %}active{% endif %}">
+        {% if item.order %}{{ item.order }}. {% endif %}{{ item.title }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Site Navigation Offcanvas Menu (Right) -->
+<div class="offcanvas-menu right" id="offcanvas-site">
+  <button class="offcanvas-close" id="close-site" aria-label="Close site navigation menu">&times;</button>
+  <h3 class="offcanvas-title">Site Navigation</h3>
+  <ul class="offcanvas-menu-list">
+    {% for nav in site.data.config-nav %}
+    <li class="offcanvas-menu-item">
+      <a href="{{ nav.stub | relative_url }}" class="offcanvas-menu-link {% if nav.stub == page.url %}active{% endif %}">
+        {{ nav.display_name }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Backdrop -->
+<div class="offcanvas-backdrop" id="offcanvas-backdrop"></div>
+
+<!-- Header: single flex row — left hamburger | centre title block | right hamburger -->
+<header class="scrolly-header" id="scrolly-header">
+
+  <div class="hamburger-menu" id="hamburger-chapters" role="button" tabindex="0" aria-label="Open chapters menu">
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+  </div>
+
+  <div class="scrolly-site-info">
+    <h1 class="scrolly-site-title" id="scrolly-site-title">{{ site.title }}</h1>
+    <div class="scrolly-site-subtitle">{{ site.tagline }} | {{ site.author }}</div>
+    <div class="scrolly-chapter-title" id="scrolly-chapter-display">
+      {% if page.chapter %}Chapter {{ page.order }}: {{ page.chapter }}
+      {% else %}{{ page.title }}{% endif %}
+    </div>
+  </div>
+
+  <div class="hamburger-menu" id="hamburger-site" role="button" tabindex="0" aria-label="Open site navigation menu">
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+  </div>
+
+</header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  'use strict';
+
+  var chaptersMenu      = document.getElementById('offcanvas-chapters');
+  var siteMenu          = document.getElementById('offcanvas-site');
+  var backdrop          = document.getElementById('offcanvas-backdrop');
+  var hamburgerChapters = document.getElementById('hamburger-chapters');
+  var hamburgerSite     = document.getElementById('hamburger-site');
+  var closeChapters     = document.getElementById('close-chapters');
+  var closeSite         = document.getElementById('close-site');
+  var siteTitle         = document.getElementById('scrolly-site-title');
+  var menuLinks         = document.querySelectorAll('.offcanvas-menu-link');
+
+  closeAllMenus();
+
+  if (hamburgerChapters) {
+    hamburgerChapters.addEventListener('click', function(e) { e.stopPropagation(); openMenu('chapters'); });
+    hamburgerChapters.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMenu('chapters'); }
+    });
+  }
+
+  if (hamburgerSite) {
+    hamburgerSite.addEventListener('click', function(e) { e.stopPropagation(); openMenu('site'); });
+    hamburgerSite.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMenu('site'); }
+    });
+  }
+
+  if (closeChapters) { closeChapters.addEventListener('click', function(e) { e.stopPropagation(); closeAllMenus(); }); }
+  if (closeSite)     { closeSite.addEventListener('click',     function(e) { e.stopPropagation(); closeAllMenus(); }); }
+  if (backdrop)      { backdrop.addEventListener('click', closeAllMenus); }
+
+  menuLinks.forEach(function(link) { link.addEventListener('click', closeAllMenus); });
+
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeAllMenus(); } });
+
+  document.addEventListener('click', function(e) {
+    var chaptersOpen = chaptersMenu && chaptersMenu.classList.contains('active');
+    var siteOpen     = siteMenu     && siteMenu.classList.contains('active');
+    if (chaptersOpen && !chaptersMenu.contains(e.target) && hamburgerChapters && !hamburgerChapters.contains(e.target)) { closeAllMenus(); }
+    if (siteOpen     && !siteMenu.contains(e.target)     && hamburgerSite     && !hamburgerSite.contains(e.target))     { closeAllMenus(); }
+  });
+
+  if (siteTitle) {
+    siteTitle.addEventListener('click', function() { window.location.href = '{{ "/" | relative_url }}'; });
+  }
+
+  function openMenu(menuName) {
+    closeAllMenus();
+    if (menuName === 'chapters' && chaptersMenu) { chaptersMenu.classList.add('active'); }
+    else if (menuName === 'site' && siteMenu)    { siteMenu.classList.add('active'); }
+    if (backdrop) { backdrop.classList.add('active'); }
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeAllMenus() {
+    if (chaptersMenu) { chaptersMenu.classList.remove('active'); }
+    if (siteMenu)     { siteMenu.classList.remove('active'); }
+    if (backdrop)     { backdrop.classList.remove('active'); }
+    document.body.style.overflow = '';
+  }
+});
+
+/**
+ * updateChapterDisplay
+ * --------------------
+ * Called by ScrollyTelling.updateHeaderForChapter() whenever the active
+ * chapter changes (layout transition, separator crossing, scroll observer).
+ *
+ * Always renders as "Chapter N: Title" when an order number is available.
+ *
+ * @param {object} data  - { chapter, order, title }
+ *   data.chapter  - chapter subtitle string (used in preference to title when set)
+ *   data.order    - chapter number
+ *   data.title    - page title (used when chapter subtitle is absent)
+ */
+window.updateChapterDisplay = function(data) {
+  var el = document.getElementById('scrolly-chapter-display');
+  if (!el || !data) return;
+
+  // Use the chapter subtitle if present, otherwise fall back to the page title
+  var label = (data.chapter && data.chapter.trim()) ? data.chapter.trim() : (data.title || '');
+  var text  = data.order ? 'Chapter ' + data.order + ': ' + label : label;
+
+  // Only touch the DOM when the text actually changes
+  if (el.textContent !== text) {
+    // Brief fade-out → update → fade-in for a clean visual transition
+    el.style.transition = 'opacity 0.2s ease';
+    el.style.opacity = '0';
+    setTimeout(function() {
+      el.textContent = text;
+      el.style.opacity = '1';
+    }, 200);
+  }
+};
+</script>

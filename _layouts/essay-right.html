@@ -1,0 +1,53 @@
+---
+layout: default
+gallery: true
+custom-foot: essay/js/scrollytelling-handler.html
+---
+{% include essay/header-scrollytelling.html %}
+
+<script>
+window.allEssays = [
+  {% assign sorted_essays = site.essay | sort: 'order' %}
+  {% for essay in sorted_essays %}
+  {
+    url: "{{ essay.url | prepend: site.baseurl }}",
+    title: "{{ essay.title | escape }}",
+    order: {{ essay.order }}
+  }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+];
+</script>
+
+<!-- Import shared scrollytelling styles -->
+<link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
+
+<div class="scrolly-container layout-right" id="scrolly-container" data-layout="right">
+  
+  <div class="scrolly-image-column" id="scrolly-image">
+    <div class="scrolly-image-frame">
+      <div class="scrolly-image-container" id="scrolly-image-container"></div>
+    </div>
+  </div>
+
+  <div class="scrolly-text-column" id="scrolly-text">
+    <div class="scrolly-text-content chapter-content-block"
+         data-chapter-path="{{ page.url | prepend: site.baseurl }}"
+         data-chapter-title="{{ page.title | escape }}"
+         data-layout="right">
+         
+         <a id="chapter-{{ page.order | plus: 1 }}" class="chapter-scroll-anchor"></a>
+
+         {% if page.chapter %}
+         <h1 id="chapter-title" class="chapter-title">{{ page.chapter }}</h1>
+         {% endif %}
+         {{ content }}
+    </div>
+
+    <div class="chapter-loading-indicator" id="chapter-loading-indicator" style="text-align:center; padding: 3rem; opacity:0; transition:opacity 0.3s;">
+      <div class="spinner-border text-muted" role="status"></div>
+    </div>
+  </div>
+
+</div>
+
+{% include essay/footer-scrollytelling.html %}

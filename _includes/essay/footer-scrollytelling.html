@@ -1,0 +1,379 @@
+<style>
+/* Scrollytelling footer styles */
+.scrolly-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background-color: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 1rem;
+}
+
+.scrolly-footer.light-mode {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation arrows */
+.chapter-nav {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.chapter-nav:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: scale(1.1);
+}
+
+.chapter-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.scrolly-footer.light-mode .chapter-nav {
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.scrolly-footer.light-mode .chapter-nav:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #000;
+}
+
+/* Citation wrapper — now a single centered column for image only */
+.scrolly-citation-wrapper {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Image citation — centered, full wrapper width */
+.scrolly-image-citation-footer {
+  font-size: 0.85em;
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity {{ site.data.theme.scrollytelling.fade-duration | default: 0.3 }}s ease,
+              transform {{ site.data.theme.scrollytelling.fade-duration | default: 0.3 }}s ease;
+  min-width: 0;
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.scrolly-image-citation-footer.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scrolly-footer.light-mode .scrolly-image-citation-footer {
+  color: rgba(0, 0, 0, 0.75);
+}
+
+/* Citation content */
+.scrolly-citation-content {
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.4;
+  max-width: 100%;
+  text-align: center;
+}
+
+/* Citation label */
+.scrolly-citation-label {
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.35rem;
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  width: 100%;
+  text-align: center;
+}
+
+.scrolly-footer.light-mode .scrolly-citation-label {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* "View Item" link styling */
+.view-item-link {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-size: 0.85em;
+  color: var(--bs-link-color) !important;
+  text-decoration: underline !important;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.view-item-link:hover {
+  opacity: 1;
+  text-decoration: underline !important;
+}
+
+/* ── In-text footnote superscript links ────────────────────────────────*/
+.footnote-ref .footnote-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+  padding-bottom: 1px;
+  transition: color 0.15s ease, border-bottom-color 0.15s ease;
+}
+
+.footnote-ref .footnote-link:hover {
+  color: var(--bs-link-color, #6ea8fe);
+  border-bottom-style: solid;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .scrolly-footer {
+    padding: 0.4rem 1.25rem !important;
+    min-height: unset !important;
+    align-items: center !important;
+    flex-direction: row !important;
+  }
+
+  .chapter-nav {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1.25rem !important;
+  }
+
+  .scrolly-citation-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .scrolly-image-citation-footer {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    align-items: center !important;
+    font-size: 0.75em !important;
+  }
+
+  .scrolly-image-citation-footer .scrolly-citation-label {
+    display: none !important;
+  }
+}
+</style>
+
+<footer class="scrolly-footer" id="scrolly-footer">
+  <!-- Previous Chapter Arrow -->
+  <a href="#" class="chapter-nav prev" id="prev-chapter" aria-label="Previous chapter" disabled>
+    ❮
+  </a>
+  
+  <!-- Citation Container — image citation only, centered -->
+  <div class="scrolly-citation-wrapper">
+    <div class="scrolly-image-citation-footer" id="scrolly-image-citation-footer">
+      <span class="scrolly-citation-label">Image</span>
+      <div class="scrolly-citation-content">
+        <span id="scrolly-image-citation-content"></span>
+        <a href="#" class="view-item-link" id="scrolly-image-view-link" style="display:none">, View Item</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Next Chapter Arrow -->
+  <a href="#" class="chapter-nav next" id="next-chapter" aria-label="Next chapter" disabled>
+    ❯
+  </a>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var prevChapterLink = document.getElementById('prev-chapter');
+  var nextChapterLink = document.getElementById('next-chapter');
+
+  // Normalize a URL for comparison: strip trailing slashes AND .html suffixes
+  // so that Jekyll pretty-permalinks (/essay/01-introduction/) and explicit
+  // .html paths (/essay/01-introduction.html) both resolve to the same string.
+  function normalize(url) {
+    return (url || '').replace(/\/$/, '').replace(/\.html$/, '');
+  }
+
+  // ── 1. Main site navigation sequence (footer arrows always use this) ──
+  var allNavItems = [
+
+    // Home
+    { url: '{{ "/" | relative_url }}', title: 'Home' },
+
+    // All essays, sorted by front-matter `order`
+    {% assign sorted_essays = site.essay | sort: 'order' %}
+    {% for item in sorted_essays %}
+    { url: '{{ item.url | relative_url }}', title: {{ item.title | jsonify }} },
+    {% endfor %}
+
+    // Config-nav pages that are neither the home stub ("/")
+    // nor an essay URL (anything under "/essay/").
+    {% for nav in site.data.config-nav %}
+    {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+    { url: '{{ nav.stub | relative_url }}', title: {{ nav.display_name | jsonify }} },
+    {% endunless %}
+    {% endfor %}
+
+  ].filter(function(item) { return item.url; });
+
+  // ── 2. Item-level page sequence (keyboard arrows use this on item pages) ──
+  // Emitted in metadata CSV order so browsing follows the collection sequence.
+  var allItemPages = [
+    {% for item in site.data[site.metadata] %}
+    { url: '{{ site.baseurl }}/items/{{ item.objectid }}.html', title: {{ item.title | jsonify }} },
+    {% endfor %}
+  ].filter(function(item) { return item.url; });
+
+  var currentUrl = normalize(window.location.pathname);
+
+  // Detect whether we are currently on an item page.
+  // Item pages live at /items/<objectid>.html — match that pattern.
+  // normalize() strips the .html suffix, so we check the normalized path.
+  var itemBasePattern = normalize('{{ site.baseurl }}/items/');
+  var onItemPage = currentUrl.indexOf(itemBasePattern + '/') === 0 ||
+                   currentUrl.indexOf(itemBasePattern) === 0 &&
+                   currentUrl.length > itemBasePattern.length &&
+                   currentUrl.charAt(itemBasePattern.length) === '/';
+
+  // Simpler, more reliable item page detection: the normalized path starts
+  // with the items base and has more path segments after it.
+  onItemPage = currentUrl.startsWith(itemBasePattern) &&
+               currentUrl.length > itemBasePattern.length;
+
+  // ── 3. Wire footer arrows to the MAIN nav sequence at all times ────────
+  var mainIndex = allNavItems.findIndex(function(item) {
+    return normalize(item.url) === currentUrl;
+  });
+
+  console.log('[footer-scrollytelling] currentUrl:', currentUrl);
+  console.log('[footer-scrollytelling] mainIndex:', mainIndex, '/', allNavItems.length - 1);
+  console.log('[footer-scrollytelling] allNavItems[0]:', allNavItems[0] && normalize(allNavItems[0].url));
+
+  if (prevChapterLink) {
+    if (mainIndex > 0) {
+      var prevItem = allNavItems[mainIndex - 1];
+      prevChapterLink.href                = prevItem.url;
+      prevChapterLink.removeAttribute('disabled');
+      prevChapterLink.style.opacity       = '1';
+      prevChapterLink.style.pointerEvents = '';
+      prevChapterLink.title               = 'Previous: ' + prevItem.title;
+    } else {
+      prevChapterLink.href                = '#';
+      prevChapterLink.setAttribute('disabled', 'disabled');
+      prevChapterLink.style.opacity       = '0.3';
+      prevChapterLink.style.pointerEvents = 'none';
+      prevChapterLink.title               = 'No previous';
+    }
+  }
+
+  if (nextChapterLink) {
+    if (mainIndex >= 0 && mainIndex < allNavItems.length - 1) {
+      var nextItem = allNavItems[mainIndex + 1];
+      nextChapterLink.href                = nextItem.url;
+      nextChapterLink.removeAttribute('disabled');
+      nextChapterLink.style.opacity       = '1';
+      nextChapterLink.style.pointerEvents = '';
+      nextChapterLink.title               = 'Next: ' + nextItem.title;
+    } else if (mainIndex === allNavItems.length - 1) {
+      nextChapterLink.href                = allNavItems[0].url;
+      nextChapterLink.removeAttribute('disabled');
+      nextChapterLink.style.opacity       = '1';
+      nextChapterLink.style.pointerEvents = '';
+      nextChapterLink.title               = 'Back to: ' + allNavItems[0].title;
+    } else {
+      // Not found in main nav (i.e. we are on an item page) —
+      // point the footer arrows at the nearest main nav boundaries
+      // so the reader can always escape back out.
+      nextChapterLink.href                = allNavItems[0].url;
+      nextChapterLink.removeAttribute('disabled');
+      nextChapterLink.style.opacity       = '1';
+      nextChapterLink.style.pointerEvents = '';
+      nextChapterLink.title               = 'Back to: ' + allNavItems[0].title;
+    }
+  }
+
+  // ── 4. Keyboard arrows: item cycle on item pages, main nav elsewhere ───
+  var keyPrevUrl = null;
+  var keyNextUrl = null;
+
+  if (onItemPage) {
+    // Find position in the item sequence and build prev/next item URLs.
+    var itemIndex = allItemPages.findIndex(function(item) {
+      return normalize(item.url) === currentUrl;
+    });
+
+    if (itemIndex > 0) {
+      keyPrevUrl = allItemPages[itemIndex - 1].url;
+    } else if (itemIndex === 0) {
+      // Wrap around to the last item
+      keyPrevUrl = allItemPages[allItemPages.length - 1].url;
+    }
+
+    if (itemIndex >= 0 && itemIndex < allItemPages.length - 1) {
+      keyNextUrl = allItemPages[itemIndex + 1].url;
+    } else if (itemIndex === allItemPages.length - 1) {
+      // Wrap around to the first item
+      keyNextUrl = allItemPages[0].url;
+    }
+
+    console.log('[footer-scrollytelling] Item page mode | index:', itemIndex, '/', allItemPages.length - 1);
+    console.log('[footer-scrollytelling] Key ← →:', keyPrevUrl, '/', keyNextUrl);
+  } else {
+    // On a main nav page: keyboard mirrors the footer arrows.
+    // Use getAttribute('href') rather than .href to keep root-relative paths
+    // and avoid the browser expanding them to absolute URLs, which could
+    // break comparisons elsewhere.
+    keyPrevUrl = (prevChapterLink && !prevChapterLink.hasAttribute('disabled'))
+      ? prevChapterLink.getAttribute('href') : null;
+    keyNextUrl = nextChapterLink
+      ? nextChapterLink.getAttribute('href') : null;
+
+    console.log('[footer-scrollytelling] Main nav mode | index:', mainIndex, '/', allNavItems.length - 1);
+    console.log('[footer-scrollytelling] Key ← →:', keyPrevUrl, '/', keyNextUrl);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    var tag = document.activeElement ? document.activeElement.tagName : '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      if (keyPrevUrl && keyPrevUrl !== '#') window.location.href = keyPrevUrl;
+    } else if (e.key === 'ArrowRight' || e.key === 'Right') {
+      if (keyNextUrl && keyNextUrl !== '#') window.location.href = keyNextUrl;
+    }
+  });
+});
+</script>

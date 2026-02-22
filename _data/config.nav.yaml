@@ -1,0 +1,20 @@
+- display_name: Home
+  stub: /
+- display_name: Make Believe
+  stub: /essay/01-introduction.html
+- display_name: Bibliography
+  stub: /bibliography.html
+- display_name: Acknowledgments
+  stub: /acknowledgments.html
+- display_name: Browse
+  stub: /browse.html
+- display_name: Subjects
+  stub: /subjects.html
+- display_name: Locations
+  stub: /locations.html
+- display_name: Map
+  stub: /map.html
+- display_name: Timeline
+  stub: /timeline.html
+- display_name: Data
+  stub: /data.html

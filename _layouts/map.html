@@ -1,0 +1,38 @@
+---
+# Default leaflet map page
+layout: default
+custom-foot: js/map-js.html
+---
+
+{% include essay/header-scrollytelling.html %}
+
+<style>
+    #map-wrapper {
+        position: relative;
+        padding-top: 0; /* Remove top padding so map extends under header */
+        padding-bottom: 80px; /* Keep spacing for fixed footer */
+        margin-top: -120px; /* Pull map up under the fixed header */
+        height: calc(100vh + 120px); /* Compensate for negative margin */
+    }
+    @media screen and (max-width: 768px) {
+        #map-wrapper {
+            margin-top: -100px; /* Adjust for smaller screens */
+            height: calc(100vh + 100px);
+            padding-bottom: 70px;
+        }
+    }
+    
+    /* Ensure map fills available space */
+    #map {
+        height: 100%;
+        width: 100%;
+        margin-top: 0;
+    }
+</style>
+
+<div id="map-wrapper">
+    <h2 class="visually-hidden">Map of Collection Items</h2>
+    <div id="map"></div>
+</div>
+
+{% include essay/footer-scrollytelling.html %}

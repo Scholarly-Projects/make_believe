@@ -1,0 +1,1242 @@
+<script>
+// Initialize collection metadata lookup
+window.collectionMetadata = {};
+{% assign items = site.data[site.metadata] %}
+{% for item in items %}
+window.collectionMetadata['{{ item.objectid }}'] = {
+  objectid: '{{ item.objectid }}',
+  title: {{ item.title | jsonify }},
+  image_citation: {{ item.image_citation | jsonify }},
+  object_location: {% if item.object_location %}'{{ site.baseurl }}{{ item.object_location }}'{% else %}null{% endif %},
+  image_small: {% if item.image_small %}'{{ site.baseurl }}{{ item.image_small }}'{% else %}null{% endif %},
+  image_thumb: {% if item.image_thumb %}'{{ site.baseurl }}{{ item.image_thumb }}'{% else %}null{% endif %},
+  image_alt_text: {{ item.image_alt_text | jsonify }}
+};
+{% endfor %}
+
+
+// Initialize citation lookup
+window.citationData = {};
+{% assign citations = site.data.citation %}
+{% for citation in citations %}
+window.citationData['{{ citation.id }}'] = {
+  id: '{{ citation.id }}',
+  text: {{ citation.text | jsonify }}
+};
+{% endfor %}
+
+
+// Base URL used to build bibliography anchor links throughout this file
+var BIBLIOGRAPHY_URL = '{{ "/bibliography.html" | relative_url }}';
+
+
+class ScrollyTelling {
+  constructor() {
+    this.triggers = [];
+    this.imageSegments = []; 
+    this.footnotes = [];
+    
+    // State
+    this.activeImageId = null; 
+    this.currentCitation = null;
+    this.loadedRange = { start: -1, end: -1 };
+    this.activeChapterIndex = -1;
+    this.isLoading = false;
+    this.isTransitioning = false;
+    this.transitionPromise = null;
+    this.layoutObserverTimeout = null;
+    this.layoutObserverPaused = false;
+    this.pendingLayout = null;
+    this.scrollAdjustmentCooldown = false;
+    this.lastScrollY = 0;
+    this.maxScrollY = 0;
+
+    // Separator icon elements registered for midpoint fade tracking.
+    // Populated by observeSeparator(); checked each scroll tick.
+    this.separatorIcons = [];
+
+    // Tracks whether the chapter-end fade is currently applied so we
+    // only toggle transitions when state actually changes.
+    this.chapterEndFaded = false;
+
+    // Tracks the objectid last sent to the footer in full layout, so we
+    // don't thrash the DOM on every scroll tick with no real change.
+    this.activeFullLayoutImageId = null;
+    
+    // DOM Elements
+    this.textColumn = document.getElementById('scrolly-text'); 
+    this.imageContainer = document.getElementById('scrolly-image-container');
+    this.scrollyContainer = document.getElementById('scrolly-container');
+    this.textContentEl = document.querySelector('.scrolly-text-content');
+    this.loadingIndicatorEl = document.getElementById('chapter-loading-indicator');
+    
+    // Citation sidebar — created in init()
+    this.citationColumnEl = null;
+    this.citationDisplayEl = null;
+
+
+    this.allEssays = window.allEssays || [];
+    this.currentLayout = this.scrollyContainer ? this.scrollyContainer.dataset.layout : 'left';
+
+
+    this.init();
+  }
+
+
+  init() {
+    if (!this.textColumn || !this.allEssays.length || !this.textContentEl) return;
+
+
+    // ── Build the citation sidebar column ─────────────────────────────
+    this.citationColumnEl = document.getElementById('scrolly-citation-column');
+    if (!this.citationColumnEl && this.scrollyContainer) {
+      this.citationColumnEl = document.createElement('div');
+      this.citationColumnEl.id = 'scrolly-citation-column';
+      this.citationColumnEl.className = 'scrolly-citation-column';
+      this.citationColumnEl.innerHTML =
+        '<div class="scrolly-citation-display" id="scrolly-citation-display"></div>';
+      this.scrollyContainer.prepend(this.citationColumnEl);
+    }
+    this.citationDisplayEl = document.getElementById('scrolly-citation-display');
+
+
+    const currentPath = this.normalizeUrl(this.textContentEl.dataset.chapterPath);
+    const startIdx = this.allEssays.findIndex(e => this.normalizeUrl(e.url) === currentPath);
+    const idx = startIdx === -1 ? 0 : startIdx;
+    
+    this.loadedRange.start = idx;
+    this.loadedRange.end = idx;
+    this.activeChapterIndex = idx;
+
+
+    this.processNewBlock(this.textContentEl);
+    this.setupLayoutObserver();
+    this.setupThemeObserver();
+    this.updateTheme();
+
+    // Observe any existing separators on page load for full-layout transitions
+    document.querySelectorAll('.chapter-separator').forEach(sep => {
+      this.observeSeparator(sep);
+    });
+
+
+    window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
+    setTimeout(() => this.handleScroll(), 100);
+  }
+
+
+  processNewBlock(block) {
+      const layout = block.dataset.layout || 'left';
+      
+      this.cleanLayoutArtifacts(block);
+      this.convertFootnotesToSuperscript(block);
+      this.parseTriggers(block, layout);
+      this.processFootnotes(block);
+      this.observeBlock(block);
+
+      // Add padding to full-layout chapters to create breathing room
+      // and ensure title appears at bottom of viewport after transition
+      if (layout === 'full') {
+        block.style.paddingTop = '30vh';
+      }
+
+      // Reset citation state so the first footnote in this block fires a
+      // fresh sidebar update regardless of what was active before.
+      this.currentCitation = null;
+
+
+      // Fade out the sidebar display so it's clean for the new block
+      if (this.citationDisplayEl) {
+        this.citationDisplayEl.classList.remove('visible');
+      }
+
+
+      if (layout === 'full') {
+          this.hydrateInlineImages(block);
+      }
+  }
+
+
+  cleanLayoutArtifacts(container) {
+    container.querySelectorAll('br').forEach(br => br.remove());
+    
+    if (container.dataset.layout !== 'full') {
+        const triggers = container.querySelectorAll('[data-trigger-type]');
+        triggers.forEach(t => {
+            Object.assign(t.style, {
+                display: 'block', height: '0px', width: '0px',
+                margin: '0px', padding: '0px', overflow: 'hidden', visibility: 'hidden'
+            });
+        });
+    }
+  }
+
+
+  hydrateInlineImages(container) {
+    const triggers = container.querySelectorAll('[data-trigger-type="image"]');
+    triggers.forEach(trigger => {
+        const objId = trigger.dataset.triggerId;
+        const meta = window.collectionMetadata[objId];
+        if (!meta) return;
+        
+        let img = trigger.querySelector('img');
+        let caption = trigger.querySelector('.text-muted');
+        
+        if (img && (!img.complete || img.naturalHeight === 0)) {
+          console.log('Re-hydrating broken image:', objId);
+          img.remove();
+          img = null;
+        }
+        
+        if (!img) {
+          img = document.createElement('img');
+          img.src = meta.object_location || meta.image_small;
+          img.alt = meta.image_alt_text || meta.title;
+          img.className = 'img-fluid d-block mx-auto mb-2'; 
+          img.style.maxWidth = '100%';
+          
+          Object.assign(trigger.style, {
+            position: 'relative', display: 'block', visibility: 'visible',
+            height: 'auto', width: '100%', margin: '6rem 0', opacity: '1', overflow: 'visible'
+          });
+          
+          trigger.appendChild(img);
+        }
+        
+        if (meta.image_citation && !caption) {
+          caption = document.createElement('div');
+          caption.className = 'text-muted small text-center mt-1 mb-4 mx-auto';
+          caption.innerHTML = this.formatCitation(meta.image_citation);
+          trigger.appendChild(caption);
+        }
+    });
+  }
+
+
+  handleScroll() {
+    if (this.isTransitioning) return;
+
+
+    if (window.scrollY > this.maxScrollY) {
+      this.maxScrollY = window.scrollY;
+    }
+
+
+    const triggerThreshold = window.innerHeight / 2;
+
+
+    let newActiveId = null;
+    let lastStartParams = null;
+    
+    for (const trigger of this.triggers) {
+      if (trigger.parentLayout === 'full') continue;
+      if (trigger.type !== 'image') continue;
+      const rect = trigger.element.getBoundingClientRect();
+      const midpoint = rect.top + (rect.height / 2);
+      if (midpoint < triggerThreshold) {
+        if (trigger.action === 'start') {
+          // This image is now the active one.
+          newActiveId = trigger.id;
+          lastStartParams = trigger.params;
+        } else if (trigger.action === 'end') {
+          // The image's exit marker has crossed the reading threshold —
+          // it should no longer be visible. A later 'start' crossing the
+          // threshold (processed next in the loop) will override this.
+          newActiveId = null;
+          lastStartParams = null;
+        }
+      }
+    }
+
+
+    if (this.currentLayout !== 'full') {
+      if (newActiveId !== this.activeImageId) {
+        this.updateImageVisibility(newActiveId, lastStartParams);
+      }
+      this.renderAnimations(triggerThreshold);
+    } else {
+      this.handleFullLayoutImageCitations(triggerThreshold);
+    }
+
+
+    this.handleCitations(triggerThreshold);
+    this.handleSeparatorFade(triggerThreshold);
+    this.handleInfiniteScroll();
+  }
+
+
+  handleFullLayoutImageCitations(triggerThreshold) {
+    const triggers = document.querySelectorAll(
+      '.chapter-content-block[data-layout="full"] [data-trigger-type="image"]'
+    );
+
+
+    let bestId = null;
+    let bestTop = -Infinity;
+
+
+    triggers.forEach(trigger => {
+      const objId = trigger.dataset.triggerId;
+      if (!objId) return;
+
+
+      const rect = trigger.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.top > bestTop) {
+        bestTop = rect.top;
+        bestId = objId;
+      }
+    });
+
+
+    if (bestId !== this.activeFullLayoutImageId) {
+      this.activeFullLayoutImageId = bestId;
+      this.updateFooterImageCitation(bestId);
+    }
+  }
+
+
+  updateImageVisibility(newId, params) {
+      if (this.currentLayout === 'full') return;
+      this.activeImageId = newId;
+      
+      if (newId && !this.imageContainer.querySelector(`img[data-objectid="${newId}"]`)) {
+          this.createImageElement(newId, params);
+      }
+
+
+      const allImages = this.imageContainer.querySelectorAll('img');
+      allImages.forEach(img => {
+          const active = img.dataset.objectid === newId;
+          img.style.opacity = active ? '1' : '0';
+          img.style.zIndex = active ? '2' : '1';
+      });
+      
+      this.updateFooterImageCitation(newId);
+  }
+  
+  updateFooterImageCitation(objectid) {
+      const footerContent = document.getElementById('scrolly-image-citation-content');
+      const footerWrapper = document.getElementById('scrolly-image-citation-footer');
+      const viewLink = document.getElementById('scrolly-image-view-link');
+      
+      if (!footerContent || !footerWrapper) return;
+      
+      if (objectid && window.collectionMetadata[objectid]) {
+          const meta = window.collectionMetadata[objectid];
+          
+          if (meta.image_citation) {
+              footerContent.innerHTML = this.formatCitation(meta.image_citation);
+          } else {
+              footerContent.textContent = meta.title || 'Image citation unavailable';
+          }
+          
+          if (viewLink) {
+              viewLink.href = `{{ site.baseurl }}/items/${objectid}.html`;
+              viewLink.style.display = 'inline';
+          }
+          
+          footerWrapper.classList.add('visible');
+      } else {
+          footerWrapper.classList.remove('visible');
+          if (viewLink) viewLink.style.display = 'none';
+      }
+  }
+
+
+  setupLayoutObserver() {
+    this.layoutObserverPaused = false;
+    
+    // Standard block observer for general layout transitions
+    this.layoutObserver = new IntersectionObserver((entries) => {
+      if (this.layoutObserverPaused) return;
+      
+      if (this.layoutObserverTimeout) {
+        clearTimeout(this.layoutObserverTimeout);
+      }
+      
+      this.layoutObserverTimeout = setTimeout(() => {
+        if (this.isTransitioning) return;
+        
+        const viewportCenter = window.innerHeight / 2;
+        let closestBlock = null;
+        let minDistance = Infinity;
+
+
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const rect = entry.target.getBoundingClientRect();
+          const blockCenter = rect.top + rect.height / 2;
+          const distance = Math.abs(viewportCenter - blockCenter);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestBlock = entry.target;
+          }
+        }
+
+
+        if (closestBlock) {
+          const block = closestBlock;
+          const targetLayout = block.dataset.layout;
+          
+          if (block.dataset.chapterPath) {
+            const chapterIndex = this.allEssays.findIndex(essay => 
+              this.normalizeUrl(essay.url) === this.normalizeUrl(block.dataset.chapterPath)
+            );
+            if (chapterIndex !== -1 && chapterIndex !== this.activeChapterIndex) {
+              this.activeChapterIndex = chapterIndex;
+              this.updateHeaderForChapter(chapterIndex);
+            }
+          }
+          
+          if (targetLayout && targetLayout !== this.currentLayout && !this.isTransitioning) {
+            this.applyLayoutTransition(targetLayout);
+          }
+          
+          this.updateHistory(block);
+        }
+      }, 75);
+    }, { 
+      rootMargin: '-35% 0px -15% 0px',
+      threshold: 0
+    });
+    
+    // ── Separator forward observer ─────────────────────────────────────
+    // Observes the icon <img> inside the separator — NOT the separator
+    // div, which can be 50–200vh tall due to padding/margin on full-layout
+    // separators. This ensures the trigger point is the visible icon pixel,
+    // not the invisible top edge of a padded container.
+    //
+    // rootMargin '0px 0px -98% 0px' defines a 2%-tall strip at the very
+    // top of the viewport. The observer fires when the icon enters that
+    // strip — i.e. the icon has just reached the top of the page and the
+    // reader has fully scrolled past all preceding content.
+    this.separatorForwardObserver = new IntersectionObserver((entries) => {
+      if (this.layoutObserverPaused || this.isTransitioning || this.scrollAdjustmentCooldown) return;
+      
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        // entry.target is the icon img — walk up to the separator div
+        const separator = entry.target.closest('.chapter-separator');
+        if (!separator) return;
+        const nextBlock = separator.nextElementSibling;
+        
+        if (nextBlock && nextBlock.classList.contains('chapter-content-block')) {
+          const targetLayout = nextBlock.dataset.layout;
+
+          // ── Header update — always fire when crossing forward ────────
+          if (nextBlock.dataset.chapterPath) {
+            const nextIdx = this.allEssays.findIndex(e =>
+              this.normalizeUrl(e.url) === this.normalizeUrl(nextBlock.dataset.chapterPath)
+            );
+            if (nextIdx !== -1 && nextIdx !== this.activeChapterIndex) {
+              this.activeChapterIndex = nextIdx;
+              this.updateHeaderForChapter(nextIdx);
+            }
+          }
+
+          // ── Layout transition — fire for any layout change ────────────
+          if (targetLayout && targetLayout !== this.currentLayout) {
+            console.log('Forward separator trigger → layout:', targetLayout);
+            this.applyLayoutTransition(targetLayout);
+          }
+        }
+      });
+    }, {
+      // 2%-tall strip at the very top of the viewport
+      rootMargin: '0px 0px -98% 0px',
+      threshold: 0
+    });
+
+    // ── Separator backward observer ────────────────────────────────────
+    // Exact mirror of the forward observer. The same icon <img> is
+    // observed. rootMargin '-98% 0px 0px 0px' creates a 2%-tall strip at
+    // the very BOTTOM of the viewport, so this fires when the icon
+    // re-enters the bottom of the page while scrolling back — the precise
+    // inverse of the forward trigger moment. Fires a header update and any
+    // required layout change back to the previous chapter's layout.
+    this.separatorBackwardObserver = new IntersectionObserver((entries) => {
+      if (this.layoutObserverPaused || this.isTransitioning || this.scrollAdjustmentCooldown) return;
+      
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        // entry.target is the icon img — walk up to the separator div
+        const separator = entry.target.closest('.chapter-separator');
+        if (!separator) return;
+        const prevBlock = separator.previousElementSibling;
+        
+        if (prevBlock && prevBlock.classList.contains('chapter-content-block')) {
+          const targetLayout = prevBlock.dataset.layout;
+
+          // ── Header update — always fire when crossing backward ───────
+          if (prevBlock.dataset.chapterPath) {
+            const prevIdx = this.allEssays.findIndex(e =>
+              this.normalizeUrl(e.url) === this.normalizeUrl(prevBlock.dataset.chapterPath)
+            );
+            if (prevIdx !== -1 && prevIdx !== this.activeChapterIndex) {
+              this.activeChapterIndex = prevIdx;
+              this.updateHeaderForChapter(prevIdx);
+            }
+          }
+
+          // ── Layout transition — fire for any layout change ────────────
+          if (targetLayout && targetLayout !== this.currentLayout) {
+            console.log('Backward separator trigger → layout:', targetLayout);
+            this.applyLayoutTransition(targetLayout);
+          }
+        }
+      });
+    }, {
+      // 2%-tall strip at the very bottom of the viewport
+      rootMargin: '-98% 0px 0px 0px',
+      threshold: 0
+    });
+  }
+
+
+  applyLayoutTransition(newLayout) {
+    if (this.currentLayout === newLayout && !this.isTransitioning) {
+      return Promise.resolve();
+    }
+    
+    if (this.isTransitioning) {
+      if (this.pendingLayout !== newLayout) {
+        console.log('Queueing layout transition:', newLayout);
+        this.pendingLayout = newLayout;
+      }
+      return this.transitionPromise || Promise.resolve();
+    }
+
+
+    this.isTransitioning = true;
+    this.currentLayout = newLayout;
+    this.scrollyContainer.dataset.layout = newLayout;
+
+
+    this.transitionPromise = this._performLayoutTransition(newLayout)
+      .finally(() => {
+        this.isTransitioning = false;
+        this.transitionPromise = null;
+        
+        if (this.pendingLayout && this.pendingLayout !== this.currentLayout) {
+          const nextLayout = this.pendingLayout;
+          this.pendingLayout = null;
+          console.log('Applying queued layout transition:', nextLayout);
+          setTimeout(() => this.applyLayoutTransition(nextLayout), 50);
+        }
+      });
+
+
+    return this.transitionPromise;
+  }
+
+
+  _getCurtain() {
+    let curtain = document.getElementById('scrolly-transition-curtain');
+    if (!curtain) {
+      curtain = document.createElement('div');
+      curtain.id = 'scrolly-transition-curtain';
+      Object.assign(curtain.style, {
+        position: 'fixed',
+        inset: '0',
+        background: 'var(--scrolly-bg-color, #111111)',
+        zIndex: '9998',
+        opacity: '0',
+        pointerEvents: 'none',
+        transition: 'opacity 0s'
+      });
+      document.body.appendChild(curtain);
+    }
+    return curtain;
+  }
+
+
+  async _curtainDown(ms = 0) {
+    const c = this._getCurtain();
+    c.style.transition = `opacity ${ms}ms ease`;
+    c.style.opacity = '1';
+    c.style.pointerEvents = 'all';
+    if (ms > 0) await this._wait(ms);
+  }
+
+
+  async _curtainUp(ms = 300) {
+    const c = this._getCurtain();
+    c.style.transition = `opacity ${ms}ms ease`;
+    c.style.opacity = '0';
+    c.style.pointerEvents = 'none';
+    await this._wait(ms);
+  }
+
+
+  async _performLayoutTransition(newLayout) {
+    try {
+      this.layoutObserverPaused = true;
+
+
+      const imageCol = document.getElementById('scrolly-image');
+      const leavingFull = this.scrollyContainer.classList.contains('layout-full') ||
+                          this.scrollyContainer.dataset.layout === 'full';
+      const enteringFull = newLayout === 'full';
+
+
+      await this._curtainDown(0);
+
+
+      // Reset citation sidebar on every layout transition
+      this.currentCitation = null;
+      if (this.citationDisplayEl) {
+        this.citationDisplayEl.classList.remove('visible');
+        this.citationDisplayEl.innerHTML = '';
+      }
+
+      // Reset separator-fade state so the citation sidebar starts clean
+      // for the new chapter. Image visibility is managed independently by
+      // the trigger loop and does not need resetting here.
+      this.chapterEndFaded = false;
+
+
+      if (enteringFull) {
+        if (imageCol) {
+          imageCol.style.transition = 'none';
+          imageCol.style.opacity = '0';
+        }
+
+
+        this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
+        void this.scrollyContainer.offsetWidth;
+
+
+        document.querySelectorAll('.chapter-content-block[data-layout="full"]')
+          .forEach(block => this.hydrateInlineImages(block));
+
+
+        this.imageContainer.querySelectorAll('img').forEach(img => {
+          img.style.opacity = '0';
+          img.style.visibility = 'hidden';
+        });
+
+
+        this.activeFullLayoutImageId = null;
+        this.currentCitation = null;
+
+        await this._wait(500);
+        await this._curtainUp(350);
+
+
+      } else if (leavingFull) {
+        if (imageCol) {
+          imageCol.style.transition = 'none';
+          imageCol.style.opacity = '0';
+        }
+
+
+        const scrollBefore = window.scrollY;
+        const heightBefore = document.documentElement.scrollHeight;
+
+
+        this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
+        void this.scrollyContainer.offsetWidth;
+
+
+        const heightDelta = document.documentElement.scrollHeight - heightBefore;
+        if (heightDelta > 0) {
+          this.scrollAdjustmentCooldown = true;
+          window.scrollTo(0, scrollBefore + heightDelta);
+        }
+
+
+        this.imageContainer.querySelectorAll('img').forEach(img => {
+          img.style.visibility = 'visible';
+        });
+        this.activeImageId = null;
+
+
+        this.activeFullLayoutImageId = null;
+        this.currentCitation = null;
+        this.updateFooterImageCitation(null);
+
+        await this._wait(16);
+        await this._curtainUp(280);
+
+
+      } else {
+        // Standard left/right transitions
+        this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
+        void this.scrollyContainer.offsetWidth;
+        
+        await this._wait(16);
+        await this._curtainUp(280);
+      }
+
+
+      if (!enteringFull && imageCol) {
+        imageCol.style.transition = 'opacity 0.35s ease';
+        imageCol.style.opacity = '1';
+        await this._wait(350);
+      }
+
+
+      if (leavingFull) {
+        this.scrollAdjustmentCooldown = false;
+      }
+
+
+      this.layoutObserverPaused = false;
+
+
+    } catch (error) {
+      console.error('Layout transition failed:', error);
+      this.layoutObserverPaused = false;
+      this.scrollAdjustmentCooldown = false;
+      await this._curtainUp(150);
+    }
+  }
+  
+  verifyLayoutSync() {
+    if (this.isTransitioning) {
+      console.log('verifyLayoutSync: skipping, transition in progress');
+      return;
+    }
+    
+    const viewportCenter = window.innerHeight / 2;
+    let closestBlock = null;
+    let minDistance = Infinity;
+    
+    const blocks = document.querySelectorAll('.scrolly-text-content');
+    blocks.forEach(block => {
+      const rect = block.getBoundingClientRect();
+      if (rect.height === 0) return;
+      
+      const blockCenter = rect.top + rect.height / 2;
+      const distance = Math.abs(viewportCenter - blockCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestBlock = block;
+      }
+    });
+    
+    if (closestBlock) {
+      const blockLayout = closestBlock.dataset.layout;
+      if (blockLayout && blockLayout !== this.currentLayout) {
+        console.log(`Layout verification: detected mismatch. Container: ${this.currentLayout}, Block: ${blockLayout}. Correcting...`);
+        this.applyLayoutTransition(blockLayout);
+      }
+    }
+  }
+
+
+  parseTriggers(container, layout) {
+    const rawTriggers = [];
+    container.querySelectorAll('[data-trigger-type]').forEach((marker) => {
+      if (!marker.dataset.scrollyProcessed) {
+        const t = {
+          element: marker,
+          parentLayout: layout,
+          type: marker.dataset.triggerType,
+          id: marker.dataset.triggerId,
+          action: marker.dataset.triggerAction,
+          params: {
+            zoom: marker.dataset.triggerZoom ? parseFloat(marker.dataset.triggerZoom) : 10,
+            coordinates: marker.dataset.triggerCoordinates || null
+          }
+        };
+        this.triggers.push(t);
+        rawTriggers.push(t);
+        marker.dataset.scrollyProcessed = 'true';
+      }
+    });
+
+
+    const pendingStarts = {};
+    rawTriggers.forEach(t => {
+        if (t.type !== 'image' || t.parentLayout === 'full') return;
+        if (t.action === 'start') pendingStarts[t.id] = t;
+        else if (t.action === 'end' && pendingStarts[t.id]) {
+            this.imageSegments.push({ id: t.id, start: pendingStarts[t.id], end: t });
+        }
+    });
+  }
+
+
+  normalizeUrl(url) {
+    if (!url) return '';
+    const path = url.replace(window.location.origin, '').replace(/\/+$/, '');
+    return path === "" ? "/" : path;
+  }
+
+
+  _wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+
+  observeBlock(element) { 
+    if (this.layoutObserver && element && !element.classList.contains('chapter-separator')) {
+      this.layoutObserver.observe(element);
+    }
+  }
+
+  // Observe chapter separators for both forward and backward full-layout transitions.
+  // Non-full-layout separators are registered with both observers so that the
+  // Register a separator's icon <img> with both directional observers.
+  // We observe the img element rather than the separator div so that the
+  // IntersectionObserver rootMargins are relative to the visible icon
+  // pixel — not the top edge of a padded/margined container that can be
+  // hundreds of viewport-heights tall for full-layout separators.
+  observeSeparator(separator) {
+    if (!separator || !separator.classList.contains('chapter-separator')) return;
+
+    const icon = separator.querySelector('img');
+    if (!icon) return;
+
+    // Both observers watch every separator icon. The forward observer fires
+    // when the icon enters the top-of-viewport strip; the backward observer
+    // fires when it re-enters the bottom-of-viewport strip. Each callback
+    // independently decides whether a layout transition is needed.
+    if (this.separatorForwardObserver)  this.separatorForwardObserver.observe(icon);
+    if (this.separatorBackwardObserver) this.separatorBackwardObserver.observe(icon);
+
+    // Also register the icon for midpoint-based fade tracking in handleScroll.
+    if (!this.separatorIcons.includes(icon)) {
+      this.separatorIcons.push(icon);
+    }
+  }
+
+
+  createImageElement(objectid, params) {
+    const meta = window.collectionMetadata[objectid];
+    if (!meta) return;
+    const img = document.createElement('img');
+    img.dataset.objectid = objectid;
+    img.src = meta.object_location || meta.image_small;
+    img.className = 'scrolly-sticky-img';
+    Object.assign(img.style, {
+      position: 'absolute', top: '0', left: '0', width: '100%', height: '100%',
+      objectFit: 'contain', opacity: '0', transition: 'opacity 0.6s ease-in-out', zIndex: '1'
+    });
+    if (params) this.applyTransformToImage(img, params.zoom, params.x, params.y);
+    this.imageContainer.appendChild(img);
+  }
+
+
+  renderAnimations(viewportCenter) {
+    if (this.currentLayout === 'full') return; 
+    this.imageSegments.forEach(segment => {
+        if (segment.id !== this.activeImageId) return;
+        const sRect = segment.start.element.getBoundingClientRect();
+        const eRect = segment.end.element.getBoundingClientRect();
+        const startY = sRect.top + (sRect.height / 2);
+        const endY = eRect.top + (eRect.height / 2);
+
+
+        if (startY < viewportCenter && endY > viewportCenter) {
+            const progress = (viewportCenter - startY) / (endY - startY);
+            const sP = this.getNumericParams(segment.start);
+            const eP = this.getNumericParams(segment.end);
+            const z = this.lerp(sP.zoom, eP.zoom, progress);
+            const x = this.lerp(sP.x, eP.x, progress);
+            const y = this.lerp(sP.y, eP.y, progress);
+            const img = this.imageContainer.querySelector(`img[data-objectid="${segment.id}"]`);
+            if (img) this.applyTransformToImage(img, z, x, y);
+        }
+    });
+  }
+
+
+  applyTransformToImage(img, zoom, x, y) {
+      img.style.transformOrigin = `${x || 50}% ${y || 50}%`;
+      img.style.transform = `scale(${zoom / 10})`;
+  }
+
+
+  lerp(start, end, t) { return start * (1 - t) + end * t; }
+  getNumericParams(trigger) {
+      let x = 50, y = 50;
+      if (trigger.params.coordinates) {
+          const parts = trigger.params.coordinates.split(',').map(Number);
+          x = (parts[0] / 1000) * 100; y = (parts[1] / 1000) * 100;
+      }
+      return { zoom: trigger.params.zoom || 10, x, y };
+  }
+
+
+  handleCitations(triggerThreshold) {
+    let active = null;
+    this.footnotes.forEach(f => {
+      if (f.element.getBoundingClientRect().top <= triggerThreshold) active = f;
+    });
+    
+    if (active && this.currentCitation !== active.citationId) {
+      const citation = window.citationData[active.citationId];
+      if (citation) {
+        const formattedText = this.formatCitation(citation.text);
+        const bibUrl = `${BIBLIOGRAPHY_URL}#${active.citationId}`;
+
+
+        const sidebarHTML =
+          `<span class="citation-number">${active.number}</span>` +
+          `<a href="${bibUrl}" class="bib-citation-link">${formattedText}</a>`;
+
+
+        if (this.citationDisplayEl) {
+          this.citationDisplayEl.innerHTML = sidebarHTML;
+          this.citationDisplayEl.classList.add('visible');
+        }
+        
+        this.currentCitation = active.citationId;
+      }
+    }
+  }
+
+
+  // ── handleSeparatorFade ───────────────────────────────────────────────
+  // Manages the text-citation sidebar across chapter boundaries.
+  //
+  // Image visibility is handled entirely by the trigger loop in
+  // handleScroll — 'start' triggers show an image, 'end' triggers hide
+  // it. This method only needs to worry about the citation sidebar.
+  //
+  // The "inter-chapter gap" is the window between:
+  //   • the separator icon crossing the viewport midpoint  (gap opens)
+  //   • the next chapter's content block reaching that same midpoint
+  //                                                        (gap closes)
+  //
+  // While in the gap the sidebar is hidden. When the gap closes the
+  // citation state is reset so the new chapter starts with a blank slate;
+  // handleCitations will naturally re-populate once the first footnote
+  // marker of the new chapter crosses the threshold.
+  //
+  // The gap test uses BOTH conditions jointly, so separators from chapters
+  // already far above the viewport (whose next block is also above the
+  // threshold) never keep the sidebar permanently hidden.
+  handleSeparatorFade(triggerThreshold) {
+    if (this.currentLayout === 'full') return;
+
+    let inGap = false;
+
+    for (const icon of this.separatorIcons) {
+      const iconRect = icon.getBoundingClientRect();
+      const iconCentre = iconRect.top + iconRect.height / 2;
+
+      if (iconCentre >= triggerThreshold) continue; // separator not yet crossed
+
+      const separator = icon.closest('.chapter-separator');
+      if (!separator) continue;
+      const nextBlock = separator.nextElementSibling;
+      if (!nextBlock || !nextBlock.classList.contains('chapter-content-block')) continue;
+
+      const nextRect = nextBlock.getBoundingClientRect();
+      if (nextRect.top >= triggerThreshold) {
+        // Icon crossed the midpoint but the next chapter's text has not —
+        // we are in the inter-chapter gap for this separator.
+        inGap = true;
+        break;
+      }
+      // nextRect.top < triggerThreshold: the next chapter's content has
+      // already reached the reading position — this gap is closed.
+    }
+
+    if (inGap === this.chapterEndFaded) return; // no state change
+
+    this.chapterEndFaded = inGap;
+
+    if (inGap) {
+      // ── Entering gap: immediately clear the citation sidebar ──────
+      if (this.citationDisplayEl) {
+        this.citationDisplayEl.style.transition = 'none';
+        this.citationDisplayEl.classList.remove('visible');
+      }
+
+    } else {
+      // ── Exiting gap: reset citation state for the new chapter ─────
+      // Do not restore the previous chapter's citation. handleCitations
+      // will populate the sidebar when the new chapter's own footnote
+      // markers first cross the midpoint.
+      this.currentCitation = null;
+      if (this.citationDisplayEl) {
+        this.citationDisplayEl.classList.remove('visible');
+      }
+    }
+  }
+
+
+  formatCitation(text) {
+    return text.replace(/_(.*?)_/g, '<i>$1</i>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
+
+
+  convertFootnotesToSuperscript(container) {
+    container.querySelectorAll('p').forEach(p => {
+      if (!p.querySelector('sup[id^="fnref:"]')) {
+        p.innerHTML = p.innerHTML.replace(/\^(\d+)/g, (match, num) => {
+          const citationId = `citation_${num.padStart(3, '0')}`;
+          const bibUrl = `${BIBLIOGRAPHY_URL}#${citationId}`;
+          return `<sup id="fnref:${num}" class="footnote-ref"><a href="${bibUrl}" class="footnote-link">${num}</a></sup>`;
+        });
+      }
+    });
+  }
+
+
+  processFootnotes(container) {
+    container.querySelectorAll('sup[id^="fnref:"]').forEach(sup => {
+      const rawNum = sup.textContent.trim();
+      const id = `citation_${rawNum.padStart(3, '0')}`;
+      if (!window.citationData[id]) return;
+      const marker = document.createElement('span');
+      marker.className = 'footnote-trigger-marker';
+      marker.dataset.citationId = id;
+      sup.parentNode.insertBefore(marker, sup);
+      this.footnotes.push({ element: marker, citationId: id, number: rawNum });
+    });
+  }
+
+
+  async loadChapter(direction) {
+    if (this.isLoading) return;
+    this.isLoading = true;
+    
+    const isNext = direction === 'next';
+    const targetIdx = isNext ? this.loadedRange.end + 1 : this.loadedRange.start - 1;
+    
+    if (targetIdx < 0 || targetIdx >= this.allEssays.length) { 
+      this.isLoading = false; 
+      return; 
+    }
+
+
+    const targetChapter = this.allEssays[targetIdx];
+    const normalizedUrl = this.normalizeUrl(targetChapter.url);
+    
+    const existingBlocks = document.querySelectorAll(`[data-chapter-path="${normalizedUrl}"]`);
+    
+    if (existingBlocks.length > 0) {
+      console.log('Chapter already loaded (found', existingBlocks.length, 'copies):', normalizedUrl);
+      
+      if (existingBlocks.length > 1) {
+        console.warn('Multiple copies detected! Removing duplicates...');
+        for (let i = 1; i < existingBlocks.length; i++) {
+          const duplicate = existingBlocks[i];
+          const prevSibling = duplicate.previousElementSibling;
+          if (prevSibling && prevSibling.classList.contains('chapter-separator')) {
+            prevSibling.remove();
+          }
+          duplicate.remove();
+        }
+      }
+      
+      if (isNext && targetIdx > this.loadedRange.end) {
+        this.loadedRange.end = targetIdx;
+      } else if (!isNext && targetIdx < this.loadedRange.start) {
+        this.loadedRange.start = targetIdx;
+      }
+      
+      this.isLoading = false;
+      return;
+    }
+
+
+    try {
+      const resp = await fetch(targetChapter.url);
+      const html = await resp.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const source = doc.querySelector('.scrolly-text-content');
+
+
+      if (source) {
+        const newBlock = document.createElement('div');
+        newBlock.className = 'scrolly-text-content chapter-content-block';
+        newBlock.dataset.chapterPath = normalizedUrl;
+        newBlock.dataset.layout = source.dataset.layout || 'left';
+        newBlock.innerHTML = source.innerHTML;
+        
+        const newLayout = newBlock.dataset.layout;
+        let adjacentLayout = null;
+        
+        if (isNext) {
+          const blocks = document.querySelectorAll('.chapter-content-block');
+          const lastBlock = blocks[blocks.length - 1];
+          adjacentLayout = lastBlock ? lastBlock.dataset.layout : null;
+        } else {
+          const firstBlock = document.querySelector('.chapter-content-block');
+          adjacentLayout = firstBlock ? firstBlock.dataset.layout : null;
+        }
+        
+        const needsLargeSeparator = newLayout === 'full' || adjacentLayout === 'full';
+        const isBeforeFullLayout = newLayout === 'full';
+        const newSeparator = this.createChapterSeparator(needsLargeSeparator, isBeforeFullLayout);
+
+
+        if (isNext) {
+          this.textColumn.insertBefore(newSeparator, this.loadingIndicatorEl);
+          this.textColumn.insertBefore(newBlock, this.loadingIndicatorEl);
+          this.loadedRange.end++;
+          this.processNewBlock(newBlock);
+          this.observeSeparator(newSeparator);
+        } else {
+          const scrollYBefore = window.scrollY;
+          const docHeightBefore = document.documentElement.scrollHeight;
+
+
+          this.layoutObserverPaused = true;
+
+
+          this.textColumn.prepend(newSeparator);
+          this.textColumn.prepend(newBlock);
+          this.loadedRange.start--;
+
+
+          this.processNewBlock(newBlock);
+          this.observeSeparator(newSeparator);
+          
+          this.scrollAdjustmentCooldown = true;
+          
+          await this._wait(100);
+          const docHeightAfter = document.documentElement.scrollHeight;
+          const addedHeight = docHeightAfter - docHeightBefore;
+          window.scrollTo(0, scrollYBefore + addedHeight);
+          
+          await this._wait(500);
+          this.scrollAdjustmentCooldown = false;
+          this.layoutObserverPaused = false;
+        }
+      }
+    } catch (e) { 
+      console.error("Failed to load chapter:", e); 
+    } finally { 
+      this.isLoading = false; 
+    }
+  }
+
+
+  handleInfiniteScroll() {
+    if (this.isLoading || this.isTransitioning || this.scrollAdjustmentCooldown) return;
+    
+    const currentY = window.scrollY;
+    if (Math.abs(currentY - this.lastScrollY) < 10) {
+      return;
+    }
+    this.lastScrollY = currentY;
+    
+    let bottomThreshold = 2000;
+    let topThreshold = 1000;
+    
+    if (this.loadedRange.end < this.allEssays.length - 1) {
+      const nextChapter = this.allEssays[this.loadedRange.end + 1];
+      const nextBlock = document.querySelector(`[data-chapter-path="${this.normalizeUrl(nextChapter.url)}"]`);
+      const currentLastBlock = Array.from(document.querySelectorAll('.chapter-content-block')).pop();
+      
+      if ((currentLastBlock && currentLastBlock.dataset.layout === 'full') || 
+          (nextBlock && nextBlock.dataset.layout === 'full')) {
+        bottomThreshold = 3500;
+      }
+    }
+    
+    if (this.loadedRange.start > 0) {
+      const currentFirstBlock = document.querySelector('.chapter-content-block');
+      if (currentFirstBlock && currentFirstBlock.dataset.layout === 'full') {
+        topThreshold = 2000;
+      }
+    }
+    
+    const scrollBottom = window.scrollY + window.innerHeight;
+    if ((document.documentElement.scrollHeight - scrollBottom < bottomThreshold) && 
+        (this.loadedRange.end < this.allEssays.length - 1)) {
+      this.loadChapter('next');
+    } else if (
+      window.scrollY < topThreshold &&
+      this.loadedRange.start > 0 &&
+      this.maxScrollY > topThreshold * 2
+    ) {
+      this.loadChapter('prev');
+    }
+  }
+
+
+  createChapterSeparator(isLarge = false, isBeforeFullLayout = false) {
+    const sep = document.createElement('div');
+    
+    if (isBeforeFullLayout) {
+      sep.className = 'chapter-separator large full-layout-separator';
+      sep.style.marginBottom = '150vh';
+      sep.style.paddingTop = '50vh';
+    } else if (isLarge) {
+      sep.className = 'chapter-separator large';
+    } else {
+      sep.className = 'chapter-separator';
+    }
+    
+    sep.innerHTML = `<img src="{{ '/assets/objects/chapter_icon.png' | relative_url }}" alt="chapter divider" style="width:40px;">`;
+    return sep;
+  }
+
+
+  updateHistory(block) {
+    const path = block.dataset.chapterPath;
+    if (path && window.location.pathname !== this.normalizeUrl(path)) {
+      history.replaceState({}, "", path);
+    }
+  }
+
+
+  // ── updateHeaderForChapter ─────────────────────────────────────────────
+  // Resolves the essay metadata for the given index and calls the global
+  // updateChapterDisplay() function defined in header-scrollytelling.html.
+  updateHeaderForChapter(idx) {
+    const essay = this.allEssays[idx];
+    if (!essay) return;
+
+    if (typeof updateChapterDisplay === 'function') {
+      updateChapterDisplay({
+        chapter: essay.chapter || null,
+        title:   essay.title  || '',
+        order:   essay.order  || idx + 1
+      });
+    }
+
+    // Also push URL so the address bar stays in sync with the header
+    const block = document.querySelector(`[data-chapter-path="${this.normalizeUrl(essay.url)}"]`);
+    if (block) this.updateHistory(block);
+  }
+
+
+  setupThemeObserver() {
+    const obs = new MutationObserver(() => this.updateTheme());
+    obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  }
+
+
+  updateTheme() {
+    const isLight = document.body.classList.contains('light-mode');
+    
+    if (this.imageContainer) {
+      this.imageContainer.style.backgroundColor = isLight ? '#ffffff' : '#111111';
+    }
+
+
+    if (this.citationColumnEl) {
+      this.citationColumnEl.style.backgroundColor =
+        isLight ? 'rgba(255,255,255,0)' : 'rgba(17,17,17,0)';
+    }
+    
+    const footer = document.getElementById('scrolly-footer');
+    if (footer) {
+      if (isLight) footer.classList.add('light-mode');
+      else footer.classList.remove('light-mode');
+    }
+    
+    const header = document.getElementById('scrolly-header');
+    if (header) {
+      if (isLight) header.classList.add('light-mode');
+      else header.classList.remove('light-mode');
+    }
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('scrolly-container')) {
+    window.scrolly = new ScrollyTelling();
+  }
+});
+</script>

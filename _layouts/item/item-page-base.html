@@ -1,0 +1,85 @@
+---
+# base layout for other item display_template layouts
+# adds breadcrumbs and title at top; citation box, rights box, and browse buttons at bottom
+layout: default
+# item-meta adds rich meta markup to the page on production build
+# also used by default.html to suppress the side-nav on item pages
+item-meta: true
+# suppress the default site footer — scrollytelling footer is included below
+hide-default-footer: true
+---
+{% include essay/header-scrollytelling.html %}
+
+<style>
+  /* ── Clear the fixed scrollytelling header at the top ───────────────── */
+  #item-page-top {
+    padding-top: 120px;
+  }
+  @media screen and (max-width: 768px) {
+    #item-page-top {
+      padding-top: 100px;
+    }
+  }
+
+  /* ── Clear the fixed scrollytelling footer at the bottom ────────────── */
+  #item-page-bottom-spacer {
+    height: 6rem;
+  }
+  @media screen and (max-width: 768px) {
+    #item-page-bottom-spacer {
+      height: 5rem;
+    }
+  }
+
+  /* ── Back button — identical style to bibliography bib-back-btn ─────── */
+  .item-back-btn {
+    color: #2563eb !important;
+    border-color: #2563eb !important;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .item-back-btn:hover {
+    color: #fff !important;
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    text-decoration: none;
+  }
+</style>
+
+<div id="item-page-top">
+  <div class="container py-3">
+      {% include item/breadcrumbs.html %}
+      <div class="my-0 h5 small">{{ page.display_template | replace: "_", " " | upcase }} {% if page.display_template == "compound_object" or page.display_template == "multiple" %}{% assign children = site.data[site.metadata] | where_exp: 'item','item.parentid == page.objectid' %} ({{ children | size }} Items){% endif %}</div>
+      <h2 class="mb-3">{{ page.title }}
+          <span class="ms-5 d-inline-flex flex-column align-items-start gap-1">
+            <a href="#" class="btn btn-sm item-back-btn" onclick="event.preventDefault(); history.back();" aria-label="Return to previous page">↩ back</a>
+            {% unless page.display_template == 'record' %}<a href="#metadata" class="btn btn-sm btn-outline-dark small">Item Info
+                <svg class="bi icon-sprite" role="img" aria-label="Jump to Item Info">
+                    <use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#arrow-down"/>
+                </svg>
+            </a>{% endunless %}
+          </span>
+      </h2>
+      <div class="row justify-content-center">
+          <div class="col-12 col-md-10">
+          {{ content }}
+          </div>
+          <div class="col-12 col-md-10" id="metadata">
+              {% include item/metadata.html %}
+          </div>
+          <div class="col-md-5 py-4">
+              {% include item/citation-box.html %}
+          </div>
+          {% if page.rights or page.rightsstatement %}
+          <div class="col-md-5 py-4">
+              {% include item/rights-box.html %}
+          </div>
+          {% endif %}
+      </div>
+      {%- if site.data.theme.browse-buttons == true -%}
+          {% include item/browse-buttons.html %}
+      {%- endif -%}
+  </div>
+  <div id="item-page-bottom-spacer"></div>
+</div>
+
+{% include essay/footer-scrollytelling.html %}

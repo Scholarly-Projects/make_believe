@@ -1,0 +1,531 @@
+---
+# Jekyll needs front matter to compile SCSS
+---
+
+/* ============================================================================
+   SCROLLYTELLING STYLES
+   Shared across essay-left, essay-right, and essay-full-image layouts
+   ============================================================================ */
+
+/* ── Global Reset ────────────────────────────────────────────────────── */
+footer:not(.scrolly-footer) { display: none !important; }
+
+.scrolly-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--scrolly-bg-color, #111111);
+  color: var(--scrolly-text-color, #f0f0f0);
+  position: relative;
+  overflow: visible; 
+}
+
+/* PATCH: Extend the background upward to hide the exposed band behind the new compact header on page load */
+.scrolly-container::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: var(--scrolly-bg-color, #111111);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Columns (Shared Defaults) ────────────────────────────────────────── */
+.scrolly-image-column {
+  width: 60%;
+  height: 100vh;
+  position: sticky; 
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: opacity 0.4s ease;
+}
+
+.scrolly-text-column {
+  width: 30%; /* Reduced from 40% to make room for citation sidebar */
+  height: auto; 
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+  border-top: none;
+  transition: all 0.5s ease;
+}
+
+/* ── CITATION SIDEBAR COLUMN ────────────────────────────────────────── */
+
+.scrolly-citation-column {
+  width: 10%;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 10;
+  flex-shrink: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* The inner display — always vertically centered within the sticky column */
+.scrolly-citation-display {
+  padding: 0 0.9rem;
+  font-size: 0.76em;
+  color: var(--scrolly-citation-color);
+  line-height: 1.45;
+  width: 100%;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.scrolly-citation-display.visible {
+  opacity: 1;
+}
+
+/* Citation number badge */
+.scrolly-citation-display .citation-number {
+  display: block;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.45rem;
+  opacity: 0.55;
+}
+
+/* Link inside sidebar citation */
+.scrolly-citation-display a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.3);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.2s ease, color 0.2s ease;
+}
+
+.scrolly-citation-display a:hover {
+  color: #fff;
+  text-decoration-color: rgba(255, 255, 255, 0.85);
+}
+
+.light-mode .scrolly-citation-display a {
+  text-decoration-color: rgba(0, 0, 0, 0.3);
+}
+
+.light-mode .scrolly-citation-display a:hover {
+  color: #000;
+  text-decoration-color: rgba(0, 0, 0, 0.8);
+}
+
+/* ── LAYOUT VARIATIONS ───────────────────────────────────────────────── */
+
+/* 1. LAYOUT LEFT: Citation | Text | Image */
+.scrolly-container.layout-left {
+  flex-direction: row;
+  align-items: flex-start; 
+}
+.scrolly-container.layout-left .scrolly-citation-column {
+  order: 1;
+  border-right: 1px solid var(--scrolly-border-color);
+}
+.scrolly-container.layout-left .scrolly-citation-display {
+  text-align: right;
+}
+.scrolly-container.layout-left .scrolly-text-column {
+  order: 2;
+  border-right: 1px solid var(--scrolly-border-color);
+}
+.scrolly-container.layout-left .scrolly-image-column {
+  order: 3;
+}
+
+/* 2. LAYOUT RIGHT: Image | Text | Citation */
+.scrolly-container.layout-right {
+  flex-direction: row;
+  align-items: flex-start;
+}
+.scrolly-container.layout-right .scrolly-citation-column {
+  order: 3;
+  border-left: 1px solid var(--scrolly-border-color);
+}
+.scrolly-container.layout-right .scrolly-citation-display {
+  text-align: left;
+}
+.scrolly-container.layout-right .scrolly-text-column {
+  order: 2;
+  border-left: 1px solid var(--scrolly-border-color);
+}
+.scrolly-container.layout-right .scrolly-image-column {
+  order: 1;
+}
+
+/* 3. LAYOUT FULL: Full-width text; citation column becomes a fixed left rail */
+.scrolly-container.layout-full {
+  flex-direction: column !important;
+  align-items: center;
+}
+
+.scrolly-container.layout-full .scrolly-image-column {
+  display: none !important;
+}
+
+.scrolly-container.layout-full .scrolly-text-column {
+  width: 100% !important;
+  max-width: none !important;
+  border: none !important;
+}
+
+/* In full layout the citation column becomes a fixed left rail */
+.scrolly-container.layout-full .scrolly-citation-column {
+  position: fixed !important;
+  left: 0;
+  top: 0;
+  width: 10vw;
+  height: 100vh;
+  border-right: 1px solid var(--scrolly-border-color);
+  border-left: none;
+  order: unset;
+}
+
+.scrolly-container.layout-full .scrolly-citation-display {
+  text-align: right;
+}
+
+/* ── TEXT CONTENT PADDING ────────────────────────────────────────────── */
+
+/* Standard Layouts (left/right): Opening padding for visual alignment */
+.scrolly-container.layout-left .scrolly-text-content,
+.scrolly-container.layout-right .scrolly-text-content {
+  padding: 50vh 10% 20rem;  /* Slightly reduced horizontal padding for narrower column */
+  max-width: none;
+  margin: 0;
+  text-align: left;
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+/* Full Layout: Centered reading experience */
+.scrolly-container.layout-full .scrolly-text-content {
+  padding: 4rem 2rem !important;
+  max-width: 900px;
+  margin: 0 auto !important;
+  text-align: left;
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+/* ── CRITICAL: Breakout Logic for Full Blocks in Non-Full Containers ──── */
+
+/* When a full-layout block appears during infinite scroll in a left container */
+.scrolly-container.layout-left .chapter-content-block[data-layout="full"] {
+  width: 333vw; /* 3.33x the 30% parent ≈ 100% screen */
+  max-width: 100vw;
+  margin-left: 0;
+  background-color: var(--scrolly-bg-color);
+  z-index: 20; 
+  position: relative;
+  padding: 4rem 2rem !important;
+  box-sizing: border-box;
+}
+
+/* When a full-layout block appears during infinite scroll in a right container */
+.scrolly-container.layout-right .chapter-content-block[data-layout="full"] {
+  width: 333vw;
+  max-width: 100vw;
+  margin-left: -200%; /* Pull left to cover image column + citation column */
+  background-color: var(--scrolly-bg-color);
+  z-index: 20;
+  position: relative;
+  padding: 4rem 2rem !important;
+  box-sizing: border-box;
+}
+
+/* Ensure inner content of breakout blocks stays centered */
+.scrolly-container:not(.layout-full) .chapter-content-block[data-layout="full"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scrolly-container:not(.layout-full) .chapter-content-block[data-layout="full"] > * {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* ── CHAPTER SEPARATORS ──────────────────────────────────────────────── */
+
+.chapter-separator {
+  width: 100%;
+  background: transparent;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 30vh;
+  justify-content: center;
+  height: 200vh;
+  box-sizing: border-box;
+}
+
+.chapter-separator.large {
+  height: 250vh;
+}
+
+.chapter-separator img {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block;
+  width: 40px;
+  transition: opacity 0.3s ease;
+}
+
+/* ── TRIGGER VISIBILITY ──────────────────────────────────────────────── */
+
+[data-trigger-type] {
+  display: block;
+  height: 0;
+  width: 0;
+  margin: 0;
+  padding: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.scrolly-container.layout-full .chapter-content-block[data-layout="full"] [data-trigger-type="image"] {
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+  width: 100% !important;
+  opacity: 1 !important;
+  margin: 8rem 0 !important;
+  padding-top: 2rem;
+}
+
+[data-trigger-type="image"] img {
+  visibility: visible;
+  opacity: 1;
+  display: block;
+  max-width: 100%;
+}
+
+/* ── IMAGE COMPONENTS ─────────────────────────────────────────────────── */
+
+.scrolly-image-frame {
+  position: relative;
+  width: 90%;
+  height: 85%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.scrolly-image-container {
+  width: 100%; 
+  height: 100%;
+  position: relative;
+}
+
+.scrolly-sticky-img {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.6s ease-in-out;
+  z-index: 1;
+}
+
+/* ── CHAPTER TITLE STYLING ────────────────────────────────────────────── */
+
+.scrolly-text-content .chapter-title {
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--scrolly-text-color);
+}
+
+.scrolly-container.layout-full .chapter-title {
+  font-size: 3.5rem;
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.scrolly-container.layout-full .full-layout-header {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.scrolly-container:not(.layout-full) .full-layout-header {
+  height: auto;
+  display: block;
+  padding: 4rem 0 2rem;
+}
+
+.scrolly-container.layout-full .full-layout-header .chapter-title {
+  font-size: 3.5rem;
+  font-weight: 300;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* ── Layout Transition Curtain ───────────────────────────────────────── */
+#scrolly-transition-curtain {
+  position: fixed;
+  inset: 0;
+  background: var(--scrolly-bg-color, #111111);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── THEME SUPPORT ────────────────────────────────────────────────────── */
+
+.scrolly-container {
+  --scrolly-bg-color: #111111;
+  --scrolly-text-color: #f0f0f0;
+  --scrolly-border-color: rgba(255,255,255,0.1);
+  --scrolly-citation-color: rgba(255,255,255,0.7);
+}
+
+.light-mode .scrolly-container,
+.scrolly-container.light-mode {
+  --scrolly-bg-color: #ffffff;
+  --scrolly-text-color: #1a1a1a;
+  --scrolly-border-color: rgba(0,0,0,0.08);
+  --scrolly-citation-color: rgba(0,0,0,0.65);
+}
+
+/* Header Light Mode Support */
+.scrolly-header.light-mode {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+.scrolly-header.light-mode .hamburger-line {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.scrolly-header.light-mode .scrolly-site-title,
+.scrolly-header.light-mode .scrolly-site-subtitle,
+.scrolly-header.light-mode .scrolly-chapter-title {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.scrolly-header.light-mode .scrolly-site-title:hover {
+  color: rgba(0, 0, 0, 1);
+}
+
+.scrolly-header.light-mode .offcanvas-menu {
+  background-color: rgba(255, 255, 255, 0.98);
+  border-right-color: rgba(0, 0, 0, 0.1);
+}
+
+.scrolly-header.light-mode .offcanvas-close,
+.scrolly-header.light-mode .offcanvas-title,
+.scrolly-header.light-mode .offcanvas-menu-link {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.scrolly-header.light-mode .offcanvas-menu-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #000;
+}
+
+.scrolly-header.light-mode .offcanvas-menu-link.active {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+/* ── MOBILE RESPONSIVE ────────────────────────────────────────────────── */
+
+@media (max-width: 992px) {
+  /* Hide citation sidebar on mobile — it appears in the slim footer bar instead */
+  .scrolly-citation-column {
+    display: none !important;
+  }
+
+  .scrolly-container {
+    flex-direction: column !important;
+  }
+  
+  .scrolly-text-column, 
+  .scrolly-image-column {
+    width: 100% !important;
+    height: auto !important;
+    order: unset !important;
+  }
+  
+  .scrolly-image-column { 
+    order: 1 !important; 
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(50vh - 80px) !important;
+    z-index: 20 !important;
+    background-color: var(--scrolly-bg-color, #111111);
+  }
+  
+  .scrolly-text-column { 
+    order: 2 !important; 
+    border: none !important;
+    z-index: 1 !important;
+    position: relative !important;
+    margin-top: 6px !important;
+    /* Restore full width since citation column is hidden */
+    width: 100% !important;
+  }
+  
+  .scrolly-text-content {
+    padding: 30vh 8% 10rem !important;
+  }
+  
+  .scrolly-container:not(.layout-full) .chapter-content-block[data-layout="full"] {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding: 2rem 8% !important;
+  }
+
+  /* ── MOBILE FOOTER ──────────────────────────────────────────────────── */
+  .scrolly-footer {
+    padding: 0.4rem 1.25rem !important;
+    min-height: unset !important;
+    align-items: center !important;
+    flex-direction: row !important;
+  }
+
+  .scrolly-footer .chapter-nav {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1.25rem !important;
+  }
+
+  .scrolly-footer .scrolly-citation-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0 !important;
+  }
+
+  .scrolly-footer .scrolly-image-citation-footer {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    align-items: center !important;
+    font-size: 0.75em !important;
+  }
+
+  .scrolly-footer .scrolly-image-citation-footer .scrolly-citation-label {
+    display: none !important;
+  }
+}
