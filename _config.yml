@@ -36,11 +36,11 @@ defaults:
 # URL VARIABLES
 #
 # site domain, full URL to the production location of your collection
-url: https://aweymo-ui.github.io
+url: https://scholarly-projects.github.io/
 # path to location on the domain if necessary e.g. /digital/hjccc
-baseurl: /mb_test_2
+baseurl: /make_believe
 # location of code, the full url to your github repository
-source-code: https://github.com/CollectionBuilder/collectionbuilder-csv
+source-code: https://github.com/Scholarly-Projects/make_believe
 
 ##########
 # SITE SETTINGS
