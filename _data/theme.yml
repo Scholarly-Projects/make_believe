@@ -43,8 +43,8 @@ font-cdn:                            # Optional: Add Google Fonts stylesheet URL
 #
 image-style: half-image              # full-image, half-image, or no-image
 featured-image: /objects/banner.jpg
-featured-image-credit: "Spokane Flour Mill Records, 1903–1948. Ms 3. Eastern Washington State Historical Society (Northwest Museum of Arts and Culture). Spokane, WA."
-featured-image-alt-text: "A triangular, red trademark symbol with the words Made in Spokane." # Add alt text for accessibility
+featured-image-credit: "Carl Dahlgren, <em>Bird's Eye View of Spokane</em>, ca. 1880s, from <em>The Illustrated History of Washington Territory and Valley of the Columbia</em>. NMAC (Eastern Washington State Historical Society), Spokane, WA."
+featured-image-alt-text: "A broad and detail version of the same image in two spheres. In the broad view, a panoramic view of a town in a valley surrounded by hills and mountains. There are numerous buildings, both large and small, with roads lined with trees. In the foreground, three figures stand on rock formations overlooking the town. The landscape is dotted with additional trees, and there is a mix of open fields and structures. In the detail image, two men standing on a rocky outcrop, one pointing, with a few houses and trees in the background. On an adjacent rock, a person sits under an umbrella next to an easel. More houses and a path are visible in the distance." # Add alt text for accessibility
 
 ##########
 # CollectionBuilder Theme Customization
