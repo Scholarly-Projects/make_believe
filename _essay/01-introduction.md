@@ -1,5 +1,5 @@
 ---
-title: "Make Believe, Foreign Interest and American Identities in the Inland Empire"
+title: "Introduction"
 chapter: "Introduction"
 order: 1
 layout: essay-left

@@ -1,8 +1,8 @@
 ---
-title: "Visualizing Transformation"
-chapter: "Visual Transition"
+title: "Colonialism in the Inland Empire"
+chapter: "Colonialism in the Inland Empire"
 order: 3
-layout: essay-full-image
+layout: essay-left
 ---
 
 {% trigger type: image id: make_believe_003 action: start %}

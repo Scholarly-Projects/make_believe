@@ -1,8 +1,8 @@
 ---
-title: "Cultural Assertions and Hidden Dependencies"
-chapter: "Cultural Assertions"
+title: "Imitation and Identity"
+chapter: "Imitation and Identity"
 order: 4
-layout: essay-left
+layout: essay-right
 ---
 
 {% trigger type: image id: make_believe_005 action: start %}

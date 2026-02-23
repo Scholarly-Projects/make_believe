@@ -1,5 +1,5 @@
 ---
-title: "Networks of Capital: Dutch Investment in the American West"
+title: "Networks of Capital"
 chapter: "Networks of Capital"
 order: 2
 layout: essay-right

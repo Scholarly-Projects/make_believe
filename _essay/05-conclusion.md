@@ -1,8 +1,8 @@
 ---
-title: "Imperial Echoes: Colonialism Beyond Direct Rule"
-chapter: "Imperial Echoes"
+title: "Conclusion"
+chapter: "Conclusion"
 order: 5
-layout: essay-right
+layout: essay-left
 ---
 
 {% trigger type: image id: make_believe_127 action: start zoom: 12 coordinates: 600,300 %}
