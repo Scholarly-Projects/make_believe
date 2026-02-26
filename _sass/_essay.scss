@@ -272,3 +272,47 @@ video::cue {
   --scrolly-citation-border: rgba(0, 0, 0, 0.2);
   --scrolly-link-color: #0d6efd;
 }
+
+/* -------------------------------------------------------
+   INLINE CITATION SUPERSCRIPTS
+   Removes dotted underline from linked footnote markers.
+   !important overrides Bootstrap's link color cascade.
+   ------------------------------------------------------- */
+
+sup a,
+a sup {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+
+  &:hover,
+  &:focus {
+    color: #FFE89B !important;
+    text-decoration: none !important;
+  }
+}
+
+/* -------------------------------------------------------
+   SIDEBAR / MARGINAL CITATION TEXT
+   Styles the scrolly-citation-display column that appears
+   beside the main text body on desktop layouts.
+   ------------------------------------------------------- */
+
+.scrolly-citation-display {
+  color: #ffffff !important;
+
+  .citation-number {
+    color: #ffffff !important;
+  }
+
+  a {
+    color: #ffffff !important;
+    text-decoration-color: #ffffff !important;
+
+    &:hover,
+    &:focus {
+      color: #FFE89B !important;
+      text-decoration-color: #ffffff !important;
+    }
+  }
+}
