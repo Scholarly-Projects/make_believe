@@ -2,9 +2,66 @@
 essay - style tweaks related to essay layout and essay features
 */
 
+/* -------------------------------------------------------
+   SITE-WIDE TYPOGRAPHY
+   Times New Roman and double spacing applied globally.
+   font-family here is a fallback; primary is set via
+   base-font-family in theme.yml.
+   ------------------------------------------------------- */
+
+body,
+p,
+li,
+td,
+th,
+blockquote,
+figcaption {
+  font-family: "Times New Roman", Times, serif !important;
+  line-height: 2;
+}
+
 p { 
   margin-bottom: 1.3em; 
 }
+
+/* -------------------------------------------------------
+   ESSAY PARAGRAPH FORMATTING
+   Scoped to scrolly essay layouts and essay-main container.
+   Replaces blank-line separation with traditional first-line
+   indent. No gap between consecutive paragraphs.
+   ------------------------------------------------------- */
+
+.scrolly-text-content p,
+.essay-main p {
+  margin-bottom: 0;
+  margin-top: 0;
+  text-indent: 1.5em;
+}
+
+/* No indent on first paragraph of a section, or after headings/images/blockquotes */
+.scrolly-text-content p:first-child,
+.scrolly-text-content h1 + p,
+.scrolly-text-content h2 + p,
+.scrolly-text-content h3 + p,
+.scrolly-text-content h4 + p,
+.scrolly-text-content h5 + p,
+.scrolly-text-content h6 + p,
+.scrolly-text-content blockquote + p,
+.scrolly-text-content figure + p,
+.scrolly-text-content img + p,
+.essay-main p:first-child,
+.essay-main h1 + p,
+.essay-main h2 + p,
+.essay-main h3 + p,
+.essay-main h4 + p,
+.essay-main h5 + p,
+.essay-main h6 + p,
+.essay-main blockquote + p,
+.essay-main figure + p,
+.essay-main img + p {
+  text-indent: 0;
+}
+
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
   margin-top: 1.7em;
@@ -89,9 +146,6 @@ aside, .aside {
   }
 }
 
-p {
-  line-height: 1.6;
-}
 
 .text-justify { 
   text-align: justify !important; 
@@ -287,7 +341,7 @@ a sup {
 
   &:hover,
   &:focus {
-    color: #FFE89B !important;
+    color: #ffe600 !important;
     text-decoration: none !important;
   }
 }
@@ -303,16 +357,17 @@ a sup {
 
   .citation-number {
     color: #ffffff !important;
+    opacity: 1 !important;
   }
 
   a {
     color: #ffffff !important;
-    text-decoration-color: #ffffff !important;
+    text-decoration-color: rgba(255, 255, 255, 0.35) !important;
 
     &:hover,
     &:focus {
-      color: #FFE89B !important;
-      text-decoration-color: #ffffff !important;
+      color: #ffe600 !important;
+      text-decoration-color: rgba(255, 230, 0, 0.7) !important;
     }
   }
 }
