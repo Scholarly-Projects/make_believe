@@ -76,6 +76,11 @@ In *The Illustrated History of Washington Territory and Valley of the Columbia*,
 
 Even in this naturalistic portrayal, the artist included a caveat to the objectivity of the image. Dahlgren depicted himself in miniature, seated on a rocky outcrop with parasol and easel. To his right, two men in top hats and canes stand on another ledge beside the artist, one seemingly dictating the artist’s interpretation of the world in front of him.   
 
+{% trigger type: image id: make_believe_126 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_127 action: start zoom: coordinates: %}
+
 The rendering hints at a dynamic that would overwhelm Spokane’s life after the fire, where civic rituals, built environments and commercial pageantry were not mirrors of reality but projections of desire shaped by patrons, industrialists and foreign investors. Here, Dahlgren captures the landscape largely as it was: on the threshold of transformation, before fantasy remade it.
 
-{% trigger type: image id: make_believe_126 action: end zoom: coordinates: %}
+{% trigger type: image id: make_believe_127 action: end zoom: coordinates: %}
+

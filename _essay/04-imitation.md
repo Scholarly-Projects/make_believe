@@ -9,7 +9,7 @@ layout: essay-right
 
 Born in Groningen, Netherlands, in 1873, Abraham Rutgers van der Loeff trained in commercial art in Amsterdam, where he filled his early diaries with cartoonish marginalia, short stories and plays set in exoticized Persian palaces, Indian jungles, and Chinese temples. His tales, such as “The Pagoda of Tshi” and “The History of Selin the Tiger,” featured stereotyped illustrations of Chinese figures in Fu Manchu facial hair, demons, and dragons, repeatedly invoking the phrase “Chineesch Spiritisme” (Chinese Spiritualism).^81  
 
-{% trigger type: image id: make_believe_048 action: end zoom: coordinates: %}
+{% trigger type: image id: make_believe_048 action: end zoom: 12 coordinates: %}
 
 {% trigger type: image id: make_believe_050 action: start zoom: coordinates: %}
 
@@ -17,7 +17,7 @@ After settling in Spokane, Van der Loeff became a fixture of the city’s satura
 
 {% trigger type: image id: make_believe_050 action: end zoom: coordinates: %}
 
-{% trigger type: image id: make_believe_052 action: start zoom: 30 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_052 action: start zoom: 08 coordinates: %}
 
 Although his diaries document that Van der Leoff visited the Spokane Athletic Club nearly every day, his social life revolved less around athletics than cards, billiards, and organizing events. In 1913, he helped organize the club’s First Annual Minstrel Show, serving on the arrangements committee while the Elks Lodge supplied “colonial costumes.”^83 While blackface vaudeville review shows were not uncommon in the Pacific Northwest during this period, minstrelsy was deeply woven into Spokane’s cultural life.^84 *The Orator*, the city’s theater magazine, reported multiple blackface reviews in any given month, not only in major theaters, clubs and restaurants but also the Spokane High School, where “the boys always do everything with characteristic thoroughness.”^85  
 
@@ -27,7 +27,7 @@ Although his diaries document that Van der Leoff visited the Spokane Athletic Cl
 
 Just as blackface theater initially inspired Chris Rutt of the Quaker Oats Company to create the Aunt Jemima character, the popularity of minstrelsy in Spokane eventually embedded itself into commercial imagery as well.^86 One late-nineteenth-century advertisement for Centennial Mills depicted a domestic scene of a mother chasing a boy with a spoon, as he hides under a table smiling after having knocked over and consumed a plate of cookies. 
 
-{% trigger type: image id: make_believe_053 action: end zoom:  coordinates: %}
+{% trigger type: image id: make_believe_053 action: end zoom: 12 coordinates: 500,1000%}
 
 {% trigger type: image id: make_believe_054 action: start zoom:  coordinates: %}
 
@@ -106,7 +106,7 @@ National and ethnic costumes were the most popular category at 19%, followed by 
 
 The inside cover of the Miller-Dervant catalogue features a circular illustration of costumed figures arranged around a band of musical notation. A Romani woman sings with a tambourine; a couple poses as French aristocrats; another woman holds a fan in a kimono. 
 
-{% trigger type: image id: make_believe_068 action: end zoom: 15 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_068 action: end zoom: 12 coordinates: 500,0 %}
 
 {% trigger type: image id: make_believe_069 action: start zoom: coordinates: %}
 
@@ -278,11 +278,11 @@ Spokane residents also applied class mimicry to their homes, with a similar leve
 
 {% trigger type: image id: make_believe_104 action: end zoom: coordinates:  %}
 
-{% trigger type: image id: make_believe_105 action: start zoom: coordinates:  %}
+{% trigger type: image id: make_believe_105 action: start zoom:09 coordinates:  %}
 
 The book and paper merchant John W. Graham offered Spokane residents a less labor-intensive form of class mimicry through an extensive line of “artistic paper hanging”. Graham specialized in "imitations of materials," producing paper versions of velvet, silk, and cretonne designed to mimic the look and feel of more expensive fabrics. These "tapestry papers" and ribbed green velvets were printed to create the illusion of texture and depth.^138  
 
-{% trigger type: image id: make_believe_105 action: end zoom: coordinates:  %}
+{% trigger type: image id: make_believe_105 action: end zoom: 09 coordinates:  %}
 
 {% trigger type: image id: make_believe_107 action: start zoom: coordinates:  %}
 

@@ -41,6 +41,8 @@ In 1895, following an annual shareholders’ meeting, Van Valkenburg was declare
 
 {% trigger type: image id: make_believe_031 action: end zoom: 09 coordinates: %}
 
+---
+
 {% trigger type: image id: make_believe_032 action: start zoom: 09 coordinates: %}
 
 Historian Jacob van Hinte explored how a foreign-controlled company seized so much American property in his extensive *Nederlanders in Amerika* (1928), written “from the perspective of a Netherlander… for a Netherlandic readership” as its later translator noted.^49 As van Hinte uncovered, the Hypotheek Bank exploited a key legal loophole to monopolize land across the Inland Empire. While many US states barred foreign corporations from owning land, except through mortgage repossession or debt settlement, Washington imposed no such time limits, allowing the bank to retain foreclosed property indefinitely. With regional mortgage lenders scarce and state oversight lenient, the Hypotheek Bank capitalized on the 1889 fire and 1893 depression to amass a vast real estate portfolio legally, but not transparently.
@@ -91,17 +93,19 @@ It is crucial to note that both the defined *permanent settlements* and *tempora
 
 {% trigger type: image id: make_believe_039 action: end zoom: 09 coordinates: %}
 
+---
+
 {% trigger type: image id: make_believe_040 action: start zoom: coordinates: %}
 
 After a brief attempt to revive A. M. Cannon’s seized sawmill as the Northwest Milling and Power Company, both that company and the North West Hypotheek Bank collapsed into insolvency by the mid-1890s, triggering the most publicly contentious episode in Spokane’s history with Dutch financiers. In 1896, the assets of Everwijn Lange’s American National Trust Co., which had funded both failed ventures, were liquidated into the Dutch public limited company *Amsterdamsch Trustees Kantoor*.^61 The Hypotheek Bank’s holdings were absorbed by the newly formed Holland Bank,^62 while the Northwest Milling and Power Company emerged again as the Phoenix Sawmill, effectively shielding its backers from liability through corporate reorganization.^63  
 
 {% trigger type: image id: make_believe_040 action: end zoom: 15 coordinates: %}
 
-{% trigger type: image id: make_believe_041 action: start zoom: coordinates: %}
+{% trigger type: image id: make_believe_041 action: start zoom: 09 coordinates: %}
 
 Tensions began in December 1896 when A. F. Van Hall of the Kantoor arrived in Spokane and announced the firm would seize the Spokane Water Power Company.^64 *The Spokesman-Review* noted that James J. Hill of the Great Northern Railway appeared aligned with the Kantoor, quoting an insider: “if the property is acquired… Mr. Hill can be relied upon to give them rates and advantages which will move the product, no matter how large, to the open markets of the world.”^65  
 
-{% trigger type: image id: make_believe_041 action: end zoom: coordinates: %}
+{% trigger type: image id: make_believe_041 action: end zoom: 09 coordinates: %}
 
 {% trigger type: image id: make_believe_042 action: start zoom: coordinates: %}
 
@@ -127,7 +131,7 @@ Four years into Van Dissel’s management, Phoenix was the largest sawmill in th
 
 {% trigger type: image id: make_believe_045 action: start zoom: 11 coordinates: %}
 
-In Amsterdam, Springdale was marketed as a “Dutch and Flemish Colony.” Advertisements in newspapers boasted of “two colossal sawmills” and declared the enterprise “a Dutch company,” with E. F. Cartier Van Dissel as president, R. Insinger (Manager of the Hypotheek Bank after Thomson) as secretary-treasurer, and E. J. Everwijn Lange Jr. as director. The advertisement states explicitly that farmland would be “offered at discount, preferably to Dutchmen” in hopes of developing “a wealthy Dutch colony.”^77  
+In Dutch newspapers, Springdale was marketed as a “Dutch and Flemish Colony.” Advertisements in newspapers boasted of “two colossal sawmills” and declared the enterprise “a Dutch company,” with E. F. Cartier Van Dissel as president, R. Insinger (Manager of the Hypotheek Bank after Thomson) as secretary-treasurer, and E. J. Everwijn Lange Jr. as director. The advertisement states explicitly that farmland would be “offered at discount, preferably to Dutchmen” in hopes of developing “a wealthy Dutch colony.”^77  
 
 {% trigger type: image id: make_believe_045 action: end zoom: 12 coordinates: %}
 

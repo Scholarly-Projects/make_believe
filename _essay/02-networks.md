@@ -41,6 +41,8 @@ The Great Northern and its rival Northern Pacific Railroad, both based in St. Pa
 
 {% trigger type: image id: make_believe_019 action: end zoom: 18 coordinates: 250,200 %}
 
+---
+
 {% trigger type: image id: make_believe_020 action: start zoom: 09 coordinates: %}
 
 This work differentiates between *financial ventures*, like those in Spokane, and *settlements,* which the Great Northern and Northern Pacific Railway immigration departments actively developed. These settlements, sometimes referred to as “workingman’s colonies” are defined as a majority foreign population who form a cooperative of wholesale, retail and agricultural businesses within the United States.^24 Examples of sustained Dutch settlements have included Holland, Michigan; Friesland, Minnesota and Chinook, Montana.^25   
