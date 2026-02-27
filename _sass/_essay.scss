@@ -67,6 +67,26 @@ p {
   margin-top: 1.7em;
   margin-bottom: 1.3rem;
 }
+/* -------------------------------------------------------
+   HORIZONTAL RULE SPACING
+   --- in markdown renders as <hr>. Adds generous vertical
+   buffer above and below to visually separate sections.
+   ------------------------------------------------------- */
+
+.scrolly-text-content hr,
+.essay-main hr {
+  margin-top: 3em;
+  margin-bottom: 3em;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Reset first-line indent on paragraph immediately following hr */
+.scrolly-text-content hr + p,
+.essay-main hr + p {
+  text-indent: 0;
+}
+
 
 /* Fading effects */
 /* Initially, steps are invisible */
