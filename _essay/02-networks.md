@@ -75,6 +75,8 @@ This model gave rise to “promotion projects”^32 like *Northwest Magazine*, l
 
 {% trigger type: image id: make_believe_024 action: end zoom: 15 coordinates: 400,900%}
 
+---
+
 {% trigger type: image id: make_believe_004 action: start zoom: coordinates: %}
 
 Unlike the working-class Dutch settlements established across the United States in the late 1800s, the acquisition of land and property through foreign-owned mortgage banking was a concealed operation. After the 1889 fire, Dutch financiers engaged exclusively with Spokane’s business leaders; when much of that property later fell into receivership, the resulting monopoly went largely unchallenged in Washington newspapers, perhaps out of embarrassment. As one Dutch historian later observed of the Spokane venture, “due to the very nature of their business, mortgage banks are closely related to the real estate business, if not from the beginning, then surely as time goes on.”^36

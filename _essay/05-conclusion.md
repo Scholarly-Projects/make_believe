@@ -22,9 +22,14 @@ In 1919, Phoenix Lumber was liquidated.^156 Three years later, Everwijn Lange Jr
 {% trigger type: image id: make_believe_044 action: start zoom: coordinates: %}
 
 Notably absent were Petrus and E. F. Cartier Van Dissel. After Lange’s death in 1928, both brothers fell into decline.^159 Petrus took his own life in 1933 amid financial and health crises.^160 E. F. resurfaced years later in Twin Falls while being tried for embezzling mining stocks, later passing in 1940.^161   
-In 1939, A. R. Van der Loeff attended Robert Insinger’s farewell party, where he presented the former president of the chamber of commerce and longest standing manager of the Hypotheek Bank with a card embossed with the Holland coat of arms.^162 Though the Northwestern and Pacific Hypotheek Bank ceased lending during war time, it did maintain an office in Spokane up until 1970, quietly collecting on its few remaining contracts.^163  
 
 {% trigger type: image id: make_believe_044 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_119 action: start zoom: coordinates: %}
+
+In 1939, A. R. Van der Loeff attended Robert Insinger’s farewell party, where he presented the former president of the chamber of commerce and longest standing manager of the Hypotheek Bank with a card embossed with the Holland coat of arms.^162 Though the Northwestern and Pacific Hypotheek Bank ceased lending during war time, it did maintain an office in Spokane up until 1970, quietly collecting on its few remaining contracts.^163  
+
+{% trigger type: image id: make_believe_119 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_120 action: start zoom: coordinates: %}
 
@@ -38,7 +43,7 @@ Crucially, Dutch financial interests in Spokane were literally just one name on 
 
 {% trigger type: image id: make_believe_121 action: start zoom: coordinates: %}
 
-The link between Spokane’s foreign-controlled industrial monopoly and its public display of cultural and ethnic imitation, *which defined who they were by performing who they were or were not*, was almost certainly never articulated by residents or city leaders. This overlapping occurrence may not have been something that registered as odd or unique by Spokane citizens at the time. After all, public displays of mimicry of other cultures, particularly of  Native Americans and Asians by European Americans were not uncommon in the Pacific Northwest during this period. Yet, the intensity and centrality of the practice to Spokane’s public culture seems unique to the Inland Empire as a largely imagined designation.   
+The link between Spokane’s foreign-controlled industrial monopoly and its public display of cultural and ethnic imitation, *which defined who they were by performing who they were or were not*, was almost certainly never articulated by residents or city leaders. This overlapping occurrence may not have been something that registered as odd or unique by Spokane citizens at the time. After all, public displays of mimicry of other cultures, particularly of  Native Americans and Asians by European Americans were not uncommon in the Pacific Northwest during this period. Yet, the intensity and centrality of the practice to Spokane’s public culture seems unique to the "Inland Empire" as a designation invented by boosters, largely abandoned after that vision failed to be realized. 
 
 {% trigger type: image id: make_believe_121 action: end zoom: coordinates: %}
 
@@ -60,9 +65,13 @@ In contrast, Spokane was enabled to overbuild at a rate that even its Dutch fina
 
 Future research could clarify ambiguities in this study. A comparative survey of archival materials from parade programs, fair ephemera, exposition brochures, and commercial imagery across Seattle, Tacoma and Portland would reveal how these cities engaged in cultural and ethnic mimicry, and whether their more organic (though still rapid) growth produced less anxiety about regional and national identity than Spokane’s foreign-financed boom.  
 
+{% trigger type: image id: make_believe_124 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_032 action: start zoom: 09 coordinates: %}
+
 Further work should also examine other Dutch “industriekolonies” of this era, as identified by Jacob van Hinte in Port Arthur, Texas. Comparing Everwijn Lange Jr.’s Texas oil venture against his timber, flour and land related interests in Spokane could yield a clearer understanding of the long-term economic impacts of such extractive, foreign-controlled enterprises after resource depletion, asset liquidation, and colonial dispersion to international shareholders.  
 
-{% trigger type: image id: make_believe_124 action: end zoom: coordinates: %}
+{% trigger type: image id: make_believe_032 action: end zoom: 09 coordinates: %}
 
 ---
 
@@ -70,7 +79,7 @@ Further work should also examine other Dutch “industriekolonies” of this era
 
 In *The Illustrated History of Washington Territory and Valley of the Columbia*, Danish-born artist Carl Dahlgren depicted Spokane in the 1880s before the fire.^166 His bird’s-eye perspective documented a modest settlement: a wide dirt road leading to a small commercial cluster, a lone railroad line cutting through, a single mill along the river, and sparse residential houses scattered across the early additions. Unlike later booster materials, the image is not overwhelmed by the potential economic power of the falls or the magnitude of agricultural resources, but focused on a vast sky, distant mountains, and the tall conifers at the city’s edge.^167   
 
-{% trigger type: image id: make_believe_125 action: end zoom: 15 coordinates: 900,900 %}
+{% trigger type: image id: make_believe_125 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_126 action: start zoom: coordinates: %}
 
