@@ -329,45 +329,48 @@ video::cue {
 
 /* -------------------------------------------------------
    INLINE CITATION SUPERSCRIPTS
-   Removes dotted underline from linked footnote markers.
-   !important overrides Bootstrap's link color cascade.
+   Matches "View Item" link style from footer-scrollytelling.html:
+   var(--bs-link-color), underline, opacity 0.9 → 1 on hover.
    ------------------------------------------------------- */
 
 sup a,
 a sup {
-  color: #ffffff !important;
-  text-decoration: none !important;
+  color: var(--bs-link-color) !important;
+  text-decoration: underline !important;
   border-bottom: none !important;
+  opacity: 0.9;
 
   &:hover,
   &:focus {
-    color: #ffe600 !important;
-    text-decoration: none !important;
+    color: var(--bs-link-color) !important;
+    text-decoration: underline !important;
+    opacity: 1;
   }
 }
 
 /* -------------------------------------------------------
    SIDEBAR / MARGINAL CITATION TEXT
-   Styles the scrolly-citation-display column that appears
-   beside the main text body on desktop layouts.
+   Matches "View Item" link style from footer-scrollytelling.html.
    ------------------------------------------------------- */
 
 .scrolly-citation-display {
-  color: #ffffff !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 
   .citation-number {
-    color: #ffffff !important;
+    color: rgba(255, 255, 255, 0.85) !important;
     opacity: 1 !important;
   }
 
   a {
-    color: #ffffff !important;
-    text-decoration-color: rgba(255, 255, 255, 0.35) !important;
+    color: var(--bs-link-color) !important;
+    text-decoration: underline !important;
+    opacity: 0.9;
 
     &:hover,
     &:focus {
-      color: #ffe600 !important;
-      text-decoration-color: rgba(255, 230, 0, 0.7) !important;
+      color: var(--bs-link-color) !important;
+      text-decoration: underline !important;
+      opacity: 1;
     }
   }
 }
