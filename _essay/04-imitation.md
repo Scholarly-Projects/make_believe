@@ -254,11 +254,9 @@ In January 1892, the *Spokane Spokesman* newspaper celebrated the new year with 
 
 {% trigger type: image id: make_believe_097 action: end zoom: coordinates:  %}
 
-{% trigger type: image id: make_believe_098 action: start zoom: coordinates:  %}
+{% trigger type: image id: make_believe_099 action: start zoom: 08 coordinates:  %}
 
 Allusions to classical Greek and Roman iconography were prevalent in Spokane's visual culture from 1890 to 1910, as people decorated their bodies and buildings to evoke a sense of permanence and destiny. As historian Hal Rothman theorized, “American elites need to define a cultural heritage for themselves apart from the European legacy that they had long revered and sought to emulate, yet to which they felt inferior.”^133 The frequent depiction of women in these scenes may also be tied to the concurrent rise of portrait and commercial photography studios in the 1890s.  
-
-{% trigger type: image id: make_believe_098 action: end zoom: coordinates:  %}
 
 {% trigger type: image id: make_believe_099 action: start zoom: 08 coordinates:  %}
 

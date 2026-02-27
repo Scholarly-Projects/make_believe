@@ -61,6 +61,8 @@ From the outset, the company’s founders acknowledged they were operating at th
 
 {% trigger type: image id: make_believe_022 action: end zoom: coordinates: %}
 
+---
+
 {% trigger type: image id: make_believe_035 action: start zoom: 20 coordinates: 500,0 %}
 
 The first explicit US anti-colonial statement was the Monroe Doctrine of 1823, prompted by President James Monroe’s concerns over Russian expansion in North America. The document opposed “any non-American action encroaching upon the political independence of American States under any guise,” “the acquisition in any manner of the control of additional territory in this hemisphere by any non-American power” arguing that establishing a colony would “usurp, to the exclusion of others, a commercial intercourse which was the common possession of all.”^53   
