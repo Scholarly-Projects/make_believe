@@ -5,32 +5,76 @@ order: 2
 layout: essay-right
 ---
 
-{% trigger type: image id: make_believe_002 action: start %}
+{% trigger type: image id: make_believe_012 action: start zoom: coordinates: %}
 
 The most visible thread that connected Dutch interests to Spokane was the “Cape Era” diamond boom in the Kimberley mines of South Africa. While the land had been a Dutch colonial interest since 1652, it was not until the discovery of diamonds in 1867 and the formation of the De Beers Mining company that the conditions for the diamond boom were created. The company introduced new methods for mining that the Dutch had implemented in Brazil and, crucially, collaborated with distributors to restrict supply to maintain artificially inflated prices.^11  
 
-{% trigger type: image id: make_believe_002 action: end %}
+{% trigger type: image id: make_believe_012 action: end zoom: 11 coordinates: %}
+
+{% trigger type: image id: make_believe_013 action: start zoom: coordinates: %}
 
 When the first shipments of diamonds from “the run” arrived in the Netherlands to be split, cut, and polished by artisans in 1870, the demand caused an entirely new class structure to emerge.^12 The South African mines generated three times as many diamonds over the twenty years of the boom as they had in the last century and a half in its Brazilian mines and this need for Dutch cleavers, cutters and polishers was reflected in their wages.^13 Their salaries increased from 100 to 200% in 1872, making more than twenty times the income of factory workers.^14 The money began to spread out into the Dutch economy more generally as these “privateers” invested in real estate, furniture, clothing, gambling and bonds.^15 
 
+{% trigger type: image id: make_believe_013 action: end zoom: 11 coordinates: %}
+
+{% trigger type: image id: make_believe_014 action: start zoom: 09 coordinates: %}
+
 As the diamond industry’s largest global client, the United States drove the diamond boom. Like the nouveau-riche class that emerged in the Netherlands, a new American elite, enriched by the railroad and steel industries, wanted a portable, social symbol of their new class status. Demand for diamonds surged in lockstep with the westward railroad expansion in America. Between 1893 and 1881, US diamond sales rose 185% according to the Dutch trade journal *De Diamant*.^16 This reciprocal exchange of capital continued as the first American railroad loans were introduced to the Amsterdam stock exchange in 1873, cementing a financial circuit that linked industrial wealth, imperial means, and luxury consumption.^17  
+
+{% trigger type: image id: make_believe_014 action: end zoom: 10 coordinates: %}
+
+{% trigger type: image id: make_believe_016 action: start zoom: 09 coordinates: %}
 
 American railway bonds were marketed specifically to the newly affluent Dutch to provide the “little man a high interest rate on his savings, and also give him the opportunity to one day belong to the wealthy class.”^18 Despite skepticism from traditional financiers, who called for formal syndicates to vet such foreign securities, the bonds proved wildly popular.^19 Between 1855 and 1875, American listings on the Amsterdam Stock Exchange surged from seven to seventy-eight, sixty-three of them railroad bonds, making the Netherlands the second-largest source of foreign investment in US railroads, behind only Britain.^20  
 
+{% trigger type: image id: make_believe_016 action: end zoom: 09 coordinates: %}
+
+{% trigger type: image id: make_believe_018 action: start zoom: coordinates: %}
+
 Another, “more or less Dutch-owned” line expanding at this time was the Great Northern Railway, owned by James J. Hill and based in St. Paul Minnesota.^21 Though Hill was Canadian, his empire originated from Dutch capital. After the 1873 financial panic bankrupted the St. Paul & Pacific Railroad, Dutch investors, who held a majority of its stock, forced it into receivership. Three years later, James J. Hill formed a syndicate with the Dutch investors and Canadian figures tied to fur trading and banking to buy out the holdings and become the Great Northern Railway.^22  
+
+{% trigger type: image id: make_believe_018 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_019 action: start zoom: 18 coordinates: 900,250 %}
 
 The Great Northern and its rival Northern Pacific Railroad, both based in St. Paul, operated in tandem to recruit Dutch settlers. Each maintained dedicated immigration departments that advertised in Dutch newspapers and promised prospective migrants: “explanatory documents to prospective settlers and offer assistance in every possible way to assist those seeking a place to live in finding a suitable opportunity. An agricultural expert is at the disposal of the railroad company, thoroughly familiar with the conditions under which these lands can be most profitably exploited, and will also gladly assist settlers who so desire.”^23  
 
+{% trigger type: image id: make_believe_019 action: end zoom: 18 coordinates: 250,200 %}
+
+{% trigger type: image id: make_believe_020 action: start zoom: 09 coordinates: %}
+
 This work differentiates between *financial ventures*, like those in Spokane, and *settlements,* which the Great Northern and Northern Pacific Railway immigration departments actively developed. These settlements, sometimes referred to as “workingman’s colonies” are defined as a majority foreign population who form a cooperative of wholesale, retail and agricultural businesses within the United States.^24 Examples of sustained Dutch settlements have included Holland, Michigan; Friesland, Minnesota and Chinook, Montana.^25   
 
+{% trigger type: image id: make_believe_020 action: end zoom: 09 coordinates: %}
+
+{% trigger type: image id: make_believe_021 action: start zoom: 12 coordinates: 400,400 %}
+
 Another defining characteristic was that the majority were discussed openly and positively in both American and Dutch newspapers. For instance, when Reinder Edward Werkman established a new settlement on Whidbey Island in Washington State, a reporter for *The Oregonian* glowingly noted how Werkman “speaks the English language without a trace of a foreign accent” and how the “Dutch are a wonderfully thrifty people” who “are liberal in their expenditures and generous in their customs.”^26 Many of these settlements still continue to celebrate this element of their origin story explicitly, as Holland, Michigan does in their Annual Dutch Winterfest, incorporating “Sinterklaas festivities.”^27   
+
+{% trigger type: image id: make_believe_021 action: end zoom: 13 coordinates: 300,300 %}
+
+{% trigger type: image id: make_believe_022 action: start zoom: coordinates: %}
 
 In contrast, the financial ventures in Spokane were deliberately discrete. To mask their foreign backing, they incorporated as American companies or created shell corporations with American managers, despite being controlled by the same Dutch financiers.^28 Aside from one water rights controversy in 1897, appointed agents of Spokane operations largely avoided engaging with American newspapers, while regularly appearing in Dutch trade papers to report back to shareholders.  
 
 Additionally, the Dutch population in Spokane was negligible. In 1892, immigrant Jan Oud reported on meeting only four other Dutch people in the entire state.^29 Two years later, E.J. Everwijn Lange Jr., director of the Amsterdam-based International Land Syndicate and central financial figure in all of the Spokane ventures, reported that the city had only one family of Dutch immigrants. Lange may have been referring to his appointed agent Herman Antonie Van Valkenburg, then nine years into his management of the Hypotheek Bank.^30   
 
+{% trigger type: image id: make_believe_022 action: end zoom: 11 coordinates: %}
+
+{% trigger type: image id: make_believe_023 action: start zoom: 12 coordinates: 500,250 %}
+
 In addition to driving Dutch settlements through their immigration departments, railroads were also key producers of booster print materials, lavishly illustrated print propaganda to market largely speculative towns along their railway lines, like Spokane, as thriving industrial destinations. By the time the Great Northern reached Spokane in 1892, it was the next largest settlement west of Butte, Montana.^31 The more popular the railway company could make a destination appear, the more it drove passenger traffic and, crucially, demand for the goods that settlers would need to live and work there.  
+
+{% trigger type: image id: make_believe_023 action: end zoom: 11 coordinates: 500,250 %}
+
+{% trigger type: image id: make_believe_024 action: start zoom: 18 coordinates: 350,0 %}
 
 This model gave rise to “promotion projects”^32 like *Northwest Magazine*, launched by editor Eugene Smalley to develop Northern Pacific interests. In 1890, Smalley’s, “rustling representative” H.B. Greening and illustrator C.D. Windsor visited Spokane for their April profile of the city and “doing great work in advertising the resources of the country tributary to the Northern Pacific.”^33 Recounting the devastating 1889 fire, the article hails “the rich men who came forward, and by their actions and liberal use of money inspired confidence… There are young men in the city now, who owe all they are worth today to the grand old triumvirate, Mr. James Glover, Mr. A.M. Cannon and Mr. J.J. Browne.”^34 Within five years of these words appearing in print, all three of these foundational figures would be bankrupt and in debt to the Pacific Northwest Hypotheek bank.^35   
 
+{% trigger type: image id: make_believe_024 action: end zoom: 15 coordinates: 400,900%}
+
+{% trigger type: image id: make_believe_004 action: start zoom: coordinates: %}
+
 Unlike the working-class Dutch settlements established across the United States in the late 1800s, the acquisition of land and property through foreign-owned mortgage banking was a concealed operation. After the 1889 fire, Dutch financiers engaged exclusively with Spokane’s business leaders; when much of that property later fell into receivership, the resulting monopoly went largely unchallenged in Washington newspapers, perhaps out of embarrassment. As one Dutch historian later observed of the Spokane venture, “due to the very nature of their business, mortgage banks are closely related to the real estate business, if not from the beginning, then surely as time goes on.”^36
+
+{% trigger type: image id: make_believe_004 action: end zoom: coordinates: %}

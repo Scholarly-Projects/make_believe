@@ -5,51 +5,134 @@ order: 3
 layout: essay-left
 ---
 
-{% trigger type: image id: make_believe_003 action: start %}
+{% trigger type: image id: make_believe_026 action: start zoom: coordinates:  %}
 
 Dutch ventures in Spokane were deliberately obscured. Entities with identical names were incorporated first as Dutch companies, then as American ones; assets were routed from foreclosed US ventures through shell companies to fully Dutch-owned entities; and failed firms were reconstituted as new legal entities, shedding debts while retaining the same management. This now-illicit (or at best, quasi-legal) practice, “phoenixing,”^37 ironically described the resurrection of the failed Northwestern Milling and Power Company into the sprawling Phoenix Lumber Company.*^38*  
 
-{% trigger type: image id: make_believe_003 action: end %}
+{% trigger type: image id: make_believe_026 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_027 action: start zoom: coordinates: %}
 
 From the incorporation of Dutch interests in 1885 to their liquidation in 1923, three Amsterdam financiers dominated: principally  E. J. Everwijn Lange Jr., and to lesser extents Jan Hendrik Broekman Jr. and Jan Adamus Honders.^39 Broekman and Lange frequently collaborated, serving together on the board of directors for the North Western and Pacific Hypotheekbank and the American National Trust Company.^40 In 1888, Broekman and Honders jointly invested 11.5 million guilders (approximately $147 million in 2026 dollars), declaring that “the city will become a second Minneapolis.”^41 Founded before Dutch investment in American railways, the similarly hydroelectric and railway-oriented city of Minneapolis was frequently invoked by Dutch financiers as a benchmark to project Spokane’s potential growth.^42  
 
+{% trigger type: image id: make_believe_027 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_028 action: start zoom: 20 coordinates: 1000,500 %}
+
 Aside from Lange’s failed attempt to launch a mining venture in the Spokane Mines Limited Co.,^43 Dutch capital in the region coalesced around three core enterprises, all steered by overlapping personnel. First, the Spokane Flour Mill (Spokane Meelmolens), incorporated to secure trade routes to Asia and the eastern US. Second, the Phoenix Sawmill on the Spokane riverfront which eventually controlled 75,000 acres across Spokane and Stevens Counties, effectively creating a company town in Springdale, Washington.^44 Third was the foundational mortgage bank, first managed by Herman Antonie Van Valkenburg.  
 
-A report to Dutch shareholders following the fire in 1889 noted that “The figures regarding the progress of the city of Spokane Falls in the state of Washington… are so very American, i.e., colossal” not out of distrust in local management “but solely as evidence of the difficulty of assessing such matters” due to the frequency of lending and building in the years after the fire.^45 Van Valkenburg’s lending to the monied classes of Spokane and the terms being given assumed an incredible surge in the Spokane population. As surveyor Isaac C. Jolles recounted on Van Valkenburg’s presidency, “There was lavishness during the initial development of this place, and many people bit off more than they could chew, trying to artificially accelerate the city's growth.” He attributed the amount of property the company had taken into receivership to  “the boundless optimism that dominated the Bank’s policies” which assumed the arrival of an East Coast elite, when most of the borrowers were newly wealthy miners who lacked sustained purchasing power.^46  
+{% trigger type: image id: make_believe_028 action: end zoom: 20 coordinates: 0,500 %}
+
+{% trigger type: image id: make_believe_029 action: start zoom: 11 coordinates:  %}
+
+A report to Dutch shareholders following the fire in 1889 noted that “The figures regarding the progress of the city of Spokane Falls in the state of Washington… are so very American, i.e., colossal” not out of distrust in local management “but solely as evidence of the difficulty of assessing such matters” due to the frequency of lending and building in the years after the fire.^45 Van Valkenburg’s lending to the monied classes of Spokane and the terms being given assumed an incredible surge in the Spokane population. 
+
+{% trigger type: image id: make_believe_029 action: end zoom: 11 coordinates: %}
+
+{% trigger type: image id: make_believe_030 action: start zoom: coordinates: %}
+
+As surveyor Isaac C. Jolles recounted on Van Valkenburg’s presidency, “There was lavishness during the initial development of this place, and many people bit off more than they could chew, trying to artificially accelerate the city's growth.” He attributed the amount of property the company had taken into receivership to  “the boundless optimism that dominated the Bank’s policies” which assumed the arrival of an East Coast elite, when most of the borrowers were newly wealthy miners who lacked sustained purchasing power.^46  
+
+{% trigger type: image id: make_believe_030 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_031 action: start zoom: 09 coordinates: %}
 
 In 1895, following an annual shareholders’ meeting, Van Valkenburg was declared “mentally abnormal,” forced into early retirement, and sent back to Holland.^47 His successor, Thomas G. Thomson, imposed “harsh” policies, foreclosing on debtors’ property and seizing agricultural land, often just before harvest, to maximize returns.^48   
 
-Historian Jacob van Hinte explored how a foreign-controlled company seized so much American property in his extensive *Nederlanders in Amerika* (1928), written “from the perspective of a Netherlander… for a Netherlandic readership” as its later translator noted.^49 As van Hinte uncovered, the Hypotheek Bank exploited a key legal loophole to monopolize land across the Inland Empire. While many US states barred foreign corporations from owning land, except through mortgage repossession or debt settlement, Washington imposed no such time limits, allowing the bank to retain foreclosed property indefinitely. With regional mortgage lenders scarce and state oversight lenient, the Hypotheek Bank capitalized on the 1889 fire and 1893 depression to amass a vast real estate portfolio legally, but not transparently.  
+{% trigger type: image id: make_believe_031 action: end zoom: 09 coordinates: %}
+
+{% trigger type: image id: make_believe_032 action: start zoom: 09 coordinates: %}
+
+Historian Jacob van Hinte explored how a foreign-controlled company seized so much American property in his extensive *Nederlanders in Amerika* (1928), written “from the perspective of a Netherlander… for a Netherlandic readership” as its later translator noted.^49 As van Hinte uncovered, the Hypotheek Bank exploited a key legal loophole to monopolize land across the Inland Empire. While many US states barred foreign corporations from owning land, except through mortgage repossession or debt settlement, Washington imposed no such time limits, allowing the bank to retain foreclosed property indefinitely. With regional mortgage lenders scarce and state oversight lenient, the Hypotheek Bank capitalized on the 1889 fire and 1893 depression to amass a vast real estate portfolio legally, but not transparently.
+
+{% trigger type: image id: make_believe_032 action: end zoom: 09 coordinates: %}
+
+{% trigger type: image id: make_believe_033 action: start zoom: coordinates: %}
+
 Though the term “predatory lending” did not yet exist, the Hypotheek Bank’s practices matched its definition precisely. The company targeted miners with irregular incomes and little financial experience, inflated property values through unreliable appraisals, charged hidden legal fees, used aggressive marketing to manufacture demand and issued loans without assessing the borrower's ability to repay.^50 Internal reports reveal a systematic pattern of exorbitant hidden fees, grossly inflated prices, property flipping, and debt trapping, all characteristics of modern predatory finance.^51  
 
+{% trigger type: image id: make_believe_033 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_022 action: start zoom: coordinates: %}
+
 From the outset, the company’s founders acknowledged they were operating at the margins of legality. In an 1886 survey of the Spokane region, Van Valkenburg openly advised Dutch shareholders that incorporating as “an American mortgage bank is preferable to a European company… because with the former, legal personality is assured, while with a European one, difficulties may arise.”^52 Van Valkenburg proceeded to cite both a pending congressional bill to ban foreign mortgage lenders and existing state restrictions on foreign real estate ownership to back up this argument. This indicated a deliberate strategy to mask the bank’s Dutch ownership under an American veil.  
+
+{% trigger type: image id: make_believe_022 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_035 action: start zoom: 20 coordinates: 500,0 %}
 
 The first explicit US anti-colonial statement was the Monroe Doctrine of 1823, prompted by President James Monroe’s concerns over Russian expansion in North America. The document opposed “any non-American action encroaching upon the political independence of American States under any guise,” “the acquisition in any manner of the control of additional territory in this hemisphere by any non-American power” arguing that establishing a colony would “usurp, to the exclusion of others, a commercial intercourse which was the common possession of all.”^53   
 
 The principle that “America should be for Americans” endured through the Civil War and later fueled anti-imperialist movements during the Gilded Age. Critics warned that annexation of territories inhabited by “tropical peoples” would, if followed by full incorporation, require granting them statehood and equal standing with Massachusetts, Georgia, or California, thereby, “destroying the very framework of American government.”^54   
 
+{% trigger type: image id: make_believe_035 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_036 action: start zoom: coordinates: %}
+
 Faced with surplus agricultural and industrial production and the collapse in prices that triggered the Panic of 1893, the United States expanded beyond its continental borders.^55 Initial expansionism involved the “severance of all the existing Spanish West Indian and Pacific possessions at the end of the Spanish War of 1898,” which included Cuba and Puerto Rico, cessation of the Philippines that same year, along with Hawaii, and the Panama Canal from Columbia in 1903.^56 Speaking to the reservations of Anti-Imperialists, only Hawaii was brought into statehood, with others placed in a permanent territorial underclass.   
+
+{% trigger type: image id: make_believe_036 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_037 action: start zoom: coordinates: %}
 
 These acquisitions were largely strategic rather than resource based, with seized islands across the Caribbean controlling the southern approach to the US and safeguarding the establishment of the Panama Canal. Over the past 125 years, they have evolved into concentrated defense zones. Puerto Rico now devotes more land to US military operations, proportionally, than any other US jurisdiction.^57  
 
+{% trigger type: image id: make_believe_037 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_038 action: start zoom: 20 coordinates: %}
+
 While the US government was engaging in expansionism and colonial acquisitions, they were also regulating foreign influence at home. The 1913 Californian Alien Land Law introduced the most explicit legislation against foreign interests extracting wealth from resources within the United States, prohibiting “aliens ineligible for citizenship” from owning agricultural land or holding long term leases. The state government implicitly passed the law to discourage Asian farmers more generally and Japanese specifically from immigrating to the United States.^58 After World War I, the next major effort to curb foreign influence came with the 1938 Foreign Agents Registration Act, which required individuals acting on behalf of foreign principals to publicly disclose their activities. Originally designed to counter Nazi propaganda, the law has recently become central to debates over whether Political Action Committees acting on behalf of foreign governments should be allowed to influence US elections.^59  
+
+{% trigger type: image id: make_believe_038 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_039 action: start zoom: 09 coordinates: %}
 
 It is crucial to note that both the defined *permanent settlements* and *temporary financial ventures* were also either taking part in or dependent upon the machinery of American settler colonialism. The previously mentioned settlement of Holland, Michigan was a direct result of the forced removal of Odawa tribes under the Treaty of Chicago.^60 This was also the case with the Treaty of Point Elliott opening land in Whidbey Island for Edward Werkman and the establishment of the Fort Belknap reservation, forcing the removal of Assiniboine and Gros Ventre tribes to allow for the Dutch settlement of Chinook, Montana.   
 
-After a brief attempt to revive A. M. Cannon’s seized sawmill as the Northwest Milling and Power Company, both that company and the North West Hypotheek Bank collapsed into insolvency by the mid-1890s, triggering the most publicly contentious episode in Spokane’s history with Dutch financiers. In 1896, the assets of Everwijn Lange’s American National Trust Co., which had funded both failed ventures, were liquidated into the Dutch public limited company *Amsterdamsch Trustees Kantoor*.^61 The Hypotheek Bank’s holdings were absorbed by the newly formed Holland Bank,^62 while the Northwest Milling and Power Company emerged again as the Phoenix Sawmill, effectively shielding its backers from liability through corporate reorganization.^63   
+{% trigger type: image id: make_believe_039 action: end zoom: 09 coordinates: %}
+
+{% trigger type: image id: make_believe_040 action: start zoom: coordinates: %}
+
+After a brief attempt to revive A. M. Cannon’s seized sawmill as the Northwest Milling and Power Company, both that company and the North West Hypotheek Bank collapsed into insolvency by the mid-1890s, triggering the most publicly contentious episode in Spokane’s history with Dutch financiers. In 1896, the assets of Everwijn Lange’s American National Trust Co., which had funded both failed ventures, were liquidated into the Dutch public limited company *Amsterdamsch Trustees Kantoor*.^61 The Hypotheek Bank’s holdings were absorbed by the newly formed Holland Bank,^62 while the Northwest Milling and Power Company emerged again as the Phoenix Sawmill, effectively shielding its backers from liability through corporate reorganization.^63  
+
+{% trigger type: image id: make_believe_040 action: end zoom: 15 coordinates: %}
+
+{% trigger type: image id: make_believe_041 action: start zoom: coordinates: %}
 
 Tensions began in December 1896 when A. F. Van Hall of the Kantoor arrived in Spokane and announced the firm would seize the Spokane Water Power Company.^64 *The Spokesman-Review* noted that James J. Hill of the Great Northern Railway appeared aligned with the Kantoor, quoting an insider: “if the property is acquired… Mr. Hill can be relied upon to give them rates and advantages which will move the product, no matter how large, to the open markets of the world.”^65  
 
+{% trigger type: image id: make_believe_041 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_042 action: start zoom: coordinates: %}
+
 Around this time, the Washington Water Power Company appeared in the press, led by Americans Henry M. Richards and D. L. Huntington. Many years after its incorporation, Dutch newspapers revealed the firm was part of a liquidation trust formed by the presidents of the Holland and Northwestern & Pacific Hypotheek Banks and financier E. J. Everwijn Lange, exposing its American leadership served as public faces for a structure ultimately directed by a consortium of Dutch financiers.^66   
+
+{% trigger type: image id: make_believe_042 action: end zoom: coordinates: %}
+
+{% trigger type: image id: make_believe_043 action: start zoom: 15 coordinates: 500,0 %}
 
 Reports surfaced that the Washington Water Power Company was negotiating with the “Holland people” to acquire all assets of the Northwest Milling and Power Company, which would create a monopoly of Spokane’s hydropower.^67 The merger between two companies, owned by the same foreign investors, consolidated forty-four acres within Spokane city limits and 26,000 horsepower of hydroelectricity.^68 The only major riverfront property outside this Dutch-controlled trust was Echo Mills, recently purchased by James J. Hill, who had just secured right-of-way access from the Kantoor.^69  
 
 After ignoring a city order to “cease maintaining nuisances in the bed of the Spokane River,” the Kantoor, Washington Water Power Company, and Northwest Milling and Power Company secured full rights to the Spokane Falls water power on October 21, 1897.^70 Everwijn Lange Jr. dismissed the city’s legal challenge as “exclusively a chicane and political demonstration,” declaring it “of great importance that the City of Spokane not succeed in its attempt,” to maintain its water power holdings, an admission that the fight was less about investment rights than preserving foreign control over strategic American resources.^71  
 
-When the Phoenix Sawmill rose from the ruins of the failed Northwest Milling and Power Company in 1898, Everwijn Lange Jr. placed E. F. Cartier Van Dissel in charge as manager.^72 Cartier had arrived in Spokane in 1897 after helping orchestrate a scheme with the Rotterdam Company for Land Exploitation. Alongside future Spokane associate L. C. Lens, Cartier sold barren, alkaline acres south of Fresno to both Dutch and American farmers as orchard land.^73   
+{% trigger type: image id: make_believe_043 action: end zoom: 15 coordinates: 500,1000 %}
+
+{% trigger type: image id: make_believe_044 action: start zoom: 09 coordinates: %}
+
+When the Phoenix Sawmill rose from the ruins of the failed Northwest Milling and Power Company in 1898, Everwijn Lange Jr. placed E. F. Cartier Van Dissel in charge as manager.^72 Cartier had arrived in Spokane in 1897 after helping orchestrate a scheme with the Rotterdam Company for Land Exploitation. Alongside future Spokane associate L. C. Lens, Cartier sold barren, alkaline acres south of Fresno to both Dutch and American farmers as orchard land.^73  
 
 Four years into Van Dissel’s management, Phoenix was the largest sawmill in the state of Washington with the help of L.C. Lens, who acquired The Inland Empire Milling Company and other nearby operations.^74 Meanwhile, Thomas G. Thomson rapidly acquired foreclosed agricultural land north of Spokane amounting to 69,000 acres near Springdale, forty miles north of Spokane, which came under the control of a new offshoot organization, the Phoenix Lumber Company.^75 Van Dissel appointed his brother Petrus M. Cartier Van Dissel as the manager,  who eventually also ran the *Springdale Reformer*, a newspaper which the neighboring *Colville Examiner* openly accused of being a propaganda tool for Phoenix’s labor interests.^76  
 
+{% trigger type: image id: make_believe_044 action: end zoom: 09 coordinates: %}
+
+{% trigger type: image id: make_believe_045 action: start zoom: 11 coordinates: %}
+
 In Amsterdam, Springdale was marketed as a “Dutch and Flemish Colony.” Advertisements in newspapers boasted of “two colossal sawmills” and declared the enterprise “a Dutch company,” with E. F. Cartier Van Dissel as president, R. Insinger (Manager of the Hypotheek Bank after Thomson) as secretary-treasurer, and E. J. Everwijn Lange Jr. as director. The advertisement states explicitly that farmland would be “offered at discount, preferably to Dutchmen” in hopes of developing “a wealthy Dutch colony.”^77  
 
+{% trigger type: image id: make_believe_045 action: end zoom: 12 coordinates: %}
+
+{% trigger type: image id: make_believe_046 action: start zoom: 09 coordinates: %}
+
 Springdale never became the “true Dutch settlement” Jacob van Hinte described in *Nederlanders in Amerika*, but instead devolved into a fractured, sometimes violent company town.^78 By the 1910s, Springdale was described as divided into Van Dissel’s “courthouse ring” of bribed judges and lawyers and the “Anti-Van-Dissel” laborers and community members.^79 This reality was in stark contrast to booster booklets like *Spokane, the Queen of the Inland Empire*, which portrayed E. F. Cartier Van Dissel as a model civic leader: “Mr. E. F. Cartier Van Dissel, the manager, has made a record here as a businessman that is so well known that it is unnecessary to dwell on it here, suffice to say that he is a kindly, agreeable gentleman who is always willing to do his part in promoting the best interests of Spokane.”^80
+
+{% trigger type: image id: make_believe_046 action: end zoom: 09 coordinates: %}
