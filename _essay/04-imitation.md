@@ -128,6 +128,8 @@ The program for the second event, "The Story of Robin Hood," described "24 milk 
 
 {% trigger type: image id: make_believe_071 action: end zoom:  coordinates:  %}
 
+---
+
 {% trigger type: image id: make_believe_073 action: start zoom: 09 coordinates:  %}
 
 A semantic drift complicated the presence of the Dutch in Spokane history. Because the German word for "German" is "deutsch" (pronounced "doych"), Americans conflated Germans with the already established Pennsylvania Dutch, after the major German immigration following the 1848 revolution.^105 A regional example in Spokane was “Dutch Jake,” a Frankfurt native who struck rich on a Bunker Hill mine. 
