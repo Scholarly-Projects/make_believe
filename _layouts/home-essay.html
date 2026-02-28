@@ -25,9 +25,6 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas: "left middle right";
-  /* 120px matches browse.html's padding-top for this same fixed header.
-     The header contains three stacked rows (hamburger bar, site title +
-     subtitle, chapter line) which together measure ~110-120px on desktop. */
   min-height: calc(100vh - 120px);
   margin-top: 120px;
   background-color: #ffffff;
@@ -43,7 +40,6 @@ body {
   border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* All font sizes are the original values × 1.15 */
 .home-site-title {
   font-size: clamp(3.22rem, 5.75vw, 5.18rem);
   font-weight: 900;
@@ -88,7 +84,7 @@ body {
 }
 
 .home-toc-heading {
-  font-size: 0.805rem;            /* 0.7 × 1.15 */
+  font-size: 0.805rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -111,7 +107,7 @@ body {
   padding: 0.45rem 0.6rem;
   color: rgba(0, 0, 0, 0.78);
   text-decoration: none;
-  font-size: 1.058rem;            /* 0.92 × 1.15 */
+  font-size: 1.058rem;
   font-weight: 400;
   line-height: 1.4;
   border-radius: 3px;
@@ -123,10 +119,9 @@ body {
   color: #111111;
 }
 
-/* Essays: indented to visually group them under the book's main nav */
 .home-toc-item.is-essay .home-toc-link {
   padding-left: 1.4rem;
-  font-size: 1.012rem;            /* 0.88 × 1.15 */
+  font-size: 1.012rem;
   color: rgba(0, 0, 0, 0.65);
 }
 
@@ -140,30 +135,26 @@ body {
   display: flex;
   flex-direction: column;
   padding: 0 1.5rem 1rem 1rem;
-  /* Subtract both the fixed header (~120px) and fixed footer (~55px) so
-     nothing in this column is hidden behind either bar. */
   height: calc(100vh - 120px - 55px);
   max-height: calc(100vh - 120px - 55px);
   overflow: hidden;
 }
 
-/* Image area: centres the square image and wraps tightly around it */
+/* Image area fills all remaining space above the CTA.
+   min-height: 0 is critical — without it a flex child refuses to shrink
+   below its content size, causing the image to push the button out of view. */
 .home-right-image-area {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1 1 0;          /* grow to fill, but start from 0 not content-size */
+  min-height: 0;        /* allow shrinking below natural image height      */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding-top: 1.5rem;
-  /* No overflow:hidden — we want the container to shrink to the image */
+  overflow: hidden;     /* clip the image rather than overflow into CTA    */
 }
 
 .home-right-image-area img {
-  /* Square image: let the browser pick the largest square that fits
-     both the available width AND the available height.
-     aspect-ratio enforces the 1:1 shape; max-width/max-height cap it
-     to the container; width/height:auto let the browser solve the size. */
   aspect-ratio: 1 / 1;
   max-width: 100%;
   max-height: 100%;
@@ -171,14 +162,13 @@ body {
   height: auto;
   display: block;
   object-fit: contain;
-  /* Shrink if the column gets very short */
   flex-shrink: 1;
+  min-height: 0;
 }
 
-/* Credit is a flex sibling of the img inside .home-right-image-area,
-   so it sits directly below the image with no intervening gap */
+/* Credit sits directly below the image inside the image-area flex column */
 .home-featured-credit {
-  flex: 0 0 auto;
+  flex: 0 0 auto;       /* never grows — always exactly its text height    */
   font-size: 0.805rem;
   color: rgba(0, 0, 0, 0.35);
   line-height: 1.5;
@@ -186,16 +176,15 @@ body {
   text-align: center;
 }
 
-/* CTA: grows to fill all remaining space below the credit.
-   flex-start + padding-top places the button just below the credit
-   rather than dead-center in the gap. */
+/* CTA: fixed height at the bottom — never grows, never shrinks, never
+   overlaps the image or credit above it regardless of viewport height.    */
 .home-right-cta {
-  flex: 1 1 auto;
+  flex: 0 0 auto;       /* takes only its natural height; cannot be pushed */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
   padding-top: 1.25rem;
+  padding-bottom: 1rem;
 }
 
 .home-read-btn {
@@ -204,7 +193,7 @@ body {
   background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.5);
   color: #111111;
-  font-size: 1.15rem;             /* 1rem × 1.15 */
+  font-size: 1.15rem;
   font-weight: 400;
   letter-spacing: 0.08em;
   text-decoration: none;
@@ -227,8 +216,6 @@ body {
       "left"
       "right"
       "middle";
-    /* The mobile header wraps across 4 rows on narrow screens:
-       hamburger bar + title + subtitle/author (wraps) + page label ≈ 160px. */
     margin-top: 160px;
     min-height: unset;
   }
@@ -243,37 +230,34 @@ body {
   #home-col-middle {
     border-right: none;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 2rem 1.5rem 3rem;
+    padding: 2rem 1.5rem 70px;   /* 70px clears the fixed mobile footer     */
     justify-content: flex-start;
-    /* Push last TOC items clear of the fixed footer bar (~50px slim height
-       + a comfortable gap so nothing is hidden behind it) */
-    padding-bottom: 70px;
   }
 
   #home-col-right {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     padding: 0.75rem 1.5rem 1rem;
-    /* Subtract corrected header (160px) + slim mobile footer (45px) */
     height: calc(100vh - 160px - 45px);
     max-height: calc(100vh - 160px - 45px);
     overflow: hidden;
   }
 
   .home-right-image-area {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-height: 0;
     height: auto;
     padding-top: 0.5rem;
+    overflow: hidden;
   }
 
+  /* On mobile the CTA still locks to its natural height at the bottom */
   .home-right-cta {
-    flex: 1 1 auto;
-    padding-top: 1rem;
+    flex: 0 0 auto;
+    padding-top: 0.85rem;
+    padding-bottom: 0.75rem;
   }
 
-  /* ── Compact footer on home page (matches scrolly.scss mobile style) ── */
-  /* The scrolly.scss rules are scoped to essay pages; duplicate the key
-     overrides here so the home page footer is equally slim on mobile. */
+  /* ── Compact footer on home page ──────────────────────────────────── */
   .scrolly-footer {
     padding: 0.4rem 1.25rem !important;
     min-height: unset !important;
@@ -287,7 +271,6 @@ body {
     font-size: 1.25rem !important;
   }
 
-  /* Hide citations in the home footer — not relevant on the landing page */
   .scrolly-footer .scrolly-citation-wrapper {
     display: none !important;
   }
@@ -300,8 +283,7 @@ body {
 </style>
 
 {%- comment -%}
-Build the first-essay URL for the Read button, matching footer nav logic:
-first essay sorted by order, falling back to first config-nav essay entry.
+Build the first-essay URL for the Read button.
 {%- endcomment -%}
 {%- assign sorted_essays = site.essay | sort: 'order' -%}
 {%- assign first_essay = sorted_essays | first -%}
@@ -329,13 +311,6 @@ first essay sorted by order, falling back to first config-nav essay entry.
   <div id="home-col-middle">
     <p class="home-toc-heading">Contents</p>
     <ul class="home-toc-list">
-
-      {%- comment -%}
-      Mirror the footer nav sequence exactly:
-        1. Home
-        2. Essays (sorted by front-matter `order`) — indented with .is-essay
-        3. Non-home, non-essay config-nav pages
-      {%- endcomment -%}
 
       <li class="home-toc-item">
         <a href="{{ '/' | relative_url }}" class="home-toc-link">Home</a>
@@ -387,7 +362,7 @@ first essay sorted by order, falling back to first config-nav essay entry.
 
 {%- comment -%}
 SINGLE ESSAY CONTENT
-Preserved: if only one essay exists, render it inline below the landing grid.
+If only one essay exists, render it inline below the landing grid.
 {%- endcomment -%}
 {%- if essay_count == 1 -%}
 {%- assign single_essay = actual_essays[0] -%}
