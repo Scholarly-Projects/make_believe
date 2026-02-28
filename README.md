@@ -18,4 +18,4 @@
 - Dual navigation tracks: readers can quickly use arrow keys to cycle through site level pages (home, browse, map, etc.), or drop down to the item level pages to cycle through that material.
 - Retains CollectionBuilder's database-oriented approach allowing readers to dive deeper into the media that compliments the essay material and make further research connections by visualizing those items chronologically, geographically or thematically. 
 
-_Andrew Weymouth, Spring, 2026_
+_Andrew Weymouth, Spring, 2026_.
