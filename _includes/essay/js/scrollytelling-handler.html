@@ -404,30 +404,54 @@ class ScrollyTelling {
   }
   
   updateFooterImageCitation(objectid) {
+      // ── Desktop elements ────────────────────────────────────────────
       const footerContent = document.getElementById('scrolly-image-citation-content');
       const footerWrapper = document.getElementById('scrolly-image-citation-footer');
-      const viewLink = document.getElementById('scrolly-image-view-link');
-      
+      const viewLink      = document.getElementById('scrolly-image-view-link');
+
+      // ── Mobile elements (title + View Item only) ────────────────────
+      const mobileWrapper   = document.getElementById('scrolly-mobile-citation');
+      const mobileTitleEl   = document.getElementById('scrolly-mobile-image-title');
+      const mobileViewLink  = document.getElementById('scrolly-mobile-view-link');
+
       if (!footerContent || !footerWrapper) return;
-      
+
       if (objectid && window.collectionMetadata[objectid]) {
           const meta = window.collectionMetadata[objectid];
-          
+          const itemUrl = `{{ site.baseurl }}/items/${objectid}.html`;
+
+          // ── Desktop: full citation text ─────────────────────────────
           if (meta.image_citation) {
               footerContent.innerHTML = this.formatCitation(meta.image_citation);
           } else {
               footerContent.textContent = meta.title || 'Image citation unavailable';
           }
-          
+
           if (viewLink) {
-              viewLink.href = `{{ site.baseurl }}/items/${objectid}.html`;
+              viewLink.href         = itemUrl;
               viewLink.style.display = 'inline';
           }
-          
+
           footerWrapper.classList.add('visible');
+
+          // ── Mobile: title only + View Item link ─────────────────────
+          if (mobileTitleEl) {
+              mobileTitleEl.textContent = meta.title || '';
+          }
+
+          if (mobileViewLink) {
+              mobileViewLink.href         = itemUrl;
+              mobileViewLink.style.display = 'inline';
+          }
+
       } else {
+          // Clear desktop
           footerWrapper.classList.remove('visible');
           if (viewLink) viewLink.style.display = 'none';
+
+          // Clear mobile
+          if (mobileTitleEl)  mobileTitleEl.textContent  = '';
+          if (mobileViewLink) mobileViewLink.style.display = 'none';
       }
   }
 

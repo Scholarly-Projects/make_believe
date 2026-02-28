@@ -474,36 +474,5 @@ body.light-mode .scrolly-text-content hr,
   }
 
   /* ── MOBILE FOOTER ──────────────────────────────────────────────────── */
-  .scrolly-footer {
-    padding: 0.4rem 1.25rem !important;
-    min-height: unset !important;
-    align-items: center !important;
-    flex-direction: row !important;
-  }
-
-  .scrolly-footer .chapter-nav {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 1.25rem !important;
-  }
-
-  .scrolly-footer .scrolly-citation-wrapper {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 0 !important;
-  }
-
-  .scrolly-footer .scrolly-image-citation-footer {
-    flex: 1 1 auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    text-align: center !important;
-    align-items: center !important;
-    font-size: 0.75em !important;
-  }
-
-  .scrolly-footer .scrolly-image-citation-footer .scrolly-citation-label {
-    display: none !important;
-  }
+  /* Footer manages its own responsive layout in footer-scrollytelling.html */
 }

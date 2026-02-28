@@ -62,7 +62,7 @@
   color: #000;
 }
 
-/* Citation wrapper — now a single centered column for image only */
+/* Citation wrapper */
 .scrolly-citation-wrapper {
   display: flex;
   flex: 1;
@@ -142,7 +142,27 @@
   text-decoration: underline !important;
 }
 
-/* ── In-text footnote superscript links ────────────────────────────────*/
+/* ── Mobile title-only citation ──────────────────────────────────────────
+   Wraps freely so long titles never get clipped. Footer height grows to
+   fit; arrows are centered vertically via align-self.                   */
+.scrolly-mobile-citation {
+  display: none;                  /* hidden on desktop                   */
+  font-size: 0.78em;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.scrolly-footer.light-mode .scrolly-mobile-citation {
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.scrolly-mobile-citation .mobile-image-title {
+  font-style: italic;
+}
+
+/* ── In-text footnote superscript links ─────────────────────────────── */
 .footnote-ref .footnote-link {
   color: inherit;
   text-decoration: none;
@@ -156,38 +176,41 @@
   border-bottom-style: solid;
 }
 
-/* Responsive adjustments */
+/* ── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 992px) {
   .scrolly-footer {
     padding: 0.4rem 1.25rem !important;
     min-height: unset !important;
-    align-items: center !important;
+    align-items: stretch !important;  /* let children control their own vertical alignment */
     flex-direction: row !important;
+    flex-wrap: nowrap;
   }
 
+  /* Arrows stay vertically centred regardless of how tall the citation grows */
   .chapter-nav {
     width: 36px !important;
-    height: 36px !important;
+    height: auto !important;
     font-size: 1.25rem !important;
+    align-self: center !important;
+    flex-shrink: 0;
   }
 
+  /* Hide the full desktop citation; show the compact mobile version */
   .scrolly-citation-wrapper {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
-
-  .scrolly-image-citation-footer {
-    flex: 1 1 auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    text-align: center !important;
-    align-items: center !important;
-    font-size: 0.75em !important;
-  }
-
-  .scrolly-image-citation-footer .scrolly-citation-label {
     display: none !important;
+  }
+
+  /* Mobile citation: wraps freely so long titles never get clipped */
+  .scrolly-mobile-citation {
+    display: flex !important;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.35rem 0.5rem;
+    align-items: center;
+    justify-content: center;
+    white-space: normal;
+    overflow: visible;
+    word-break: break-word;
   }
 }
 </style>
@@ -197,8 +220,8 @@
   <a href="#" class="chapter-nav prev" id="prev-chapter" aria-label="Previous chapter" disabled>
     ❮
   </a>
-  
-  <!-- Citation Container — image citation only, centered -->
+
+  <!-- Desktop: full citation centered -->
   <div class="scrolly-citation-wrapper">
     <div class="scrolly-image-citation-footer" id="scrolly-image-citation-footer">
       <span class="scrolly-citation-label">Image</span>
@@ -208,7 +231,12 @@
       </div>
     </div>
   </div>
-  
+
+  <!-- Mobile: title + View Item link only -->
+  <div class="scrolly-mobile-citation" id="scrolly-mobile-citation">
+    <span class="mobile-image-title" id="scrolly-mobile-image-title"></span><a href="#" class="view-item-link" id="scrolly-mobile-view-link" style="display:none">&thinsp;&mdash;&thinsp;View Item</a>
+  </div>
+
   <!-- Next Chapter Arrow -->
   <a href="#" class="chapter-nav next" id="next-chapter" aria-label="Next chapter" disabled>
     ❯
@@ -220,37 +248,25 @@ document.addEventListener('DOMContentLoaded', function() {
   var prevChapterLink = document.getElementById('prev-chapter');
   var nextChapterLink = document.getElementById('next-chapter');
 
-  // Normalize a URL for comparison: strip trailing slashes AND .html suffixes
-  // so that Jekyll pretty-permalinks (/essay/01-introduction/) and explicit
-  // .html paths (/essay/01-introduction.html) both resolve to the same string.
   function normalize(url) {
     return (url || '').replace(/\/$/, '').replace(/\.html$/, '');
   }
 
-  // ── 1. Main site navigation sequence (footer arrows always use this) ──
+  // ── 1. Main site navigation sequence ─────────────────────────────────
   var allNavItems = [
-
-    // Home
     { url: '{{ "/" | relative_url }}', title: 'Home' },
-
-    // All essays, sorted by front-matter `order`
     {% assign sorted_essays = site.essay | sort: 'order' %}
     {% for item in sorted_essays %}
     { url: '{{ item.url | relative_url }}', title: {{ item.title | jsonify }} },
     {% endfor %}
-
-    // Config-nav pages that are neither the home stub ("/")
-    // nor an essay URL (anything under "/essay/").
     {% for nav in site.data.config-nav %}
     {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
     { url: '{{ nav.stub | relative_url }}', title: {{ nav.display_name | jsonify }} },
     {% endunless %}
     {% endfor %}
-
   ].filter(function(item) { return item.url; });
 
-  // ── 2. Item-level page sequence (keyboard arrows use this on item pages) ──
-  // Emitted in metadata CSV order so browsing follows the collection sequence.
+  // ── 2. Item-level page sequence ───────────────────────────────────────
   var allItemPages = [
     {% for item in site.data[site.metadata] %}
     { url: '{{ site.baseurl }}/items/{{ item.objectid }}.html', title: {{ item.title | jsonify }} },
@@ -259,28 +275,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var currentUrl = normalize(window.location.pathname);
 
-  // Detect whether we are currently on an item page.
-  // Item pages live at /items/<objectid>.html — match that pattern.
-  // normalize() strips the .html suffix, so we check the normalized path.
   var itemBasePattern = normalize('{{ site.baseurl }}/items/');
-  var onItemPage = currentUrl.indexOf(itemBasePattern + '/') === 0 ||
-                   currentUrl.indexOf(itemBasePattern) === 0 &&
-                   currentUrl.length > itemBasePattern.length &&
-                   currentUrl.charAt(itemBasePattern.length) === '/';
+  var onItemPage = currentUrl.startsWith(itemBasePattern) &&
+                   currentUrl.length > itemBasePattern.length;
 
-  // Simpler, more reliable item page detection: the normalized path starts
-  // with the items base and has more path segments after it.
-  onItemPage = currentUrl.startsWith(itemBasePattern) &&
-               currentUrl.length > itemBasePattern.length;
-
-  // ── 3. Wire footer arrows to the MAIN nav sequence at all times ────────
+  // ── 3. Wire footer arrows to the main nav sequence ────────────────────
   var mainIndex = allNavItems.findIndex(function(item) {
     return normalize(item.url) === currentUrl;
   });
 
   console.log('[footer-scrollytelling] currentUrl:', currentUrl);
   console.log('[footer-scrollytelling] mainIndex:', mainIndex, '/', allNavItems.length - 1);
-  console.log('[footer-scrollytelling] allNavItems[0]:', allNavItems[0] && normalize(allNavItems[0].url));
 
   if (prevChapterLink) {
     if (mainIndex > 0) {
@@ -314,9 +319,6 @@ document.addEventListener('DOMContentLoaded', function() {
       nextChapterLink.style.pointerEvents = '';
       nextChapterLink.title               = 'Back to: ' + allNavItems[0].title;
     } else {
-      // Not found in main nav (i.e. we are on an item page) —
-      // point the footer arrows at the nearest main nav boundaries
-      // so the reader can always escape back out.
       nextChapterLink.href                = allNavItems[0].url;
       nextChapterLink.removeAttribute('disabled');
       nextChapterLink.style.opacity       = '1';
@@ -325,44 +327,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // ── 4. Keyboard arrows: item cycle on item pages, main nav elsewhere ───
+  // ── 4. Keyboard navigation ────────────────────────────────────────────
   var keyPrevUrl = null;
   var keyNextUrl = null;
 
   if (onItemPage) {
-    // Find position in the item sequence and build prev/next item URLs.
     var itemIndex = allItemPages.findIndex(function(item) {
       return normalize(item.url) === currentUrl;
     });
 
-    if (itemIndex > 0) {
-      keyPrevUrl = allItemPages[itemIndex - 1].url;
-    } else if (itemIndex === 0) {
-      // Wrap around to the last item
-      keyPrevUrl = allItemPages[allItemPages.length - 1].url;
-    }
+    keyPrevUrl = (itemIndex > 0)
+      ? allItemPages[itemIndex - 1].url
+      : allItemPages[allItemPages.length - 1].url;
 
-    if (itemIndex >= 0 && itemIndex < allItemPages.length - 1) {
-      keyNextUrl = allItemPages[itemIndex + 1].url;
-    } else if (itemIndex === allItemPages.length - 1) {
-      // Wrap around to the first item
-      keyNextUrl = allItemPages[0].url;
-    }
-
-    console.log('[footer-scrollytelling] Item page mode | index:', itemIndex, '/', allItemPages.length - 1);
-    console.log('[footer-scrollytelling] Key ← →:', keyPrevUrl, '/', keyNextUrl);
+    keyNextUrl = (itemIndex >= 0 && itemIndex < allItemPages.length - 1)
+      ? allItemPages[itemIndex + 1].url
+      : allItemPages[0].url;
   } else {
-    // On a main nav page: keyboard mirrors the footer arrows.
-    // Use getAttribute('href') rather than .href to keep root-relative paths
-    // and avoid the browser expanding them to absolute URLs, which could
-    // break comparisons elsewhere.
     keyPrevUrl = (prevChapterLink && !prevChapterLink.hasAttribute('disabled'))
       ? prevChapterLink.getAttribute('href') : null;
     keyNextUrl = nextChapterLink
       ? nextChapterLink.getAttribute('href') : null;
-
-    console.log('[footer-scrollytelling] Main nav mode | index:', mainIndex, '/', allNavItems.length - 1);
-    console.log('[footer-scrollytelling] Key ← →:', keyPrevUrl, '/', keyNextUrl);
   }
 
   document.addEventListener('keydown', function(e) {
