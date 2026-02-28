@@ -43,6 +43,7 @@ class ScrollyTelling {
     this.activeChapterIndex = -1;
     this.isLoading = false;
     this.isTransitioning = false;
+    this.isRestoring = false;          // ← NEW: blocks scroll/layout during state restore
     this.transitionPromise = null;
     this.layoutObserverTimeout = null;
     this.layoutObserverPaused = false;
@@ -52,15 +53,12 @@ class ScrollyTelling {
     this.maxScrollY = 0;
 
     // Separator icon elements registered for midpoint fade tracking.
-    // Populated by observeSeparator(); checked each scroll tick.
     this.separatorIcons = [];
 
-    // Tracks whether the chapter-end fade is currently applied so we
-    // only toggle transitions when state actually changes.
+    // Tracks whether the chapter-end fade is currently applied.
     this.chapterEndFaded = false;
 
-    // Tracks the objectid last sent to the footer in full layout, so we
-    // don't thrash the DOM on every scroll tick with no real change.
+    // Tracks the objectid last sent to the footer in full layout.
     this.activeFullLayoutImageId = null;
     
     // DOM Elements
@@ -74,10 +72,8 @@ class ScrollyTelling {
     this.citationColumnEl = null;
     this.citationDisplayEl = null;
 
-
     this.allEssays = window.allEssays || [];
     this.currentLayout = this.scrollyContainer ? this.scrollyContainer.dataset.layout : 'left';
-
 
     this.init();
   }
@@ -86,6 +82,14 @@ class ScrollyTelling {
   init() {
     if (!this.textColumn || !this.allEssays.length || !this.textContentEl) return;
 
+    // ── Take manual control of scroll restoration ────────────────────
+    // This prevents the browser from interfering with our own restore
+    // logic while also allowing us to precisely replay saved positions
+    // after dynamic chapters have been re-loaded.
+    history.scrollRestoration = 'manual';
+
+    // Save state whenever the user navigates away (link click, tab close, etc.)
+    window.addEventListener('pagehide', () => this._saveScrollState());
 
     // ── Build the citation sidebar column ─────────────────────────────
     this.citationColumnEl = document.getElementById('scrolly-citation-column');
@@ -99,7 +103,6 @@ class ScrollyTelling {
     }
     this.citationDisplayEl = document.getElementById('scrolly-citation-display');
 
-
     const currentPath = this.normalizeUrl(this.textContentEl.dataset.chapterPath);
     const startIdx = this.allEssays.findIndex(e => this.normalizeUrl(e.url) === currentPath);
     const idx = startIdx === -1 ? 0 : startIdx;
@@ -108,20 +111,126 @@ class ScrollyTelling {
     this.loadedRange.end = idx;
     this.activeChapterIndex = idx;
 
-
     this.processNewBlock(this.textContentEl);
     this.setupLayoutObserver();
     this.setupThemeObserver();
     this.updateTheme();
 
-    // Observe any existing separators on page load for full-layout transitions
     document.querySelectorAll('.chapter-separator').forEach(sep => {
       this.observeSeparator(sep);
     });
 
-
     window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
-    setTimeout(() => this.handleScroll(), 100);
+
+    // ── Restore state on back/forward navigation ─────────────────────
+    // Check nav type AFTER everything is wired up so that loadChapter
+    // calls inside _restoreScrollState() can complete normally.
+    const navEntries = performance.getEntriesByType('navigation');
+    if (navEntries.length && navEntries[0].type === 'back_forward') {
+      this._restoreScrollState();
+    } else {
+      // Normal page load — just trigger an initial scroll pass.
+      setTimeout(() => this.handleScroll(), 100);
+    }
+  }
+
+  // ── _saveScrollState ─────────────────────────────────────────────────
+  // Persists the reader's current position and which chapters are loaded
+  // so that _restoreScrollState() can faithfully replay the session after
+  // a browser back/forward navigation.
+  _saveScrollState() {
+    try {
+      const state = {
+        y:     window.scrollY,
+        start: this.loadedRange.start,
+        end:   this.loadedRange.end,
+        path:  location.pathname
+      };
+      sessionStorage.setItem('scrolly_state', JSON.stringify(state));
+    } catch (e) {
+      // sessionStorage unavailable — silent fallback.
+    }
+  }
+
+  // ── _restoreScrollState ──────────────────────────────────────────────
+  // Called on back/forward navigation.  Reads the saved state, reloads
+  // any chapters that were dynamically loaded in the previous session,
+  // then scrolls precisely to the saved Y position.
+  //
+  // While running, this.isRestoring = true, which blocks:
+  //   • handleScroll   (avoids image / citation thrash)
+  //   • handleInfiniteScroll  (prevents runaway chapter loading)
+  //   • scroll adjustments inside loadChapter('prev')
+  //   • applyLayoutTransition (layout settled by the time we scroll)
+  async _restoreScrollState() {
+    let state = null;
+    try {
+      const raw = sessionStorage.getItem('scrolly_state');
+      state = raw ? JSON.parse(raw) : null;
+    } catch (e) { /* ignore */ }
+
+    // Only restore if the saved path matches the current page.
+    if (!state || this.normalizeUrl(state.path) !== this.normalizeUrl(location.pathname)) {
+      // No usable saved state — fall back to a normal initial scroll pass.
+      setTimeout(() => this.handleScroll(), 100);
+      return;
+    }
+
+    // Lock everything while we rebuild the chapter stack.
+    this.isRestoring          = true;
+    this.scrollAdjustmentCooldown = true;
+    this.layoutObserverPaused = true;
+
+    try {
+      // 1. Load chapters that come AFTER the initial chapter (append — no
+      //    scroll shift, safe to do first).
+      while (this.loadedRange.end < state.end) {
+        // Wait if a previous loadChapter call is still in flight.
+        if (this.isLoading) {
+          await this._wait(150);
+          continue;
+        }
+        await this.loadChapter('next');
+        await this._wait(80);
+      }
+
+      // 2. Load chapters that come BEFORE the initial chapter (prepend).
+      //    Scroll adjustments inside loadChapter('prev') are suppressed
+      //    because this.isRestoring is true (see guard in loadChapter).
+      while (this.loadedRange.start > state.start) {
+        if (this.isLoading) {
+          await this._wait(150);
+          continue;
+        }
+        await this.loadChapter('prev');
+        await this._wait(80);
+      }
+
+      // 3. Let the browser finish any pending layout reflows.
+      await this._wait(250);
+
+      // 4. Scroll to the exact saved position.
+      window.scrollTo({ top: state.y, behavior: 'instant' });
+
+      // 5. Give the scroll and any triggered observers time to settle
+      //    before we re-enable everything.
+      await this._wait(350);
+
+      // Clear the saved state so a subsequent normal page load doesn't
+      // accidentally trigger a restore.
+      sessionStorage.removeItem('scrolly_state');
+
+    } catch (err) {
+      console.error('ScrollyTelling: state restore failed', err);
+    } finally {
+      // Always release the locks, even if something went wrong.
+      this.isRestoring          = false;
+      this.scrollAdjustmentCooldown = false;
+      this.layoutObserverPaused = false;
+
+      // Kick off a normal scroll pass now that everything is ready.
+      this.handleScroll();
+    }
   }
 
 
@@ -134,22 +243,15 @@ class ScrollyTelling {
       this.processFootnotes(block);
       this.observeBlock(block);
 
-      // Add padding to full-layout chapters to create breathing room
-      // and ensure title appears at bottom of viewport after transition
       if (layout === 'full') {
         block.style.paddingTop = '30vh';
       }
 
-      // Reset citation state so the first footnote in this block fires a
-      // fresh sidebar update regardless of what was active before.
       this.currentCitation = null;
 
-
-      // Fade out the sidebar display so it's clean for the new block
       if (this.citationDisplayEl) {
         this.citationDisplayEl.classList.remove('visible');
       }
-
 
       if (layout === 'full') {
           this.hydrateInlineImages(block);
@@ -214,16 +316,14 @@ class ScrollyTelling {
 
 
   handleScroll() {
-    if (this.isTransitioning) return;
-
+    // Do nothing during a state restore — we control scroll ourselves.
+    if (this.isTransitioning || this.isRestoring) return;
 
     if (window.scrollY > this.maxScrollY) {
       this.maxScrollY = window.scrollY;
     }
 
-
     const triggerThreshold = window.innerHeight / 2;
-
 
     let newActiveId = null;
     let lastStartParams = null;
@@ -235,19 +335,14 @@ class ScrollyTelling {
       const midpoint = rect.top + (rect.height / 2);
       if (midpoint < triggerThreshold) {
         if (trigger.action === 'start') {
-          // This image is now the active one.
           newActiveId = trigger.id;
           lastStartParams = trigger.params;
         } else if (trigger.action === 'end') {
-          // The image's exit marker has crossed the reading threshold —
-          // it should no longer be visible. A later 'start' crossing the
-          // threshold (processed next in the loop) will override this.
           newActiveId = null;
           lastStartParams = null;
         }
       }
     }
-
 
     if (this.currentLayout !== 'full') {
       if (newActiveId !== this.activeImageId) {
@@ -257,7 +352,6 @@ class ScrollyTelling {
     } else {
       this.handleFullLayoutImageCitations(triggerThreshold);
     }
-
 
     this.handleCitations(triggerThreshold);
     this.handleSeparatorFade(triggerThreshold);
@@ -270,15 +364,12 @@ class ScrollyTelling {
       '.chapter-content-block[data-layout="full"] [data-trigger-type="image"]'
     );
 
-
     let bestId = null;
     let bestTop = -Infinity;
-
 
     triggers.forEach(trigger => {
       const objId = trigger.dataset.triggerId;
       if (!objId) return;
-
 
       const rect = trigger.getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.top > bestTop) {
@@ -286,7 +377,6 @@ class ScrollyTelling {
         bestId = objId;
       }
     });
-
 
     if (bestId !== this.activeFullLayoutImageId) {
       this.activeFullLayoutImageId = bestId;
@@ -302,7 +392,6 @@ class ScrollyTelling {
       if (newId && !this.imageContainer.querySelector(`img[data-objectid="${newId}"]`)) {
           this.createImageElement(newId, params);
       }
-
 
       const allImages = this.imageContainer.querySelectorAll('img');
       allImages.forEach(img => {
@@ -346,7 +435,6 @@ class ScrollyTelling {
   setupLayoutObserver() {
     this.layoutObserverPaused = false;
     
-    // Standard block observer for general layout transitions
     this.layoutObserver = new IntersectionObserver((entries) => {
       if (this.layoutObserverPaused) return;
       
@@ -355,12 +443,11 @@ class ScrollyTelling {
       }
       
       this.layoutObserverTimeout = setTimeout(() => {
-        if (this.isTransitioning) return;
+        if (this.isTransitioning || this.isRestoring) return;
         
         const viewportCenter = window.innerHeight / 2;
         let closestBlock = null;
         let minDistance = Infinity;
-
 
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
@@ -372,7 +459,6 @@ class ScrollyTelling {
             closestBlock = entry.target;
           }
         }
-
 
         if (closestBlock) {
           const block = closestBlock;
@@ -400,23 +486,12 @@ class ScrollyTelling {
       threshold: 0
     });
     
-    // ── Separator forward observer ─────────────────────────────────────
-    // Observes the icon <img> inside the separator — NOT the separator
-    // div, which can be 50–200vh tall due to padding/margin on full-layout
-    // separators. This ensures the trigger point is the visible icon pixel,
-    // not the invisible top edge of a padded container.
-    //
-    // rootMargin '0px 0px -98% 0px' defines a 2%-tall strip at the very
-    // top of the viewport. The observer fires when the icon enters that
-    // strip — i.e. the icon has just reached the top of the page and the
-    // reader has fully scrolled past all preceding content.
     this.separatorForwardObserver = new IntersectionObserver((entries) => {
-      if (this.layoutObserverPaused || this.isTransitioning || this.scrollAdjustmentCooldown) return;
+      if (this.layoutObserverPaused || this.isTransitioning || this.scrollAdjustmentCooldown || this.isRestoring) return;
       
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
 
-        // entry.target is the icon img — walk up to the separator div
         const separator = entry.target.closest('.chapter-separator');
         if (!separator) return;
         const nextBlock = separator.nextElementSibling;
@@ -424,7 +499,6 @@ class ScrollyTelling {
         if (nextBlock && nextBlock.classList.contains('chapter-content-block')) {
           const targetLayout = nextBlock.dataset.layout;
 
-          // ── Header update — always fire when crossing forward ────────
           if (nextBlock.dataset.chapterPath) {
             const nextIdx = this.allEssays.findIndex(e =>
               this.normalizeUrl(e.url) === this.normalizeUrl(nextBlock.dataset.chapterPath)
@@ -435,7 +509,6 @@ class ScrollyTelling {
             }
           }
 
-          // ── Layout transition — fire for any layout change ────────────
           if (targetLayout && targetLayout !== this.currentLayout) {
             console.log('Forward separator trigger → layout:', targetLayout);
             this.applyLayoutTransition(targetLayout);
@@ -443,25 +516,16 @@ class ScrollyTelling {
         }
       });
     }, {
-      // 2%-tall strip at the very top of the viewport
       rootMargin: '0px 0px -98% 0px',
       threshold: 0
     });
 
-    // ── Separator backward observer ────────────────────────────────────
-    // Exact mirror of the forward observer. The same icon <img> is
-    // observed. rootMargin '-98% 0px 0px 0px' creates a 2%-tall strip at
-    // the very BOTTOM of the viewport, so this fires when the icon
-    // re-enters the bottom of the page while scrolling back — the precise
-    // inverse of the forward trigger moment. Fires a header update and any
-    // required layout change back to the previous chapter's layout.
     this.separatorBackwardObserver = new IntersectionObserver((entries) => {
-      if (this.layoutObserverPaused || this.isTransitioning || this.scrollAdjustmentCooldown) return;
+      if (this.layoutObserverPaused || this.isTransitioning || this.scrollAdjustmentCooldown || this.isRestoring) return;
       
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
 
-        // entry.target is the icon img — walk up to the separator div
         const separator = entry.target.closest('.chapter-separator');
         if (!separator) return;
         const prevBlock = separator.previousElementSibling;
@@ -469,7 +533,6 @@ class ScrollyTelling {
         if (prevBlock && prevBlock.classList.contains('chapter-content-block')) {
           const targetLayout = prevBlock.dataset.layout;
 
-          // ── Header update — always fire when crossing backward ───────
           if (prevBlock.dataset.chapterPath) {
             const prevIdx = this.allEssays.findIndex(e =>
               this.normalizeUrl(e.url) === this.normalizeUrl(prevBlock.dataset.chapterPath)
@@ -480,7 +543,6 @@ class ScrollyTelling {
             }
           }
 
-          // ── Layout transition — fire for any layout change ────────────
           if (targetLayout && targetLayout !== this.currentLayout) {
             console.log('Backward separator trigger → layout:', targetLayout);
             this.applyLayoutTransition(targetLayout);
@@ -488,7 +550,6 @@ class ScrollyTelling {
         }
       });
     }, {
-      // 2%-tall strip at the very bottom of the viewport
       rootMargin: '-98% 0px 0px 0px',
       threshold: 0
     });
@@ -496,6 +557,10 @@ class ScrollyTelling {
 
 
   applyLayoutTransition(newLayout) {
+    // Never transition while restoring scroll state — layout will resolve
+    // naturally once the restore completes and handleScroll() runs.
+    if (this.isRestoring) return Promise.resolve();
+
     if (this.currentLayout === newLayout && !this.isTransitioning) {
       return Promise.resolve();
     }
@@ -508,11 +573,9 @@ class ScrollyTelling {
       return this.transitionPromise || Promise.resolve();
     }
 
-
     this.isTransitioning = true;
     this.currentLayout = newLayout;
     this.scrollyContainer.dataset.layout = newLayout;
-
 
     this.transitionPromise = this._performLayoutTransition(newLayout)
       .finally(() => {
@@ -526,7 +589,6 @@ class ScrollyTelling {
           setTimeout(() => this.applyLayoutTransition(nextLayout), 50);
         }
       });
-
 
     return this.transitionPromise;
   }
@@ -574,28 +636,20 @@ class ScrollyTelling {
     try {
       this.layoutObserverPaused = true;
 
-
       const imageCol = document.getElementById('scrolly-image');
       const leavingFull = this.scrollyContainer.classList.contains('layout-full') ||
                           this.scrollyContainer.dataset.layout === 'full';
       const enteringFull = newLayout === 'full';
 
-
       await this._curtainDown(0);
 
-
-      // Reset citation sidebar on every layout transition
       this.currentCitation = null;
       if (this.citationDisplayEl) {
         this.citationDisplayEl.classList.remove('visible');
         this.citationDisplayEl.innerHTML = '';
       }
 
-      // Reset separator-fade state so the citation sidebar starts clean
-      // for the new chapter. Image visibility is managed independently by
-      // the trigger loop and does not need resetting here.
       this.chapterEndFaded = false;
-
 
       if (enteringFull) {
         if (imageCol) {
@@ -603,20 +657,16 @@ class ScrollyTelling {
           imageCol.style.opacity = '0';
         }
 
-
         this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
 
-
         document.querySelectorAll('.chapter-content-block[data-layout="full"]')
           .forEach(block => this.hydrateInlineImages(block));
-
 
         this.imageContainer.querySelectorAll('img').forEach(img => {
           img.style.opacity = '0';
           img.style.visibility = 'hidden';
         });
-
 
         this.activeFullLayoutImageId = null;
         this.currentCitation = null;
@@ -624,21 +674,17 @@ class ScrollyTelling {
         await this._wait(500);
         await this._curtainUp(350);
 
-
       } else if (leavingFull) {
         if (imageCol) {
           imageCol.style.transition = 'none';
           imageCol.style.opacity = '0';
         }
 
-
         const scrollBefore = window.scrollY;
         const heightBefore = document.documentElement.scrollHeight;
 
-
         this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
-
 
         const heightDelta = document.documentElement.scrollHeight - heightBefore;
         if (heightDelta > 0) {
@@ -646,12 +692,10 @@ class ScrollyTelling {
           window.scrollTo(0, scrollBefore + heightDelta);
         }
 
-
         this.imageContainer.querySelectorAll('img').forEach(img => {
           img.style.visibility = 'visible';
         });
         this.activeImageId = null;
-
 
         this.activeFullLayoutImageId = null;
         this.currentCitation = null;
@@ -660,9 +704,7 @@ class ScrollyTelling {
         await this._wait(16);
         await this._curtainUp(280);
 
-
       } else {
-        // Standard left/right transitions
         this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
         
@@ -670,21 +712,17 @@ class ScrollyTelling {
         await this._curtainUp(280);
       }
 
-
       if (!enteringFull && imageCol) {
         imageCol.style.transition = 'opacity 0.35s ease';
         imageCol.style.opacity = '1';
         await this._wait(350);
       }
 
-
       if (leavingFull) {
         this.scrollAdjustmentCooldown = false;
       }
 
-
       this.layoutObserverPaused = false;
-
 
     } catch (error) {
       console.error('Layout transition failed:', error);
@@ -748,7 +786,6 @@ class ScrollyTelling {
       }
     });
 
-
     const pendingStarts = {};
     rawTriggers.forEach(t => {
         if (t.type !== 'image' || t.parentLayout === 'full') return;
@@ -776,27 +813,15 @@ class ScrollyTelling {
     }
   }
 
-  // Observe chapter separators for both forward and backward full-layout transitions.
-  // Non-full-layout separators are registered with both observers so that the
-  // Register a separator's icon <img> with both directional observers.
-  // We observe the img element rather than the separator div so that the
-  // IntersectionObserver rootMargins are relative to the visible icon
-  // pixel — not the top edge of a padded/margined container that can be
-  // hundreds of viewport-heights tall for full-layout separators.
   observeSeparator(separator) {
     if (!separator || !separator.classList.contains('chapter-separator')) return;
 
     const icon = separator.querySelector('img');
     if (!icon) return;
 
-    // Both observers watch every separator icon. The forward observer fires
-    // when the icon enters the top-of-viewport strip; the backward observer
-    // fires when it re-enters the bottom-of-viewport strip. Each callback
-    // independently decides whether a layout transition is needed.
     if (this.separatorForwardObserver)  this.separatorForwardObserver.observe(icon);
     if (this.separatorBackwardObserver) this.separatorBackwardObserver.observe(icon);
 
-    // Also register the icon for midpoint-based fade tracking in handleScroll.
     if (!this.separatorIcons.includes(icon)) {
       this.separatorIcons.push(icon);
     }
@@ -827,7 +852,6 @@ class ScrollyTelling {
         const eRect = segment.end.element.getBoundingClientRect();
         const startY = sRect.top + (sRect.height / 2);
         const endY = eRect.top + (eRect.height / 2);
-
 
         if (startY < viewportCenter && endY > viewportCenter) {
             const progress = (viewportCenter - startY) / (endY - startY);
@@ -872,11 +896,9 @@ class ScrollyTelling {
         const formattedText = this.formatCitation(citation.text);
         const bibUrl = `${BIBLIOGRAPHY_URL}#${active.citationId}`;
 
-
         const sidebarHTML =
           `<span class="citation-number">${active.number}</span>` +
           `<a href="${bibUrl}" class="bib-citation-link">${formattedText}</a>`;
-
 
         if (this.citationDisplayEl) {
           this.citationDisplayEl.innerHTML = sidebarHTML;
@@ -889,26 +911,6 @@ class ScrollyTelling {
   }
 
 
-  // ── handleSeparatorFade ───────────────────────────────────────────────
-  // Manages the text-citation sidebar across chapter boundaries.
-  //
-  // Image visibility is handled entirely by the trigger loop in
-  // handleScroll — 'start' triggers show an image, 'end' triggers hide
-  // it. This method only needs to worry about the citation sidebar.
-  //
-  // The "inter-chapter gap" is the window between:
-  //   • the separator icon crossing the viewport midpoint  (gap opens)
-  //   • the next chapter's content block reaching that same midpoint
-  //                                                        (gap closes)
-  //
-  // While in the gap the sidebar is hidden. When the gap closes the
-  // citation state is reset so the new chapter starts with a blank slate;
-  // handleCitations will naturally re-populate once the first footnote
-  // marker of the new chapter crosses the threshold.
-  //
-  // The gap test uses BOTH conditions jointly, so separators from chapters
-  // already far above the viewport (whose next block is also above the
-  // threshold) never keep the sidebar permanently hidden.
   handleSeparatorFade(triggerThreshold) {
     if (this.currentLayout === 'full') return;
 
@@ -918,7 +920,7 @@ class ScrollyTelling {
       const iconRect = icon.getBoundingClientRect();
       const iconCentre = iconRect.top + iconRect.height / 2;
 
-      if (iconCentre >= triggerThreshold) continue; // separator not yet crossed
+      if (iconCentre >= triggerThreshold) continue;
 
       const separator = icon.closest('.chapter-separator');
       if (!separator) continue;
@@ -927,31 +929,21 @@ class ScrollyTelling {
 
       const nextRect = nextBlock.getBoundingClientRect();
       if (nextRect.top >= triggerThreshold) {
-        // Icon crossed the midpoint but the next chapter's text has not —
-        // we are in the inter-chapter gap for this separator.
         inGap = true;
         break;
       }
-      // nextRect.top < triggerThreshold: the next chapter's content has
-      // already reached the reading position — this gap is closed.
     }
 
-    if (inGap === this.chapterEndFaded) return; // no state change
+    if (inGap === this.chapterEndFaded) return;
 
     this.chapterEndFaded = inGap;
 
     if (inGap) {
-      // ── Entering gap: immediately clear the citation sidebar ──────
       if (this.citationDisplayEl) {
         this.citationDisplayEl.style.transition = 'none';
         this.citationDisplayEl.classList.remove('visible');
       }
-
     } else {
-      // ── Exiting gap: reset citation state for the new chapter ─────
-      // Do not restore the previous chapter's citation. handleCitations
-      // will populate the sidebar when the new chapter's own footnote
-      // markers first cross the midpoint.
       this.currentCitation = null;
       if (this.citationDisplayEl) {
         this.citationDisplayEl.classList.remove('visible');
@@ -1004,7 +996,6 @@ class ScrollyTelling {
       return; 
     }
 
-
     const targetChapter = this.allEssays[targetIdx];
     const normalizedUrl = this.normalizeUrl(targetChapter.url);
     
@@ -1035,13 +1026,11 @@ class ScrollyTelling {
       return;
     }
 
-
     try {
       const resp = await fetch(targetChapter.url);
       const html = await resp.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const source = doc.querySelector('.scrolly-text-content');
-
 
       if (source) {
         const newBlock = document.createElement('div');
@@ -1066,7 +1055,6 @@ class ScrollyTelling {
         const isBeforeFullLayout = newLayout === 'full';
         const newSeparator = this.createChapterSeparator(needsLargeSeparator, isBeforeFullLayout);
 
-
         if (isNext) {
           this.textColumn.insertBefore(newSeparator, this.loadingIndicatorEl);
           this.textColumn.insertBefore(newBlock, this.loadingIndicatorEl);
@@ -1077,27 +1065,29 @@ class ScrollyTelling {
           const scrollYBefore = window.scrollY;
           const docHeightBefore = document.documentElement.scrollHeight;
 
-
           this.layoutObserverPaused = true;
-
 
           this.textColumn.prepend(newSeparator);
           this.textColumn.prepend(newBlock);
           this.loadedRange.start--;
 
-
           this.processNewBlock(newBlock);
           this.observeSeparator(newSeparator);
           
-          this.scrollAdjustmentCooldown = true;
-          
-          await this._wait(100);
-          const docHeightAfter = document.documentElement.scrollHeight;
-          const addedHeight = docHeightAfter - docHeightBefore;
-          window.scrollTo(0, scrollYBefore + addedHeight);
-          
-          await this._wait(500);
-          this.scrollAdjustmentCooldown = false;
+          // ── Scroll compensation when prepending ───────────────────
+          // Suppressed during state restore: _restoreScrollState will
+          // set the final scroll position explicitly after all chapters
+          // have been loaded, so mid-restore adjustments would fight it.
+          if (!this.isRestoring) {
+            this.scrollAdjustmentCooldown = true;
+            await this._wait(100);
+            const docHeightAfter = document.documentElement.scrollHeight;
+            const addedHeight = docHeightAfter - docHeightBefore;
+            window.scrollTo(0, scrollYBefore + addedHeight);
+            await this._wait(500);
+            this.scrollAdjustmentCooldown = false;
+          }
+
           this.layoutObserverPaused = false;
         }
       }
@@ -1110,7 +1100,10 @@ class ScrollyTelling {
 
 
   handleInfiniteScroll() {
-    if (this.isLoading || this.isTransitioning || this.scrollAdjustmentCooldown) return;
+    // Never trigger chapter loading while restoring state — the restore
+    // routine manages chapter loading itself and sets scroll position
+    // explicitly once all chapters are in place.
+    if (this.isLoading || this.isTransitioning || this.scrollAdjustmentCooldown || this.isRestoring) return;
     
     const currentY = window.scrollY;
     if (Math.abs(currentY - this.lastScrollY) < 10) {
@@ -1179,9 +1172,6 @@ class ScrollyTelling {
   }
 
 
-  // ── updateHeaderForChapter ─────────────────────────────────────────────
-  // Resolves the essay metadata for the given index and calls the global
-  // updateChapterDisplay() function defined in header-scrollytelling.html.
   updateHeaderForChapter(idx) {
     const essay = this.allEssays[idx];
     if (!essay) return;
@@ -1194,7 +1184,6 @@ class ScrollyTelling {
       });
     }
 
-    // Also push URL so the address bar stays in sync with the header
     const block = document.querySelector(`[data-chapter-path="${this.normalizeUrl(essay.url)}"]`);
     if (block) this.updateHistory(block);
   }
@@ -1212,7 +1201,6 @@ class ScrollyTelling {
     if (this.imageContainer) {
       this.imageContainer.style.backgroundColor = isLight ? '#ffffff' : '#111111';
     }
-
 
     if (this.citationColumnEl) {
       this.citationColumnEl.style.backgroundColor =
