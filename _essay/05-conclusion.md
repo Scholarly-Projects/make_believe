@@ -31,6 +31,8 @@ In 1939, A. R. Van der Loeff attended Robert Insinger’s farewell party, where 
 
 {% trigger type: image id: make_believe_119 action: end zoom: coordinates: %}
 
+---
+
 {% trigger type: image id: make_believe_120 action: start zoom: coordinates: %}
 
 Despite extracting hundreds of millions of dollars’ worth of natural resources from the Inland Northwest between 1890 and 1920, Everwijn Lange’s Spokane ventures yielded little financial success for his appointed agents. While capital flowed steadily to financiers and shareholders in Amsterdam, the investments also drew fierce criticism. Dutch trade papers repeatedly condemned agents for mismanaged share transfers, misrepresented solvency, and diverted funds, all of which eroded shareholder value and rendered Spokane holdings a persistent drag on investment portfolios.^164   

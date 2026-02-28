@@ -9,7 +9,7 @@
 - Sidebar which generates a text citation following the reader's progress through the material, providing only the most relevant information without cluttering the interface.
 - Programmatic manipulation of how images display, where the author of the template can enter zoom and coordinate data in the _essay markdown templates to control how readers view the media as they scroll through the text.
 - Citations and images are informed by CSV data, allowing for automatic generation and editing of Image Credit and Bibliography pages.
-- "Infinite Scroll" function, which allows readers to seamlessly scroll from one chapter to another in the _essay section of the site, so they can remain focused on the text, rather than hunting in menu drop downs to progress. Images and citations are triggered identically moving both forward and backwards in the text like an audio recording, which is where the temporal in the `Texttemporal` comes from.
+- "Infinite Scroll" function, which allows readers to seamlessly scroll from one chapter to another in the _essay section of the site, so they can remain focused on the text, rather than hunting in menu drop downs to progress. Images and citations are triggered identically moving both forward and backwards in the text like an audio recording, which is where the temporal in the `Textemporal` comes from.
 - Scroll state preservation, to ensure that the reader is returned where they left in the chapter, if they engage with the associated item level images or text citations.
 - Chapters seamlessly transition between left, right and center orientation, initiated by a customizable chapter transition icon. Any seams in the layout are masked by scrolling progress based fades.
 - Light / Dark mode toggle
