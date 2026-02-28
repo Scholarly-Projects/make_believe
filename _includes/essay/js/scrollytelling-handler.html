@@ -1197,27 +1197,33 @@ class ScrollyTelling {
 
   updateTheme() {
     const isLight = document.body.classList.contains('light-mode');
-    
+
+    // ── Inline style fallback ─────────────────────────────────────────
+    // CSS variables on .scrolly-container cover most cases, but Bootstrap
+    // or framework resets can win via specificity. Setting inline styles
+    // on the container directly guarantees the change is always visible.
+    if (this.scrollyContainer) {
+      this.scrollyContainer.style.backgroundColor = isLight ? '#ffffff' : '#111111';
+      this.scrollyContainer.style.color           = isLight ? '#1a1a1a' : '#f0f0f0';
+    }
+
+    // Image panel background (always an inline style — no CSS variable route)
     if (this.imageContainer) {
       this.imageContainer.style.backgroundColor = isLight ? '#ffffff' : '#111111';
     }
 
+    // Citation sidebar background (transparent in both modes)
     if (this.citationColumnEl) {
       this.citationColumnEl.style.backgroundColor =
         isLight ? 'rgba(255,255,255,0)' : 'rgba(17,17,17,0)';
     }
-    
-    const footer = document.getElementById('scrolly-footer');
-    if (footer) {
-      if (isLight) footer.classList.add('light-mode');
-      else footer.classList.remove('light-mode');
-    }
-    
-    const header = document.getElementById('scrolly-header');
-    if (header) {
-      if (isLight) header.classList.add('light-mode');
-      else header.classList.remove('light-mode');
-    }
+
+    // HR borders inside the text content
+    document.querySelectorAll('.scrolly-text-content hr').forEach(hr => {
+      hr.style.borderTopColor = isLight
+        ? 'rgba(0,0,0,0.15)'
+        : 'rgba(255,255,255,0.2)';
+    });
   }
 }
 

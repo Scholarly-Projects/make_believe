@@ -67,6 +67,7 @@ p {
   margin-top: 1.7em;
   margin-bottom: 1.3rem;
 }
+
 /* -------------------------------------------------------
    HORIZONTAL RULE SPACING
    --- in markdown renders as <hr>. Adds generous vertical
@@ -338,7 +339,11 @@ video::cue {
   --scrolly-link-color: #6ea8fe;
 }
 
-:root.light-mode {
+/* Light-mode CSS variable overrides.
+   Scoped to body.light-mode so only the scrolly content panels
+   (text column, image panel, citation sidebar) are affected.
+   Header and footer are NOT targeted here — they remain dark always. */
+body.light-mode {
   --scrolly-bg-color: #ffffff;
   --scrolly-text-color: #191919;
   --scrolly-border-color: rgba(0, 0, 0, 0.1);
@@ -370,20 +375,32 @@ a sup {
 
 /* -------------------------------------------------------
    SIDEBAR / MARGINAL CITATION TEXT
-   Matches "View Item" link style from footer-scrollytelling.html.
+   Typography mirrors the footer image-citation bar:
+   Times New Roman, 0.76em, colour from --scrolly-citation-color
+   so it flips automatically in light mode. Link colour
+   matches the footer "View Item" link via --bs-link-color.
    ------------------------------------------------------- */
 
 .scrolly-citation-display {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: var(--scrolly-citation-color) !important;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 0.76em;
+  line-height: 1.8;
 
   .citation-number {
-    color: rgba(255, 255, 255, 0.85) !important;
-    opacity: 1 !important;
+    /* Dimmed ordinal — matches footer label opacity treatment */
+    color: var(--scrolly-citation-color) !important;
+    opacity: 0.6 !important;
+    font-size: 0.85em;
+    font-weight: 600;
+    letter-spacing: 0.03em;
   }
 
   a {
+    /* Exact same treatment as footer "View Item" link */
     color: var(--bs-link-color) !important;
     text-decoration: underline !important;
+    text-underline-offset: 2px;
     opacity: 0.9;
 
     &:hover,

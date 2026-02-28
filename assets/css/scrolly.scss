@@ -19,7 +19,8 @@ footer:not(.scrolly-footer) { display: none !important; }
   overflow: visible; 
 }
 
-/* PATCH: Extend the background upward to hide the exposed band behind the new compact header on page load */
+/* PATCH: Extend the background upward to hide the exposed band behind the
+   compact header on page load */
 .scrolly-container::before {
   content: "";
   position: absolute;
@@ -46,7 +47,7 @@ footer:not(.scrolly-footer) { display: none !important; }
 }
 
 .scrolly-text-column {
-  width: 30%; /* Reduced from 40% to make room for citation sidebar */
+  width: 30%;
   height: auto; 
   min-height: 100vh;
   position: relative;
@@ -110,15 +111,6 @@ footer:not(.scrolly-footer) { display: none !important; }
 .scrolly-citation-display a:hover {
   color: #fff;
   text-decoration-color: rgba(255, 255, 255, 0.85);
-}
-
-.light-mode .scrolly-citation-display a {
-  text-decoration-color: rgba(0, 0, 0, 0.3);
-}
-
-.light-mode .scrolly-citation-display a:hover {
-  color: #000;
-  text-decoration-color: rgba(0, 0, 0, 0.8);
 }
 
 /* ── LAYOUT VARIATIONS ───────────────────────────────────────────────── */
@@ -197,10 +189,10 @@ footer:not(.scrolly-footer) { display: none !important; }
 
 /* ── TEXT CONTENT PADDING ────────────────────────────────────────────── */
 
-/* Standard Layouts (left/right): Opening padding for visual alignment */
+/* Standard Layouts (left/right) */
 .scrolly-container.layout-left .scrolly-text-content,
 .scrolly-container.layout-right .scrolly-text-content {
-  padding: 50vh 10% 20rem;  /* Slightly reduced horizontal padding for narrower column */
+  padding: 50vh 10% 20rem;
   max-width: none;
   margin: 0;
   text-align: left;
@@ -220,9 +212,8 @@ footer:not(.scrolly-footer) { display: none !important; }
 
 /* ── CRITICAL: Breakout Logic for Full Blocks in Non-Full Containers ──── */
 
-/* When a full-layout block appears during infinite scroll in a left container */
 .scrolly-container.layout-left .chapter-content-block[data-layout="full"] {
-  width: 333vw; /* 3.33x the 30% parent ≈ 100% screen */
+  width: 333vw;
   max-width: 100vw;
   margin-left: 0;
   background-color: var(--scrolly-bg-color);
@@ -232,11 +223,10 @@ footer:not(.scrolly-footer) { display: none !important; }
   box-sizing: border-box;
 }
 
-/* When a full-layout block appears during infinite scroll in a right container */
 .scrolly-container.layout-right .chapter-content-block[data-layout="full"] {
   width: 333vw;
   max-width: 100vw;
-  margin-left: -200%; /* Pull left to cover image column + citation column */
+  margin-left: -200%;
   background-color: var(--scrolly-bg-color);
   z-index: 20;
   position: relative;
@@ -389,68 +379,57 @@ footer:not(.scrolly-footer) { display: none !important; }
   pointer-events: none;
 }
 
-/* ── THEME SUPPORT ────────────────────────────────────────────────────── */
+/* ── THEME VARIABLES ─────────────────────────────────────────────────── */
+/* Dark mode is the default — variables are defined directly on
+   .scrolly-container so they are properly scoped and not overridden
+   by any global Bootstrap or theme reset on :root / body.            */
 
 .scrolly-container {
   --scrolly-bg-color: #111111;
   --scrolly-text-color: #f0f0f0;
-  --scrolly-border-color: rgba(255,255,255,0.1);
-  --scrolly-citation-color: rgba(255,255,255,0.7);
+  --scrolly-border-color: rgba(255, 255, 255, 0.1);
+  --scrolly-citation-color: rgba(255, 255, 255, 0.7);
 }
 
+/* ── Light-mode overrides ────────────────────────────────────────────── */
+/* Three selectors for maximum reliability:
+   1. body.light-mode .scrolly-container  — explicit body-class cascade
+   2. .light-mode .scrolly-container      — any ancestor with .light-mode
+   3. .scrolly-container.light-mode       — class on the container itself
+   The handler's updateTheme() sets inline backgroundColor on the image
+   panel and citation column; the CSS variables here handle everything else. */
+
+body.light-mode .scrolly-container,
 .light-mode .scrolly-container,
 .scrolly-container.light-mode {
   --scrolly-bg-color: #ffffff;
   --scrolly-text-color: #1a1a1a;
-  --scrolly-border-color: rgba(0,0,0,0.08);
-  --scrolly-citation-color: rgba(0,0,0,0.65);
+  --scrolly-border-color: rgba(0, 0, 0, 0.08);
+  --scrolly-citation-color: rgba(0, 0, 0, 0.65);
 }
 
-/* Header Light Mode Support */
-.scrolly-header.light-mode {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-bottom-color: rgba(0, 0, 0, 0.1);
+/* Citation link colours flip in light mode */
+body.light-mode .scrolly-citation-display a,
+.light-mode .scrolly-citation-display a {
+  text-decoration-color: rgba(0, 0, 0, 0.3);
 }
 
-.scrolly-header.light-mode .hamburger-line {
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
-.scrolly-header.light-mode .scrolly-site-title,
-.scrolly-header.light-mode .scrolly-site-subtitle,
-.scrolly-header.light-mode .scrolly-chapter-title {
-  color: rgba(0, 0, 0, 0.85);
-}
-
-.scrolly-header.light-mode .scrolly-site-title:hover {
-  color: rgba(0, 0, 0, 1);
-}
-
-.scrolly-header.light-mode .offcanvas-menu {
-  background-color: rgba(255, 255, 255, 0.98);
-  border-right-color: rgba(0, 0, 0, 0.1);
-}
-
-.scrolly-header.light-mode .offcanvas-close,
-.scrolly-header.light-mode .offcanvas-title,
-.scrolly-header.light-mode .offcanvas-menu-link {
-  color: rgba(0, 0, 0, 0.85);
-}
-
-.scrolly-header.light-mode .offcanvas-menu-link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+body.light-mode .scrolly-citation-display a:hover,
+.light-mode .scrolly-citation-display a:hover {
   color: #000;
+  text-decoration-color: rgba(0, 0, 0, 0.8);
 }
 
-.scrolly-header.light-mode .offcanvas-menu-link.active {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #000;
+/* HR colour in light mode */
+body.light-mode .scrolly-text-content hr,
+.light-mode .scrolly-text-content hr {
+  border-top-color: rgba(0, 0, 0, 0.15);
 }
 
 /* ── MOBILE RESPONSIVE ────────────────────────────────────────────────── */
 
 @media (max-width: 992px) {
-  /* Hide citation sidebar on mobile — it appears in the slim footer bar instead */
+  /* Hide citation sidebar on mobile */
   .scrolly-citation-column {
     display: none !important;
   }
@@ -481,7 +460,6 @@ footer:not(.scrolly-footer) { display: none !important; }
     z-index: 1 !important;
     position: relative !important;
     margin-top: 6px !important;
-    /* Restore full width since citation column is hidden */
     width: 100% !important;
   }
   
