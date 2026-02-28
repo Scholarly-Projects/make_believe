@@ -1,6 +1,6 @@
 # make_believe
 
-[Textemporal](https://github.com/Scholarly-Projects/textemporal) visual resource oriented essay template is an iteration of Devin Becker's [CB-Essay](https://collectionbuilder.github.io/cb-essay/), developed by the author to host a public facing thesis towards a 2026 MA in History at University of Idaho. 
+[Textemporal](https://github.com/Scholarly-Projects/textemporal) is a visual resource oriented essay template. It is an iteration of Devin Becker's [CB-Essay](https://collectionbuilder.github.io/cb-essay/), developed by the author to host a public facing thesis towards a 2026 MA in History at University of Idaho. 
 
 ## Template Features
 
