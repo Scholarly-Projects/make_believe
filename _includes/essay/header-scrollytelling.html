@@ -8,7 +8,11 @@
   z-index: 1000;
   background-color: rgba(17, 17, 17, 0.95);
   backdrop-filter: blur(10px);
-  padding: calc(0.65rem + 20px) 1.5rem 0.85rem;
+  /* env(safe-area-inset-top) adds clearance for iOS notch/dynamic island.
+     Browsers without safe-area support treat it as 0, so this is safe
+     everywhere. The header background extends into the notch area and
+     content is pushed below it.                                          */
+  padding: calc(0.65rem + 20px + env(safe-area-inset-top, 0px)) 1.5rem 0.85rem;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -396,24 +400,38 @@ body.light-mode .theme-toggle::after {
 </header>
 
 <script>
-// ── Apply saved theme BEFORE first paint to avoid flash ───────────────
-// Dark is the enforced baseline. We explicitly REMOVE light-mode first so
-// that stale localStorage values, framework defaults, or any class already
-// on <body> cannot accidentally produce a light page. We then only add
-// light-mode back if the reader has explicitly chosen it.
+// ── Enforce dark mode as the baseline ────────────────────────────────
+// Runs immediately (before first paint) AND again on DOMContentLoaded as
+// a backstop, because document.body may not exist yet if this script is
+// evaluated inside <head>. documentElement (<html>) is always available
+// and is used as the immediate anchor; body is patched once it exists.
 (function () {
+  var isLight = false;
   try {
-    document.body.classList.remove('light-mode');
-    if (localStorage.getItem('scrolly-theme') === 'light') {
+    isLight = localStorage.getItem('scrolly-theme') === 'light';
+    if (!isLight) localStorage.setItem('scrolly-theme', 'dark');
+  } catch (e) {}
+
+  // Apply immediately to <html> so there is zero flash regardless of
+  // where in the document this script tag appears.
+  var root = document.documentElement;
+  if (isLight) {
+    root.classList.add('light-mode');
+  } else {
+    root.classList.remove('light-mode');
+  }
+
+  // Patch <body> the moment the DOM is ready.
+  document.addEventListener('DOMContentLoaded', function () {
+    var light = localStorage.getItem('scrolly-theme') === 'light';
+    if (light) {
       document.body.classList.add('light-mode');
     } else {
-      // Pin dark explicitly so the key is always initialised.
-      localStorage.setItem('scrolly-theme', 'dark');
+      document.body.classList.remove('light-mode');
     }
-  } catch (e) {
-    // localStorage unavailable — remove any stale class and stay dark.
-    document.body.classList.remove('light-mode');
-  }
+    // Clean <html> now that <body> is the authoritative target.
+    document.documentElement.classList.remove('light-mode');
+  }, { once: true });
 }());
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -476,6 +494,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (themeToggle) {
     themeToggle.addEventListener('click', function () {
       var isLight = document.body.classList.toggle('light-mode');
+      // Keep <html> clean — body.light-mode is the sole authority.
+      document.documentElement.classList.remove('light-mode');
       themeToggle.setAttribute('aria-checked', isLight ? 'true' : 'false');
 
       try { localStorage.setItem('scrolly-theme', isLight ? 'light' : 'dark'); } catch (e) {}
@@ -523,4 +543,24 @@ window.updateChapterDisplay = function (data) {
     }, 200);
   }
 };
+
+// ── Measure actual header height and expose as CSS variable ───────────
+// This lets scrolly.scss use --scrolly-header-h for the sticky image
+// column offset, giving pixel-perfect clearance on every device including
+// iOS with notch/dynamic island (whose safe-area adds to the header height
+// via the env() in the padding rule above).
+(function () {
+  function setHeaderHeight() {
+    var header = document.getElementById('scrolly-header');
+    if (!header) return;
+    var h = header.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--scrolly-header-h', h + 'px');
+  }
+
+  // Set once on load, then again after fonts/images settle
+  document.addEventListener('DOMContentLoaded', setHeaderHeight);
+  window.addEventListener('load', setHeaderHeight);
+  // Re-measure on resize (orientation change, font scale change, etc.)
+  window.addEventListener('resize', setHeaderHeight, { passive: true });
+}());
 </script>

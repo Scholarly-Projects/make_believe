@@ -448,8 +448,13 @@ body.light-mode .scrolly-text-content hr,
   .scrolly-image-column { 
     order: 1 !important; 
     position: sticky !important;
-    top: 80px !important;
-    height: calc(50vh - 80px) !important;
+    /* --scrolly-header-h can be overridden by JS if the header height is
+       measured at runtime. The fallback of 120px matches the tallest
+       desktop header and errs on the side of more padding rather than less.
+       env(safe-area-inset-top) adds iOS notch clearance on real devices.  */
+    top: calc(var(--scrolly-header-h, 120px) + env(safe-area-inset-top, 0px)) !important;
+    height: calc(50vh - var(--scrolly-header-h, 120px) - env(safe-area-inset-top, 0px)) !important;
+    padding-top: 0.75rem !important;
     z-index: 20 !important;
     background-color: var(--scrolly-bg-color, #111111);
   }
