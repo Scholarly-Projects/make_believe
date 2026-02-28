@@ -15,6 +15,8 @@ The article asked readers to “pronounce the name: Spokhin, not Spo-keen, as yo
 
 {% trigger type: image id: make_believe_001 action: end zoom: 14 coordinates: 1000,300 %}
 
+---
+
 {% trigger type: image id: make_believe_002 action: start zoom: coordinates: %}
 
 On August 4th 1889, a fire destroyed thirty-two blocks of downtown Spokane, effectively sweeping “the entire business portion of the city” away.^3 Self-mythologizing around the fire quickly became part of the narrative around the city, comparing the event to the Chicago fire as an example of the city founder’s “indomitable energy” and thanking the “rich men who came forward, and by their actions and liberal use of money inspired the confidence to make a city.”^4  
