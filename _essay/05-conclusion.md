@@ -2,7 +2,7 @@
 title: "Conclusion"
 chapter: "Conclusion"
 order: 5
-layout: essay-left
+layout: essay-right
 ---
 
 {% trigger type: image id: make_believe_117 action: start zoom: coordinates: %}

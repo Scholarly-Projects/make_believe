@@ -2,7 +2,7 @@
 title: "Introduction"
 chapter: "Introduction"
 order: 1
-layout: essay-left
+layout: essay-right
 ---
 
 {% trigger type: image id: make_believe_001 action: start zoom: coordinates: %}

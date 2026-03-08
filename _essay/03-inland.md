@@ -2,7 +2,7 @@
 title: "Colonialism in the Inland Empire"
 chapter: "Colonialism in the Inland Empire"
 order: 3
-layout: essay-left
+layout: essay-right
 ---
 
 {% trigger type: image id: make_believe_026 action: start zoom: coordinates:  %}
