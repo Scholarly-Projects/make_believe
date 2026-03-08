@@ -10,46 +10,96 @@ window.allEssays = [
   {% assign sorted_essays = site.essay | sort: 'order' %}
   {% for essay in sorted_essays %}
   {
-    url: "{{ essay.url | prepend: site.baseurl }}",
-    title: "{{ essay.title | escape }}",
-    order: {{ essay.order }}
+    url:     "{{ essay.url | prepend: site.baseurl }}",
+    title:   "{{ essay.title | escape }}",
+    chapter: "{{ essay.chapter | escape }}",
+    order:   {{ essay.order }}
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
 </script>
 
-<!-- Import shared scrollytelling styles -->
 <link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
 
 <div class="scrolly-container layout-full" id="scrolly-container" data-layout="full">
-  
+
+  <!-- ── 1. TOC SIDEBAR ──────────────────────────────────────────────── -->
+  <aside class="scrolly-toc-sidebar" id="scrolly-toc-sidebar" aria-label="Table of contents">
+    <p class="scrolly-toc-heading">Contents</p>
+    <ul class="scrolly-toc-list" id="scrolly-toc-list">
+
+      <li>
+        <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
+      </li>
+
+      {% assign toc_essays = site.essay | sort: 'order' %}
+      {% for essay in toc_essays %}
+      <li class="toc-chapter-entry">
+        <a href="{{ essay.url | prepend: site.baseurl }}"
+           class="scrolly-toc-link {% if essay.url == page.url %}toc-active{% endif %}"
+           data-toc-chapter="{{ essay.order }}">
+          {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+        </a>
+        <ul class="toc-section-list"
+            id="toc-sections-{{ essay.order }}"
+            data-toc-chapter-url="{{ essay.url | prepend: site.baseurl }}"
+            style="display:none;"></ul>
+      </li>
+      {% endfor %}
+
+      <hr class="toc-divider">
+
+      {% for nav in site.data.config-nav %}
+        {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+      <li>
+        <a href="{{ nav.stub | relative_url }}"
+           class="scrolly-toc-link {% if nav.stub == page.url %}toc-active{% endif %}">
+          {{ nav.display_name }}
+        </a>
+      </li>
+        {% endunless %}
+      {% endfor %}
+
+    </ul>
+  </aside>
+
+  <!-- ── 2. IMAGE COLUMN (hidden in full layout, kept for JS compatibility) -->
   <div class="scrolly-image-column" id="scrolly-image">
     <div class="scrolly-image-frame">
       <div class="scrolly-image-container" id="scrolly-image-container"></div>
     </div>
+    <!-- No below-image citation in full layout; images render inline in text -->
   </div>
 
+  <!-- ── 3. TEXT COLUMN ──────────────────────────────────────────────── -->
   <div class="scrolly-text-column" id="scrolly-text">
     <div class="scrolly-text-content chapter-content-block"
          data-chapter-path="{{ page.url | prepend: site.baseurl }}"
          data-chapter-title="{{ page.chapter | escape }}"
          data-layout="full">
-         
-         <a id="chapter-{{ page.order | plus: 1 }}" class="chapter-scroll-anchor"></a>
-         
-         {% if page.chapter %}
-         <div class="full-layout-header">
-            <h1 id="chapter-title" class="chapter-title">{{ page.chapter }}</h1>
-         </div>
-         {% endif %}
 
-         {{ content }}
+      <a id="chapter-{{ page.order | plus: 1 }}" class="chapter-scroll-anchor"></a>
+
+      {% if page.chapter %}
+      <div class="full-layout-header">
+        <h1 id="chapter-title" class="chapter-title">{{ page.chapter }}</h1>
+      </div>
+      {% endif %}
+      {{ content }}
     </div>
-    
-    <div id="chapter-loading-indicator" class="text-center py-5" style="opacity:0; transition: opacity 0.3s;">
+
+    <div id="chapter-loading-indicator" class="text-center py-5"
+         style="opacity:0; transition:opacity 0.3s;">
       <div class="spinner-border text-muted" role="status"></div>
     </div>
   </div>
-</div>
 
-{% include essay/footer-scrollytelling.html %}
+  <!-- ── 4. CITATION COLUMN (fixed right rail in full layout, injected by JS) -->
+
+</div><!-- /.scrolly-container -->
+
+<!-- ── 5. MOBILE CITATION BAR ────────────────────────────────────────── -->
+<div class="scrolly-mobile-citation-bar" id="scrolly-mobile-citation">
+  <span class="mobile-citation-title" id="scrolly-mobile-image-title"></span>
+  <a class="mobile-view-link" id="scrolly-mobile-view-link" style="display:none;">View Item</a>
+</div>

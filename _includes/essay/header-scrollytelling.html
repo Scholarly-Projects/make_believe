@@ -1,105 +1,139 @@
 <style>
-/* Scrollytelling header styles */
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLLYTELLING HEADER
+   Desktop: [identity-left] … [chapter-center bold] … [sun+toggle-right]
+   Mobile:  [site-nav hamburger-left] … [stacked title/chapter] … [toggle-right]
+   ═══════════════════════════════════════════════════════════════════ */
+
 .scrolly-header {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   z-index: 1000;
   background-color: rgba(17, 17, 17, 0.95);
   backdrop-filter: blur(10px);
-  /* env(safe-area-inset-top) adds clearance for iOS notch/dynamic island.
-     Browsers without safe-area support treat it as 0, so this is safe
-     everywhere. The header background extends into the notch area and
-     content is pushed below it.                                          */
-  padding: calc(0.65rem + 20px + env(safe-area-inset-top, 0px)) 1.5rem 0.85rem;
+  /* Vertical padding gives enough room for 3 stacked identity lines */
+  padding: calc(0.55rem + env(safe-area-inset-top, 0px)) 1.5rem 0.55rem;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   transition: background-color 0.3s ease;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* Needed so the absolutely-positioned chapter wrap is relative to the header */
+  isolation: isolate;
 }
 
-.scrolly-site-info {
-  text-align: center;
-  flex: 1 1 auto;
-  margin: 10px 0 0 0;
-  display: flex;
+body.light-mode .scrolly-header {
+  background-color: rgba(255, 255, 255, 0.96);
+  border-bottom-color: rgba(0, 0, 0, 0.12);
+}
+
+/* ── LEFT: site identity (desktop) ──────────────────────────────── */
+.scrolly-header-identity {
+  display:        flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
+  align-items:    flex-start;
+  flex:    0 0 auto;       /* fixed size — chapter wrap is absolute, not flex */
+  min-width: 0;
+  max-width: 320px;
+  gap: 0.1rem;
+  position: relative;
+  z-index:  1;             /* sits above the absolute chapter wrap (z:0) */
 }
 
 .scrolly-site-title {
-  font-size: 1.1em;
+  font-size:   1.05em;
   font-weight: bold;
-  color: rgba(255, 255, 255, 0.95);
-  margin: 0;
+  color:       rgba(255, 255, 255, 0.95);
+  margin:      0;
   line-height: 1.2;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  cursor:      pointer;
+  white-space: nowrap;
+  transition:  color 0.2s ease;
 }
+body.light-mode .scrolly-site-title { color: rgba(0,0,0,0.9); }
+.scrolly-site-title:hover  { color: #fff; }
+body.light-mode .scrolly-site-title:hover { color: #000; }
 
-.scrolly-site-title:hover {
-  color: rgba(255, 255, 255, 1);
-}
-
+/* Subtitle — allowed to wrap so it never gets cut off */
 .scrolly-site-subtitle {
-  font-size: 0.8em;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
+  font-size:   0.7em;
+  font-weight: 400;
+  color:       rgba(255, 255, 255, 0.6);
+  margin:      0;
+  line-height: 1.35;
+  white-space: normal;       /* wrap rather than truncate */
+}
+body.light-mode .scrolly-site-subtitle { color: rgba(0,0,0,0.52); }
+
+/* Author — one line, slightly lighter than subtitle */
+.scrolly-site-author {
+  font-size:   0.68em;
+  font-weight: 300;
+  color:       rgba(255, 255, 255, 0.48);
+  margin:      0;
   line-height: 1.3;
+  white-space: nowrap;
+}
+body.light-mode .scrolly-site-author { color: rgba(0,0,0,0.42); }
+
+/* ── CENTER: chapter title — absolutely centered across the full header ── */
+/* Absolute positioning ensures the chapter title is centred relative to
+   the entire header bar, not just the space between identity and controls. */
+.scrolly-header-chapter-wrap {
+  position:  absolute;
+  left:  0;
+  right: 0;
+  top:   50%;
+  transform: translateY(-50%);
+  display:         flex;
+  justify-content: center;
+  align-items:     center;
+  pointer-events:  none;   /* clicks fall through to elements behind */
+  padding:         0 220px; /* guard rails: clear identity (left) + controls (right) */
+  box-sizing:      border-box;
+  z-index:         0;
 }
 
-.scrolly-chapter-title {
-  font-size: 0.8em;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-  font-weight: normal;
-  line-height: 1.3;
-  transition: opacity 0.3s ease;
+.scrolly-chapter-title-display {
+  font-size:   1.0em;
+  font-weight: bold;
+  color:       rgba(255, 255, 255, 0.93);
+  text-align:  center;
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+  max-width:   100%;
+  transition:  opacity 0.3s ease;
 }
+body.light-mode .scrolly-chapter-title-display { color: rgba(0,0,0,0.85); }
 
-/* ── Right column: hamburger stacked above the theme toggle row ─────── */
-/* align-self: stretch makes the column as tall as the centre title block.
-   justify-content: space-between pushes the hamburger to the top and the
-   toggle row to the bottom, landing it level with the chapter-title line. */
-.scrolly-header-right {
-  display: flex;
-  flex-direction: column;
+/* ── RIGHT: theme controls ───────────────────────────────────────── */
+.scrolly-header-controls {
+  display:     flex;
   align-items: center;
-  justify-content: space-between;
-  align-self: stretch;
+  gap:         0.4rem;
   flex-shrink: 0;
+  position:    relative;
+  z-index:     1;          /* sits above the absolute chapter wrap */
 }
 
-/* ── Theme toggle row: sun icon + pill toggle ───────────────────────── */
-.theme-toggle-row {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-/* Sun icon — stroke-based, no fill */
 .sun-icon {
-  width: 13px;
-  height: 13px;
+  width:  13px; height: 13px;
   flex-shrink: 0;
-  fill: none;
+  fill:   none;
   stroke: rgba(255, 255, 255, 0.75);
   stroke-width: 2;
   stroke-linecap: round;
   opacity: 0.7;
   transition: stroke 0.25s ease, opacity 0.25s ease;
 }
+body.light-mode .sun-icon { stroke: rgba(0,0,0,0.65); }
 
-/* Pill toggle track */
 .theme-toggle {
   position: relative;
-  width: 34px;
-  height: 18px;
+  width: 34px; height: 18px;
   background-color: rgba(255, 255, 255, 0.85);
   border-radius: 9px;
   cursor: pointer;
@@ -109,228 +143,174 @@
   opacity: 0.65;
   transition: background-color 0.25s ease, opacity 0.25s ease;
 }
-
-.theme-toggle:hover {
-  opacity: 1;
-}
-
-/* Sliding circle */
+.theme-toggle:hover { opacity: 1; }
 .theme-toggle::after {
   content: '';
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 12px;
-  height: 12px;
+  top: 3px; left: 3px;
+  width: 12px; height: 12px;
   background-color: #111111;
   border-radius: 50%;
   transition: transform 0.25s ease;
 }
+body.light-mode .theme-toggle              { background-color: rgba(0,0,0,0.22); opacity: 0.7; }
+body.light-mode .theme-toggle:hover        { opacity: 1; }
+body.light-mode .theme-toggle::after       { background-color: #ffffff; transform: translateX(16px); }
 
-/* Light mode: track darkens, circle slides right and turns white */
-body.light-mode .theme-toggle {
-  background-color: rgba(0, 0, 0, 0.22);
-  opacity: 0.7;
-}
-
-body.light-mode .theme-toggle:hover {
-  opacity: 1;
-}
-
-body.light-mode .theme-toggle::after {
-  background-color: #ffffff;
-  transform: translateX(16px);
-}
-
-/* Hamburger menu */
-.hamburger-menu {
-  position: relative;
-  width: 24px;
-  height: 20px;
+/* ── Mobile hamburger ────────────────────────────────────────────── */
+.scrolly-hamburger-mobile {
+  display:        none;
+  width:  24px; height: 18px;
   cursor: pointer;
-  display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-shrink: 0;
 }
-
-.hamburger-line {
-  width: 100%;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.9);
+.scrolly-hamburger-mobile .hamburger-line {
+  width: 100%; height: 2px;
+  background-color: rgba(255,255,255,0.9);
   border-radius: 2px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+body.light-mode .scrolly-hamburger-mobile .hamburger-line {
+  background-color: rgba(0,0,0,0.8);
 }
 
-/* Off-canvas menus */
+/* ── Mobile center block ─────────────────────────────────────────── */
+.scrolly-header-mobile-center {
+  display:        none;
+  flex-direction: column;
+  align-items:    center;
+  flex:    1 1 auto;
+  min-width: 0;
+  text-align: center;
+  gap: 0.08rem;
+}
+.scrolly-mobile-title {
+  font-size:   0.95em;
+  font-weight: bold;
+  color:       rgba(255,255,255,0.95);
+  line-height: 1.2;
+  cursor:      pointer;
+  white-space: nowrap;
+}
+body.light-mode .scrolly-mobile-title { color: rgba(0,0,0,0.9); }
+
+.scrolly-mobile-meta {
+  font-size:   0.63em;
+  color:       rgba(255,255,255,0.48);
+  line-height: 1.3;
+  text-align:  center;
+  white-space: normal;
+}
+body.light-mode .scrolly-mobile-meta { color: rgba(0,0,0,0.42); }
+
+.scrolly-mobile-chapter {
+  font-size:   0.68em;
+  color:       rgba(255,255,255,0.58);
+  line-height: 1.3;
+  margin-top:  0.1rem;
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+  max-width:   100%;
+  transition:  opacity 0.3s ease;
+}
+body.light-mode .scrolly-mobile-chapter { color: rgba(0,0,0,0.48); }
+
+/* ── Off-canvas (site-nav only on mobile) ────────────────────────── */
 .offcanvas-menu {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 300px;
-  background-color: rgba(17, 17, 17, 0.98);
+  display:   none;
+  position:  fixed;
+  top: 0; right: 0;
+  height:    100%;
+  width:     300px;
+  background-color: rgba(17,17,17,0.98);
   backdrop-filter: blur(10px);
-  padding: 1.5rem;
+  padding:   1.5rem;
   overflow-y: auto;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 1002;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.offcanvas-menu.active {
-  display: block;
-  transform: translateX(0);
-}
-
-.offcanvas-menu.right {
-  right: 0;
-  left: auto;
   transform: translateX(100%);
-  border-right: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+  z-index:   1002;
+  border-left: 1px solid rgba(255,255,255,0.1);
 }
-
-.offcanvas-menu.right.active {
-  transform: translateX(0);
+.offcanvas-menu.active { display: block; transform: translateX(0); }
+body.light-mode .offcanvas-menu {
+  background-color: rgba(248,248,248,0.98);
+  border-left-color: rgba(0,0,0,0.1);
 }
 
 .offcanvas-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.5em;
-  cursor: pointer;
-  padding: 0.25rem;
-  z-index: 1003;
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: none;
+  color: rgba(255,255,255,0.8);
+  font-size: 1.5em; cursor: pointer; padding: 0.25rem; z-index: 1003;
 }
+body.light-mode .offcanvas-close { color: rgba(0,0,0,0.6); }
 
 .offcanvas-title {
   font-size: 1.3em;
-  color: rgba(255, 255, 255, 0.95);
+  color:     rgba(255,255,255,0.95);
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom:  1px solid rgba(255,255,255,0.2);
 }
+body.light-mode .offcanvas-title { color: rgba(0,0,0,0.85); border-bottom-color: rgba(0,0,0,0.15); }
 
-.offcanvas-menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.offcanvas-menu-item {
-  margin-bottom: 0.5rem;
-}
-
+.offcanvas-menu-list { list-style: none; padding: 0; margin: 0; }
+.offcanvas-menu-item { margin-bottom: 0.5rem; }
 .offcanvas-menu-link {
-  display: block;
-  padding: 0.75rem 1rem;
-  color: rgba(255, 255, 255, 0.85);
+  display: block; padding: 0.75rem 1rem;
+  color:   rgba(255,255,255,0.85);
   text-decoration: none;
   border-radius: 4px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+.offcanvas-menu-link:hover  { background-color: rgba(255,255,255,0.1); color: white; }
+.offcanvas-menu-link.active { background-color: rgba(255,255,255,0.2); color: white; font-weight: bold; }
+body.light-mode .offcanvas-menu-link       { color: rgba(0,0,0,0.75); }
+body.light-mode .offcanvas-menu-link:hover { background-color: rgba(0,0,0,0.06); color: #000; }
+body.light-mode .offcanvas-menu-link.active{ background-color: rgba(0,0,0,0.1);  color: #000; }
 
-.offcanvas-menu-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.offcanvas-menu-link.active {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  font-weight: bold;
-}
-
-/* Backdrop for off-canvas */
 .offcanvas-backdrop {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 1001;
+  display: none; position: fixed; inset: 0;
+  background-color: rgba(0,0,0,0.5);
+  opacity: 0; transition: opacity 0.3s ease; z-index: 1001;
 }
+.offcanvas-backdrop.active { display: block; opacity: 1; }
 
-.offcanvas-backdrop.active {
-  display: block;
-  opacity: 1;
-}
-
-/* ── Responsive ─────────────────────────────────────────────────────── */
+/* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .scrolly-header {
-    padding: 0.55rem 1rem 0.7rem;
+    padding: calc(0.45rem + env(safe-area-inset-top, 0px)) 0.9rem 0.45rem;
+    gap: 0.55rem;
   }
 
-  .scrolly-site-info {
-    margin-top: 8px;
+  /* Hide desktop-only elements */
+  .scrolly-header-identity,
+  .scrolly-header-chapter-wrap {
+    display: none !important;
   }
 
-  .scrolly-site-title {
-    font-size: 0.95em;
-  }
+  /* Show mobile elements */
+  .scrolly-hamburger-mobile    { display: flex; }
+  .scrolly-header-mobile-center{ display: flex; }
 
-  .scrolly-site-subtitle,
-  .scrolly-chapter-title {
-    font-size: 0.72em;
-  }
-
-  .theme-toggle {
-    width: 30px;
-    height: 16px;
-  }
-
-  .theme-toggle::after {
-    width: 10px;
-    height: 10px;
-  }
-
-  body.light-mode .theme-toggle::after {
-    transform: translateX(14px);
-  }
-
-  .sun-icon {
-    width: 11px;
-    height: 11px;
-  }
+  .theme-toggle { width: 30px; height: 16px; }
+  .theme-toggle::after { width: 10px; height: 10px; }
+  body.light-mode .theme-toggle::after { transform: translateX(14px); }
+  .sun-icon { width: 11px; height: 11px; }
 }
 </style>
 
-<!-- Chapters Offcanvas Menu (Left) -->
-<div class="offcanvas-menu" id="offcanvas-chapters">
-  <button class="offcanvas-close" id="close-chapters" aria-label="Close chapters menu">&times;</button>
-  <h3 class="offcanvas-title">Chapters</h3>
-  <ul class="offcanvas-menu-list">
-    {% assign essays = site.essay | sort: 'order' %}
-    {% for item in essays %}
-    <li class="offcanvas-menu-item">
-      <a href="{{ item.url | relative_url }}" class="offcanvas-menu-link {% if item.url == page.url %}active{% endif %}">
-        {% if item.order %}{{ item.order }}. {% endif %}{{ item.title }}
-      </a>
-    </li>
-    {% endfor %}
-  </ul>
-</div>
-
-<!-- Site Navigation Offcanvas Menu (Right) -->
-<div class="offcanvas-menu right" id="offcanvas-site">
-  <button class="offcanvas-close" id="close-site" aria-label="Close site navigation menu">&times;</button>
+<!-- Site Navigation Off-canvas (mobile) -->
+<div class="offcanvas-menu" id="offcanvas-site">
+  <button class="offcanvas-close" id="close-site" aria-label="Close site navigation">&times;</button>
   <h3 class="offcanvas-title">Site Navigation</h3>
   <ul class="offcanvas-menu-list">
     {% for nav in site.data.config-nav %}
     <li class="offcanvas-menu-item">
-      <a href="{{ nav.stub | relative_url }}" class="offcanvas-menu-link {% if nav.stub == page.url %}active{% endif %}">
+      <a href="{{ nav.stub | relative_url }}"
+         class="offcanvas-menu-link {% if nav.stub == page.url %}active{% endif %}">
         {{ nav.display_name }}
       </a>
     </li>
@@ -338,98 +318,88 @@ body.light-mode .theme-toggle::after {
   </ul>
 </div>
 
-<!-- Backdrop -->
 <div class="offcanvas-backdrop" id="offcanvas-backdrop"></div>
 
-<!-- Header: left hamburger | centre title block | right column -->
+<!-- ══════════════════════════════════════════════════════════════════
+     HEADER
+     ══════════════════════════════════════════════════════════════════ -->
 <header class="scrolly-header" id="scrolly-header">
 
-  <!-- Left: chapters menu trigger -->
-  <div class="hamburger-menu" id="hamburger-chapters" role="button" tabindex="0" aria-label="Open chapters menu">
+  <!-- Mobile-only: site-nav hamburger LEFT -->
+  <div class="scrolly-hamburger-mobile"
+       id="hamburger-site" role="button" tabindex="0"
+       aria-label="Open site navigation menu">
     <div class="hamburger-line"></div>
     <div class="hamburger-line"></div>
     <div class="hamburger-line"></div>
   </div>
 
-  <!-- Centre: site identity -->
-  <div class="scrolly-site-info">
-    <h1 class="scrolly-site-title" id="scrolly-site-title">{{ site.title }}</h1>
-    <div class="scrolly-site-subtitle">{{ site.tagline }} | {{ site.author }}</div>
-    <div class="scrolly-chapter-title" id="scrolly-chapter-display">
+  <!-- Desktop-only: site identity LEFT -->
+  <div class="scrolly-header-identity">
+    <div class="scrolly-site-title" id="scrolly-site-title">{{ site.title }}</div>
+    {% if site.tagline %}
+    <div class="scrolly-site-subtitle">{{ site.tagline }}</div>
+    {% endif %}
+    {% if site.author %}
+    <div class="scrolly-site-author">{{ site.author }}</div>
+    {% endif %}
+  </div>
+
+  <!-- Desktop: chapter title CENTER -->
+  <div class="scrolly-header-chapter-wrap">
+    <div class="scrolly-chapter-title-display" id="scrolly-chapter-display">
       {% if page.chapter %}Chapter {{ page.order }}: {{ page.chapter }}
       {% else %}{{ page.title }}{% endif %}
     </div>
   </div>
 
-  <!-- Right: site-nav hamburger above, then sun + toggle below -->
-  <div class="scrolly-header-right">
-
-    <div class="hamburger-menu" id="hamburger-site" role="button" tabindex="0" aria-label="Open site navigation menu">
-      <div class="hamburger-line"></div>
-      <div class="hamburger-line"></div>
-      <div class="hamburger-line"></div>
+  <!-- Mobile-only: stacked identity + chapter CENTER -->
+  <div class="scrolly-header-mobile-center">
+    <div class="scrolly-mobile-title" id="scrolly-site-title-mobile">{{ site.title }}</div>
+    {% if site.tagline or site.author %}
+    <div class="scrolly-mobile-meta">
+      {% if site.tagline %}{{ site.tagline }}{% endif %}{% if site.tagline and site.author %} | {% endif %}{% if site.author %}{{ site.author }}{% endif %}
     </div>
-
-    <div class="theme-toggle-row">
-      <!-- Sun: signals "this controls brightness" -->
-      <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="4"/>
-        <line x1="12" y1="2"  x2="12" y2="5"/>
-        <line x1="12" y1="19" x2="12" y2="22"/>
-        <line x1="4.22"  y1="4.22"  x2="6.34"  y2="6.34"/>
-        <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
-        <line x1="2"  y1="12" x2="5"  y2="12"/>
-        <line x1="19" y1="12" x2="22" y2="12"/>
-        <line x1="4.22"  y1="19.78" x2="6.34"  y2="17.66"/>
-        <line x1="17.66" y1="6.34"  x2="19.78" y2="4.22"/>
-      </svg>
-
-      <!-- Pill toggle — CSS drives the circle position via body.light-mode -->
-      <button
-        class="theme-toggle"
-        id="theme-toggle"
-        aria-label="Toggle light/dark mode"
-        title="Toggle light/dark mode"
-        role="switch"
-        aria-checked="false"
-      ></button>
+    {% endif %}
+    <div class="scrolly-mobile-chapter" id="scrolly-chapter-display-mobile">
+      {% if page.chapter %}Chapter {{ page.order }}: {{ page.chapter }}
+      {% else %}{{ page.title }}{% endif %}
     </div>
+  </div>
 
+  <!-- Theme controls RIGHT -->
+  <div class="scrolly-header-controls">
+    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/>
+      <line x1="12" y1="2"  x2="12" y2="5"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="4.22"  y1="4.22"  x2="6.34"  y2="6.34"/>
+      <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+      <line x1="2"  y1="12" x2="5"  y2="12"/>
+      <line x1="19" y1="12" x2="22" y2="12"/>
+      <line x1="4.22"  y1="19.78" x2="6.34"  y2="17.66"/>
+      <line x1="17.66" y1="6.34"  x2="19.78" y2="4.22"/>
+    </svg>
+    <button class="theme-toggle" id="theme-toggle"
+            aria-label="Toggle light/dark mode"
+            title="Toggle light/dark mode"
+            role="switch" aria-checked="false"></button>
   </div>
 
 </header>
 
 <script>
-// ── Enforce dark mode as the baseline ────────────────────────────────
-// Runs immediately (before first paint) AND again on DOMContentLoaded as
-// a backstop, because document.body may not exist yet if this script is
-// evaluated inside <head>. documentElement (<html>) is always available
-// and is used as the immediate anchor; body is patched once it exists.
+/* Enforce dark mode before first paint */
 (function () {
   var isLight = false;
-  try {
-    isLight = localStorage.getItem('scrolly-theme') === 'light';
-    if (!isLight) localStorage.setItem('scrolly-theme', 'dark');
-  } catch (e) {}
+  try { isLight = localStorage.getItem('scrolly-theme') === 'light'; if (!isLight) localStorage.setItem('scrolly-theme', 'dark'); } catch (e) {}
+  if (isLight) document.documentElement.classList.add('light-mode');
+  else         document.documentElement.classList.remove('light-mode');
 
-  // Apply immediately to <html> so there is zero flash regardless of
-  // where in the document this script tag appears.
-  var root = document.documentElement;
-  if (isLight) {
-    root.classList.add('light-mode');
-  } else {
-    root.classList.remove('light-mode');
-  }
-
-  // Patch <body> the moment the DOM is ready.
   document.addEventListener('DOMContentLoaded', function () {
     var light = localStorage.getItem('scrolly-theme') === 'light';
-    if (light) {
-      document.body.classList.add('light-mode');
-    } else {
-      document.body.classList.remove('light-mode');
-    }
-    // Clean <html> now that <body> is the authoritative target.
+    if (light) document.body.classList.add('light-mode');
+    else       document.body.classList.remove('light-mode');
     document.documentElement.classList.remove('light-mode');
   }, { once: true });
 }());
@@ -437,130 +407,84 @@ body.light-mode .theme-toggle::after {
 document.addEventListener('DOMContentLoaded', function () {
   'use strict';
 
-  var chaptersMenu      = document.getElementById('offcanvas-chapters');
-  var siteMenu          = document.getElementById('offcanvas-site');
-  var backdrop          = document.getElementById('offcanvas-backdrop');
-  var hamburgerChapters = document.getElementById('hamburger-chapters');
-  var hamburgerSite     = document.getElementById('hamburger-site');
-  var closeChapters     = document.getElementById('close-chapters');
-  var closeSite         = document.getElementById('close-site');
-  var siteTitle         = document.getElementById('scrolly-site-title');
-  var themeToggle       = document.getElementById('theme-toggle');
-  var menuLinks         = document.querySelectorAll('.offcanvas-menu-link');
+  var siteMenu  = document.getElementById('offcanvas-site');
+  var backdrop  = document.getElementById('offcanvas-backdrop');
+  var hamburger = document.getElementById('hamburger-site');
+  var closeSite = document.getElementById('close-site');
+  var siteTitle = document.getElementById('scrolly-site-title');
+  var siteTitleM= document.getElementById('scrolly-site-title-mobile');
+  var toggle    = document.getElementById('theme-toggle');
+  var menuLinks = document.querySelectorAll('.offcanvas-menu-link');
 
   closeAllMenus();
 
-  // Sync ARIA with theme already applied at load time
-  if (themeToggle) {
-    themeToggle.setAttribute('aria-checked',
-      document.body.classList.contains('light-mode') ? 'true' : 'false');
-  }
+  if (toggle) toggle.setAttribute('aria-checked',
+    document.body.classList.contains('light-mode') ? 'true' : 'false');
 
-  // ── Hamburger / off-canvas ─────────────────────────────────────────
-  if (hamburgerChapters) {
-    hamburgerChapters.addEventListener('click', function (e) { e.stopPropagation(); openMenu('chapters'); });
-    hamburgerChapters.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMenu('chapters'); }
+  if (hamburger) {
+    hamburger.addEventListener('click', function (e) { e.stopPropagation(); openSiteMenu(); });
+    hamburger.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSiteMenu(); }
     });
   }
-
-  if (hamburgerSite) {
-    hamburgerSite.addEventListener('click', function (e) { e.stopPropagation(); openMenu('site'); });
-    hamburgerSite.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMenu('site'); }
-    });
-  }
-
-  if (closeChapters) { closeChapters.addEventListener('click', function (e) { e.stopPropagation(); closeAllMenus(); }); }
-  if (closeSite)     { closeSite.addEventListener('click',     function (e) { e.stopPropagation(); closeAllMenus(); }); }
-  if (backdrop)      { backdrop.addEventListener('click', closeAllMenus); }
-
-  menuLinks.forEach(function (link) { link.addEventListener('click', closeAllMenus); });
-
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeAllMenus(); } });
-
+  if (closeSite) closeSite.addEventListener('click', function (e) { e.stopPropagation(); closeAllMenus(); });
+  if (backdrop)  backdrop.addEventListener('click', closeAllMenus);
+  menuLinks.forEach(function (l) { l.addEventListener('click', closeAllMenus); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllMenus(); });
   document.addEventListener('click', function (e) {
-    var chaptersOpen = chaptersMenu && chaptersMenu.classList.contains('active');
-    var siteOpen     = siteMenu     && siteMenu.classList.contains('active');
-    if (chaptersOpen && !chaptersMenu.contains(e.target) && hamburgerChapters && !hamburgerChapters.contains(e.target)) { closeAllMenus(); }
-    if (siteOpen     && !siteMenu.contains(e.target)     && hamburgerSite     && !hamburgerSite.contains(e.target))     { closeAllMenus(); }
+    if (siteMenu && siteMenu.classList.contains('active') &&
+        !siteMenu.contains(e.target) && hamburger && !hamburger.contains(e.target)) closeAllMenus();
   });
 
-  if (siteTitle) {
-    siteTitle.addEventListener('click', function () { window.location.href = '{{ "/" | relative_url }}'; });
-  }
+  [siteTitle, siteTitleM].forEach(function (el) {
+    if (el) el.addEventListener('click', function () { window.location.href = '{{ "/" | relative_url }}'; });
+  });
 
-  // ── Theme toggle ──────────────────────────────────────────────────
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function () {
+  if (toggle) {
+    toggle.addEventListener('click', function () {
       var isLight = document.body.classList.toggle('light-mode');
-      // Keep <html> clean — body.light-mode is the sole authority.
       document.documentElement.classList.remove('light-mode');
-      themeToggle.setAttribute('aria-checked', isLight ? 'true' : 'false');
-
+      toggle.setAttribute('aria-checked', isLight ? 'true' : 'false');
       try { localStorage.setItem('scrolly-theme', isLight ? 'light' : 'dark'); } catch (e) {}
-
-      // Notify ScrollyTelling so the image panel and citation column update
-      if (window.scrolly && typeof window.scrolly.updateTheme === 'function') {
-        window.scrolly.updateTheme();
-      }
+      if (window.scrolly && typeof window.scrolly.updateTheme === 'function') window.scrolly.updateTheme();
     });
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────
-  function openMenu(menuName) {
+  function openSiteMenu() {
     closeAllMenus();
-    if (menuName === 'chapters' && chaptersMenu) { chaptersMenu.classList.add('active'); }
-    else if (menuName === 'site' && siteMenu)    { siteMenu.classList.add('active'); }
-    if (backdrop) { backdrop.classList.add('active'); }
+    if (siteMenu) siteMenu.classList.add('active');
+    if (backdrop) backdrop.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
-
   function closeAllMenus() {
-    if (chaptersMenu) { chaptersMenu.classList.remove('active'); }
-    if (siteMenu)     { siteMenu.classList.remove('active'); }
-    if (backdrop)     { backdrop.classList.remove('active'); }
+    if (siteMenu) siteMenu.classList.remove('active');
+    if (backdrop) backdrop.classList.remove('active');
     document.body.style.overflow = '';
   }
 });
 
-/**
- * updateChapterDisplay — called by ScrollyTelling on chapter change.
- */
 window.updateChapterDisplay = function (data) {
-  var el = document.getElementById('scrolly-chapter-display');
-  if (!el || !data) return;
-
+  if (!data) return;
   var label = (data.chapter && data.chapter.trim()) ? data.chapter.trim() : (data.title || '');
   var text  = data.order ? 'Chapter ' + data.order + ': ' + label : label;
 
-  if (el.textContent !== text) {
-    el.style.transition = 'opacity 0.2s ease';
-    el.style.opacity = '0';
-    setTimeout(function () {
-      el.textContent = text;
-      el.style.opacity = '1';
-    }, 200);
-  }
+  ['scrolly-chapter-display', 'scrolly-chapter-display-mobile'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el || el.textContent === text) return;
+    el.style.transition = 'opacity 0.2s ease'; el.style.opacity = '0';
+    setTimeout(function () { el.textContent = text; el.style.opacity = '1'; }, 200);
+  });
 };
 
-// ── Measure actual header height and expose as CSS variable ───────────
-// This lets scrolly.scss use --scrolly-header-h for the sticky image
-// column offset, giving pixel-perfect clearance on every device including
-// iOS with notch/dynamic island (whose safe-area adds to the header height
-// via the env() in the padding rule above).
+/* Expose header height as CSS variable */
 (function () {
-  function setHeaderHeight() {
-    var header = document.getElementById('scrolly-header');
-    if (!header) return;
-    var h = header.getBoundingClientRect().height;
-    document.documentElement.style.setProperty('--scrolly-header-h', h + 'px');
+  function setH() {
+    var h = document.getElementById('scrolly-header');
+    if (!h) return;
+    document.documentElement.style.setProperty('--scrolly-header-h', h.getBoundingClientRect().height + 'px');
   }
-
-  // Set once on load, then again after fonts/images settle
-  document.addEventListener('DOMContentLoaded', setHeaderHeight);
-  window.addEventListener('load', setHeaderHeight);
-  // Re-measure on resize (orientation change, font scale change, etc.)
-  window.addEventListener('resize', setHeaderHeight, { passive: true });
+  document.addEventListener('DOMContentLoaded', setH);
+  window.addEventListener('load', setH);
+  window.addEventListener('resize', setH, { passive: true });
 }());
 </script>
