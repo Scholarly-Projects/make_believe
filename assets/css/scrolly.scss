@@ -122,6 +122,30 @@ body.light-mode .scrolly-text-content hr,
   .scrolly-citation-display { text-align: left; }
 }
 
+.scrolly-citation-display {
+  // ... existing styles ...
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.2s ease, color 0.2s ease;
+
+    &:hover { color: #FFFFFF; text-decoration-color: rgba(255, 255, 255, 0.85); }
+  }
+
+  /* Indicator for truncated URLs */
+  .citation-url-continuation {
+    color: #8C8C8C;
+    font-style: italic;
+    margin-left: 0.25em;
+  }
+}
+
+body.light-mode .scrolly-citation-display {
+  .citation-url-continuation { color: #737373; }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TOC SIDEBAR — fixed, never scrolls
@@ -155,8 +179,8 @@ body.light-mode .scrolly-toc-sidebar {
 
 .scrolly-toc-heading {
   font-size:      1em;
-  font-weight:    1000;
-  letter-spacing: 0.13em;
+  font-weight:    800;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color:          #FFFFF;;   
   margin: 0 0 0.85rem 0;
@@ -176,7 +200,7 @@ body.light-mode .scrolly-toc-heading { color: #000000; }
 .scrolly-toc-link {
   display:    block;
   padding:    0.32rem 0.4rem;
-  font-size:  0.93em;
+  font-size:  0.98em;
   font-family: "Times New Roman", Times, serif;
   color:      #CACACA;   /* base scale */
   text-decoration: none;
@@ -193,7 +217,7 @@ body.light-mode .scrolly-toc-link.toc-active { color: #000000; }          /* inv
 
 .toc-chapter-entry > .scrolly-toc-link {
   padding-left: 1.1rem;
-  font-size:    0.88em;
+  font-size:    0.95em;
   color:        #CACACA;   /* base scale — same tier as top-level but slightly smaller */
 
   &:hover      { color: #E4E4E4; }   /* mid scale */
@@ -397,10 +421,20 @@ body.light-mode .scrolly-image-citation-desktop {
     text-underline-offset: 2px;
     transition: text-decoration-color 0.2s ease, color 0.2s ease;
 
-    &:hover { color: #FFFFFF; text-decoration-color: rgba(255, 255, 255, 0.85); }   /* focus */
+    &:hover { color: #FFFFFF; text-decoration-color: rgba(255, 255, 255, 0.85); }
+  }
+
+  /* Indicator for truncated URLs */
+  .citation-url-continuation {
+    color: #8C8C8C;
+    font-style: italic;
+    margin-left: 0.25em;
   }
 }
 
+body.light-mode .scrolly-citation-display {
+  .citation-url-continuation { color: #737373; }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    FOOTER — fixed bottom bar, desktop + mobile

@@ -841,27 +841,57 @@ class ScrollyTelling {
   // ─────────────────────────────────────────────────────────────────
   handleCitations(triggerThreshold) {
     let active = null;
-    
     this.footnotes.forEach(f => {
       if (f.element.getBoundingClientRect().top <= triggerThreshold) active = f;
     });
-    
     if (active && this.currentCitation !== active.citationId) {
       const citation = window.citationData[active.citationId];
       if (citation) {
         const formattedText = this.formatCitation(citation.text);
         const bibUrl        = `${BIBLIOGRAPHY_URL}#${active.citationId}`;
-        
         if (this.citationDisplayEl) {
           this.citationDisplayEl.innerHTML =
             `<span class="citation-number">${active.number}</span>` +
             `<a href="${bibUrl}" class="bib-citation-link">${formattedText}</a>`;
+          
+          // ── Truncate URLs after content is inserted ──
+          this.truncateCitationUrls();
+          
           this.citationDisplayEl.classList.add('visible');
         }
-        
         this.currentCitation = active.citationId;
       }
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // Truncate URLs in citation sidebar to "(cont.)"
+  // ─────────────────────────────────────────────────────────────────
+  truncateCitationUrls() {
+    if (!this.citationDisplayEl) return;
+    
+    // Get the main citation link element
+    const citationLink = this.citationDisplayEl.querySelector('.bib-citation-link');
+    if (!citationLink) return;
+    
+    const citationText = citationLink.innerHTML;
+    
+    // Regex to detect http:// or https:// URLs
+    const urlPattern = /(https?:\/\/[^\s<>"']+)/gi;
+    
+    // Check if citation contains a URL
+    if (urlPattern.test(citationText)) {
+      // Replace URLs with "(cont.)" indicator
+      const truncatedText = citationText.replace(urlPattern, '<span class="citation-url-continuation">(cont.)</span>');
+      citationLink.innerHTML = truncatedText;
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  formatCitation(text) {
+    return text
+      .replace(/_(.*?)_/g, '<i>$1</i>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   }
 
   // ─────────────────────────────────────────────────────────────────
