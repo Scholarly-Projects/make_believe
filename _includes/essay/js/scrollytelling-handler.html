@@ -131,6 +131,92 @@ class ScrollyTelling {
     // ── TOC: populate sections for current chapter immediately ───────
     this.populateTocSections(this.textContentEl);
     this.updateTocActiveChapter(idx);
+
+    // ── Desktop: left/right arrow key navigation ─────────────────────
+    document.addEventListener('keydown', (e) => {
+      // Only fire on desktop (where the mobile footer is hidden).
+      // Skip if a text input / textarea is focused.
+      const tag = document.activeElement && document.activeElement.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (document.activeElement && document.activeElement.isContentEditable) return;
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        this._keyboardNavigate('next');
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        this._keyboardNavigate('prev');
+      }
+    });
+
+    // ── Mobile: prev/next chapter buttons in the footer bar ──────────
+    const mobileNext = document.getElementById('scrolly-mobile-next');
+    const mobilePrev = document.getElementById('scrolly-mobile-prev');
+    if (mobileNext) mobileNext.addEventListener('click', () => this._keyboardNavigate('next'));
+    if (mobilePrev) mobilePrev.addEventListener('click', () => this._keyboardNavigate('prev'));
+
+    // Keep nav button disabled state in sync
+    this._updateMobileNavButtons();
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────
+  // CHAPTER NAVIGATION (keyboard + mobile buttons)
+  // ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Navigate to the previous or next chapter in allEssays order.
+   * Used by both desktop keyboard arrows and mobile footer buttons.
+   */
+  async _keyboardNavigate(direction) {
+    if (this.isTransitioning || this.isLoading) return;
+
+    const isNext   = direction === 'next';
+    const targetIdx = isNext
+      ? this.activeChapterIndex + 1
+      : this.activeChapterIndex - 1;
+
+    if (targetIdx < 0 || targetIdx >= this.allEssays.length) return;
+
+    const targetEssay = this.allEssays[targetIdx];
+
+    // If the target block is already loaded, scroll to its top.
+    const normalizedUrl = this.normalizeUrl(targetEssay.url);
+    const existingBlock = document.querySelector(`[data-chapter-path="${normalizedUrl}"]`);
+
+    if (existingBlock) {
+      const headerH = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--scrolly-header-h')
+      ) || 52;
+      const y = existingBlock.getBoundingClientRect().top + window.scrollY - headerH - 16;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else {
+      // Load the chapter first, then scroll
+      await this.loadChapter(direction);
+      await new Promise(r => setTimeout(r, 400));   // wait for DOM insertion
+      const newBlock = document.querySelector(`[data-chapter-path="${normalizedUrl}"]`);
+      if (newBlock) {
+        const headerH = parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue('--scrolly-header-h')
+        ) || 52;
+        const y = newBlock.getBoundingClientRect().top + window.scrollY - headerH - 16;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+
+    this._updateMobileNavButtons();
+  }
+
+
+  /**
+   * Sync the disabled state of the mobile prev/next buttons
+   * based on the active chapter position in the list.
+   */
+  _updateMobileNavButtons() {
+    const prevBtn = document.getElementById('scrolly-mobile-prev');
+    const nextBtn = document.getElementById('scrolly-mobile-next');
+    if (prevBtn) prevBtn.disabled = this.activeChapterIndex <= 0;
+    if (nextBtn) nextBtn.disabled = this.activeChapterIndex >= this.allEssays.length - 1;
   }
 
 
@@ -1209,6 +1295,9 @@ class ScrollyTelling {
       `[data-chapter-path="${this.normalizeUrl(essay.url)}"]`
     );
     if (block) this.updateHistory(block);
+
+    // Keep mobile nav button disabled state in sync
+    this._updateMobileNavButtons();
   }
 
   setupThemeObserver() {

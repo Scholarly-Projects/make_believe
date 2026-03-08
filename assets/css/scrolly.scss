@@ -7,10 +7,10 @@
    Shared across essay-left, essay-right, and essay-full-image layouts.
 
    Desktop grid (left & right layouts):
-     [TOC 170px fixed] | [Image/Text columns] | [Citation 170px]
+     [TOC 14%] | [Image 40% / Text 36%] | [Citation 10%]
 
    Desktop grid (full layout):
-     [TOC 170px fixed] | [Text 1fr]   (citation becomes a fixed right rail)
+     [TOC 14%] | [Text 1fr]   (citation becomes a fixed right rail)
    ============================================================================ */
 
 
@@ -79,7 +79,7 @@ body.light-mode .scrolly-text-content hr,
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-container.layout-right {
-  grid-template-columns: 14% 36% 36% 14%;
+  grid-template-columns: 14% 40% 36% 10%;
   grid-template-areas:   "toc image text citation";
   align-items: flex-start;
 
@@ -89,7 +89,7 @@ body.light-mode .scrolly-text-content hr,
 }
 
 .scrolly-container.layout-left {
-  grid-template-columns: 14% 36% 36% 14%;
+  grid-template-columns: 14% 36% 40% 10%;
   grid-template-areas:   "toc text image citation";
   align-items: flex-start;
 
@@ -292,16 +292,20 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
 }
 
 .scrolly-image-citation-desktop {
-  flex-shrink:      0;
-  padding:          0.55rem 1rem 0.65rem;
-  font-size:        0.71em;
-  color:            rgba(255, 255, 255, 0.5);
-  line-height:      1.4;
-  border-top:       1px solid var(--scrolly-border-color);
+  flex-shrink:  0;
+  flex:         0 0 auto;
+  /* Fixed height = padding (top 0.55rem + bottom 0.65rem = 1.2rem) +
+     4 text lines at font-size 0.71em * line-height 1.4 ≈ 3.98em ≈ 4em.
+     Using rem so the box never collapses even when empty.              */
+  height:       5.5rem;
+  overflow:     hidden;
+  padding:      0.55rem 1rem 0.65rem;
+  font-size:    0.71em;
+  color:        rgba(255, 255, 255, 0.5);
+  line-height:  1.4;
+  border-top:   1px solid var(--scrolly-border-color);
   background-color: var(--scrolly-bg-color);
-  min-height:       2.4rem;
-
-  #scrolly-image-citation-content:empty { display: none; }
+  box-sizing:   border-box;
 
   .citation-view-link {
     display:    inline-block;
@@ -409,28 +413,39 @@ body.light-mode .scrolly-image-citation-desktop {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE CITATION BAR
+   MOBILE CITATION BAR  (fixed bottom — hidden on desktop)
+   Layout: [← prev] [citation title … — View Item] [next →]
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-mobile-citation-bar {
-  display: none;
+  display: none;     /* turned on in @media block */
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 800;
   background-color: rgba(17, 17, 17, 0.96);
   backdrop-filter:  blur(8px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding:    0.5rem 1rem;
+  padding:    0.4rem 0.6rem;
   align-items:     center;
   justify-content: space-between;
-  gap:     0.75rem;
+  gap:     0.4rem;
   font-size: 0.75em;
   color:   rgba(255, 255, 255, 0.6);
   min-height: 2.8rem;
 
+  /* Centre zone: citation text + view link */
+  .mobile-citation-center {
+    display:       flex;
+    flex:          1 1 auto;
+    align-items:   center;
+    gap:           0.5rem;
+    min-width:     0;
+    overflow:      hidden;
+  }
+
   .mobile-citation-title {
-    flex: 1 1 auto;
-    font-style: italic;
+    flex:          1 1 auto;
+    font-style:    italic;
     white-space:   nowrap;
     overflow:      hidden;
     text-overflow: ellipsis;
@@ -446,11 +461,53 @@ body.light-mode .scrolly-image-citation-desktop {
   }
 }
 
+/* Prev / Next chapter arrow buttons (mobile footer) */
+.scrolly-mobile-nav-btn {
+  flex-shrink:     0;
+  width:           2rem;
+  height:          2rem;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background:      none;
+  border:          1px solid rgba(255, 255, 255, 0.2);
+  border-radius:   3px;
+  color:           rgba(255, 255, 255, 0.65);
+  font-size:       1.15em;
+  cursor:          pointer;
+  line-height:     1;
+  padding:         0;
+  transition:      color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    color:            rgba(255, 255, 255, 0.95);
+    border-color:     rgba(255, 255, 255, 0.55);
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  &:disabled {
+    opacity:  0.25;
+    cursor:   default;
+  }
+}
+
 body.light-mode .scrolly-mobile-citation-bar {
   background-color: rgba(255, 255, 255, 0.96);
-  border-top-color: rgba(0,0,0,0.1);
-  color: rgba(0,0,0,0.55);
-  .mobile-view-link { color: rgba(0,0,0,0.45); }
+  border-top-color: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.55);
+
+  .mobile-view-link { color: rgba(0, 0, 0, 0.45); }
+}
+
+body.light-mode .scrolly-mobile-nav-btn {
+  border-color: rgba(0, 0, 0, 0.18);
+  color:        rgba(0, 0, 0, 0.55);
+
+  &:hover:not(:disabled) {
+    color:            rgba(0, 0, 0, 0.9);
+    border-color:     rgba(0, 0, 0, 0.45);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
 }
 
 
@@ -482,12 +539,13 @@ body.light-mode .scrolly-mobile-citation-bar {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    BREAKOUT BLOCKS (full-layout blocks inside left/right container)
-   Both sidebars are now 170px, so breakout width = 100vw - 340px.
+   TOC 14% + citation 10% = 24%; breakout width = 76vw.
+   layout-right: image 40vw, text 36vw → margin-left = -(40/36)*100% ≈ -111%
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-container.layout-right .chapter-content-block[data-layout="full"] {
-  width:       72vw;           /* 100% - 14% TOC - 14% citation */
-  margin-left: -50%;           /* image col = 36%, text col = 36%  → shift left by 1 text col */
+  width:       76vw;
+  margin-left: -111%;          /* shift left by image col (40vw) relative to text col (36vw) */
   background-color: var(--scrolly-bg-color);
   z-index:   20;
   position:  relative;
@@ -496,7 +554,7 @@ body.light-mode .scrolly-mobile-citation-bar {
 }
 
 .scrolly-container.layout-left .chapter-content-block[data-layout="full"] {
-  width:       72vw;
+  width:       76vw;
   margin-left: 0;
   background-color: var(--scrolly-bg-color);
   z-index:   20;
