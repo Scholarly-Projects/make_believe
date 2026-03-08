@@ -4,21 +4,12 @@
 
 /* ============================================================================
    SCROLLYTELLING STYLES
-   Shared across essay-left, essay-right, and essay-full-image layouts.
-
-   Desktop grid (left & right layouts):
-     [TOC 14%] | [Image 40% / Text 36%] | [Citation 10%]
-
-   Desktop grid (full layout):
-     [TOC 14%] | [Text 1fr]   (citation becomes a fixed right rail)
    ============================================================================ */
 
-
-/* ── Global ──────────────────────────────────────────────────────────────── */
+/* ── Global ─────────────────────────────────────────────────────────────── */
 footer:not(.scrolly-footer) { display: none !important; }
 
-
-/* ── Container ───────────────────────────────────────────────────────────── */
+/* ── Container ──────────────────────────────────────────────────────────── */
 .scrolly-container {
   display: grid;
   min-height: 100vh;
@@ -46,7 +37,6 @@ footer:not(.scrolly-footer) { display: none !important; }
   pointer-events: none;
 }
 
-
 /* ── Light-mode ──────────────────────────────────────────────────────────── */
 body.light-mode .scrolly-container,
 .light-mode    .scrolly-container,
@@ -70,7 +60,6 @@ body.light-mode .scrolly-text-content hr,
 .light-mode     .scrolly-text-content hr {
   border-top-color: rgba(0, 0, 0, 0.15);
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LAYOUT GRID
@@ -122,9 +111,8 @@ body.light-mode .scrolly-text-content hr,
   .scrolly-citation-display { text-align: left; }
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   TOC SIDEBAR — fixed, never scrolls
+   TOC SIDEBAR
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-toc-sidebar {
@@ -165,7 +153,6 @@ body.light-mode .scrolly-toc-sidebar {
 }
 body.light-mode .scrolly-toc-heading { color: rgba(0, 0, 0, 0.32); }
 
-/* ── Lists ───────────────────────────────────────────────────────────────── */
 .scrolly-toc-list {
   list-style: none;
   margin:  0;
@@ -234,7 +221,6 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   margin:     0.7rem 0;
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
    IMAGE COLUMN
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -243,8 +229,6 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   grid-area: image;
   position:  sticky;
   top:    var(--scrolly-header-h, 52px);
-  /* Reserve space above the footer (2.8rem) so the sticky image never
-     sits behind the fixed footer bar on desktop.                      */
   height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
   display:        flex;
   flex-direction: column;
@@ -279,9 +263,6 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   z-index: 1;
 }
 
-/* ── Desktop image citation — below the image frame ─────────────────────── */
-/* Sits directly under the image sticky panel; replaces the old footer       */
-/* citation. Height is fixed so the image frame has a predictable anchor.    */
 .scrolly-image-citation-desktop {
   flex-shrink: 0;
   flex:        0 0 auto;
@@ -314,7 +295,6 @@ body.light-mode .scrolly-image-citation-desktop {
   .citation-view-link:hover { color: rgba(0,0,0,0.78); }
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
    TEXT COLUMN
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -328,8 +308,6 @@ body.light-mode .scrolly-image-citation-desktop {
   transition: all 0.5s ease;
 }
 
-/* Add bottom padding equal to footer height so the last content line is
-   never hidden behind the fixed footer on both left/right and full layouts. */
 .scrolly-container.layout-left  .scrolly-text-content,
 .scrolly-container.layout-right .scrolly-text-content {
   padding:    50vh 10% calc(20rem + 2.8rem);
@@ -348,7 +326,6 @@ body.light-mode .scrolly-image-citation-desktop {
   line-height: 1.6;
   font-size:   1.05rem;
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CITATION SIDEBAR
@@ -401,26 +378,20 @@ body.light-mode .scrolly-image-citation-desktop {
   }
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   FOOTER — fixed bottom bar, desktop + mobile
-   (Defined here for layout awareness; visual styles live in
-    footer-scrollytelling.html to keep self-contained.)
+   FOOTER
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-footer {
-  /* Ensure footer sits above all content layers */
   z-index: 999;
 }
 
-/* Give the TOC sidebar clearance so it doesn't run behind the footer */
 .scrolly-toc-sidebar {
   padding-bottom: calc(2.8rem + 1rem);
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   CHAPTER SEPARATORS
+   CHAPTER SEPARATORS - REDUCED HEIGHTS (CURTAIN REMOVED)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .chapter-separator {
@@ -428,30 +399,51 @@ body.light-mode .scrolly-image-citation-desktop {
   background:  transparent;
   display:     flex;
   align-items: flex-start;
-  padding-top: 30vh;
+  padding-top: 10vh;
   justify-content: center;
-  height:      200vh;
+  height:      50vh;
   box-sizing:  border-box;
+  position:    relative;
 
-  &.large { height: 250vh; }
+  &.large { 
+    height: 70vh; 
+  }
 
   img {
     opacity:    1 !important;
     visibility: visible !important;
     display:    block;
     width:      40px;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+    filter: none;
   }
 }
 
+body.light-mode .chapter-separator img {
+  filter: invert(1);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   BREAKOUT BLOCKS (full-layout blocks inside left/right container)
+   LAYOUT TRANSITION CURTAIN (kept for layout changes only)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#scrolly-transition-curtain {
+  position: fixed;
+  inset:    0;
+  background:     var(--scrolly-bg-color, #111111);
+  z-index:        9998;
+  opacity:        0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BREAKOUT BLOCKS
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-container.layout-right .chapter-content-block[data-layout="full"] {
   width:       76vw;
-  margin-left: -124%;          /* shift left by image col (42vw) relative to text col (34vw) */
+  margin-left: -124%;
   background-color: var(--scrolly-bg-color);
   z-index:   20;
   position:  relative;
@@ -476,7 +468,6 @@ body.light-mode .scrolly-image-citation-desktop {
 
   > * { width: 100%; max-width: 900px; }
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TRIGGER MARKERS
@@ -506,7 +497,6 @@ body.light-mode .scrolly-image-citation-desktop {
   display:    block;
   max-width:  100%;
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CHAPTER TITLE STYLING
@@ -550,22 +540,8 @@ body.light-mode .scrolly-image-citation-desktop {
   letter-spacing: -0.02em;
 }
 
-
-/* ── Layout Transition Curtain ───────────────────────────────────────────── */
-#scrolly-transition-curtain {
-  position: fixed;
-  inset:    0;
-  background:     var(--scrolly-bg-color, #111111);
-  z-index:        9998;
-  opacity:        0;
-  pointer-events: none;
-}
-
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   HIDE BACK-TO-TOP BUTTON in the reading interface
-   CollectionBuilder renders a #back-to-top or .back-to-top element globally.
-   Suppress it site-wide when the scrolly header is present.
+   HIDE BACK-TO-TOP BUTTON
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #back-to-top,
@@ -577,11 +553,8 @@ body:has(#scrolly-container) .back-to-top {
   display: none !important;
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   IMAGE LIGHTBOX / SPOTLIGHT
-   A full-screen overlay that centres an image when clicked.
-   The overlay is injected by scrollytelling-handler.js.
+   IMAGE LIGHTBOX
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #scrolly-lightbox {
@@ -611,14 +584,13 @@ body:has(#scrolly-container) .back-to-top {
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
   transform:  scale(0.96);
   transition: transform 0.28s ease;
-  cursor:     default;          /* image itself doesn't show zoom-out cursor */
+  cursor:     default;
 }
 
 #scrolly-lightbox.active img {
   transform: scale(1);
 }
 
-/* Close button */
 #scrolly-lightbox-close {
   position: absolute;
   top:   1.25rem;
@@ -635,7 +607,6 @@ body:has(#scrolly-container) .back-to-top {
 }
 #scrolly-lightbox-close:hover { color: #fff; }
 
-/* Caption below the expanded image */
 #scrolly-lightbox-caption {
   position: absolute;
   bottom:   1.5rem;
@@ -649,17 +620,14 @@ body:has(#scrolly-container) .back-to-top {
   pointer-events: none;
 }
 
-/* Clickable hint on sticky images */
 .scrolly-image-frame img,
 .scrolly-image-container img {
   cursor: zoom-in;
 }
 
-/* Inline full-layout images */
 .chapter-content-block[data-layout="full"] [data-trigger-type="image"] img {
   cursor: zoom-in;
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MOBILE  (≤ 992px)
@@ -709,7 +677,6 @@ body:has(#scrolly-container) .back-to-top {
     order:      2 !important;
   }
 
-  /* Extra bottom padding on mobile to clear the footer */
   .scrolly-text-content {
     padding: 30vh 8% calc(10rem + 2.8rem) !important;
   }
@@ -724,5 +691,14 @@ body:has(#scrolly-container) .back-to-top {
   .scrolly-container.layout-full .scrolly-citation-column {
     display:  none !important;
     position: static !important;
+  }
+
+  .chapter-separator {
+    padding-top: 8vh;
+    height: 40vh;
+    
+    &.large {
+      height: 55vh;
+    }
   }
 }

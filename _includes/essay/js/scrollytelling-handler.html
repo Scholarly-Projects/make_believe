@@ -14,7 +14,6 @@ window.collectionMetadata['{{ item.objectid }}'] = {
 };
 {% endfor %}
 
-
 // Initialize citation lookup
 window.citationData = {};
 {% assign citations = site.data.citation %}
@@ -25,17 +24,15 @@ window.citationData['{{ citation.id }}'] = {
 };
 {% endfor %}
 
-
 // Base URL used to build bibliography anchor links throughout this file
 var BIBLIOGRAPHY_URL = '{{ "/bibliography.html" | relative_url }}';
-
 
 class ScrollyTelling {
   constructor() {
     this.triggers = [];
     this.imageSegments = [];
     this.footnotes = [];
-
+    
     // State
     this.activeImageId = null;
     this.currentCitation = null;
@@ -51,42 +48,40 @@ class ScrollyTelling {
     this.scrollAdjustmentCooldown = false;
     this.lastScrollY = 0;
     this.maxScrollY = 0;
-
     this.separatorIcons = [];
     this.chapterEndFaded = false;
     this.activeFullLayoutImageId = null;
-
+    
     // DOM Elements
     this.textColumn       = document.getElementById('scrolly-text');
     this.imageContainer   = document.getElementById('scrolly-image-container');
     this.scrollyContainer = document.getElementById('scrolly-container');
     this.textContentEl    = document.querySelector('.scrolly-text-content');
     this.loadingIndicatorEl = document.getElementById('chapter-loading-indicator');
-
+    
     // Citation sidebar — created in init()
     this.citationColumnEl  = null;
     this.citationDisplayEl = null;
-
+    
     // TOC sidebar
     this.tocSidebar = document.getElementById('scrolly-toc-sidebar');
     this.tocList    = document.getElementById('scrolly-toc-list');
-
+    
     this.allEssays    = window.allEssays || [];
     this.currentLayout = this.scrollyContainer
       ? this.scrollyContainer.dataset.layout
       : 'right';
-
+    
     this.init();
   }
-
 
   // ─────────────────────────────────────────────────────────────────
   init() {
     if (!this.textColumn || !this.allEssays.length || !this.textContentEl) return;
-
+    
     history.scrollRestoration = 'manual';
     window.addEventListener('pagehide', () => this._saveScrollState());
-
+    
     // ── Build the citation sidebar column ────────────────────────────
     this.citationColumnEl = document.getElementById('scrolly-citation-column');
     if (!this.citationColumnEl && this.scrollyContainer) {
@@ -98,28 +93,28 @@ class ScrollyTelling {
       this.scrollyContainer.appendChild(this.citationColumnEl);
     }
     this.citationDisplayEl = document.getElementById('scrolly-citation-display');
-
+    
     const currentPath = this.normalizeUrl(this.textContentEl.dataset.chapterPath);
     const startIdx    = this.allEssays.findIndex(
       e => this.normalizeUrl(e.url) === currentPath
     );
     const idx = startIdx === -1 ? 0 : startIdx;
-
+    
     this.loadedRange.start  = idx;
     this.loadedRange.end    = idx;
     this.activeChapterIndex = idx;
-
+    
     this.processNewBlock(this.textContentEl);
     this.setupLayoutObserver();
     this.setupThemeObserver();
     this.updateTheme();
-
+    
     document.querySelectorAll('.chapter-separator').forEach(sep => {
       this.observeSeparator(sep);
     });
-
+    
     window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
-
+    
     // ── Restore on back/forward ──────────────────────────────────────
     const navEntries = performance.getEntriesByType('navigation');
     if (navEntries.length && navEntries[0].type === 'back_forward') {
@@ -127,31 +122,21 @@ class ScrollyTelling {
     } else {
       setTimeout(() => this.handleScroll(), 100);
     }
-
+    
     // ── TOC: populate sections for current chapter immediately ───────
     this.populateTocSections(this.textContentEl);
     this.updateTocActiveChapter(idx);
-
-    // ── Keyboard navigation is handled by footer-scrollytelling.html ─
-    // (window.scrollyFooterOwnsKeyboard === true when footer is loaded)
-    // No keyboard listener registered here to avoid conflicts.
-
+    
     // ── Lightbox ─────────────────────────────────────────────────────
     this.setupLightbox();
-
+    
     // ── Suppress CollectionBuilder's back-to-top button ──────────────
-    // _base.scss injects a #scroll-to-top element controlled by
-    // window.onscroll which sets element.style.display = "block" inline.
-    // CSS !important can't reliably beat a JS inline-style set in a later
-    // event, so we neutralize it here instead.
     this._suppressBackToTop();
   }
-
 
   // ─────────────────────────────────────────────────────────────────
   // STATE SAVE / RESTORE
   // ─────────────────────────────────────────────────────────────────
-
   _saveScrollState() {
     try {
       sessionStorage.setItem('scrolly_state', JSON.stringify({
@@ -169,33 +154,32 @@ class ScrollyTelling {
       const raw = sessionStorage.getItem('scrolly_state');
       state = raw ? JSON.parse(raw) : null;
     } catch (e) {}
-
+    
     if (!state || this.normalizeUrl(state.path) !== this.normalizeUrl(location.pathname)) {
       setTimeout(() => this.handleScroll(), 100);
       return;
     }
-
+    
     this.isRestoring              = true;
     this.scrollAdjustmentCooldown = true;
     this.layoutObserverPaused     = true;
-
+    
     try {
       while (this.loadedRange.end < state.end) {
         if (this.isLoading) { await this._wait(150); continue; }
         await this.loadChapter('next');
         await this._wait(80);
       }
-
       while (this.loadedRange.start > state.start) {
         if (this.isLoading) { await this._wait(150); continue; }
         await this.loadChapter('prev');
         await this._wait(80);
       }
-
+      
       await this._wait(250);
       window.scrollTo({ top: state.y, behavior: 'instant' });
       await this._wait(350);
-
+      
       sessionStorage.removeItem('scrolly_state');
     } catch (err) {
       console.error('ScrollyTelling: state restore failed', err);
@@ -207,44 +191,39 @@ class ScrollyTelling {
     }
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // BLOCK PROCESSING
   // ─────────────────────────────────────────────────────────────────
-
   processNewBlock(block) {
     const layout = block.dataset.layout || 'right';
-
     this.cleanLayoutArtifacts(block);
     this.convertFootnotesToSuperscript(block);
     this.parseTriggers(block, layout);
     this.processFootnotes(block);
     this.observeBlock(block);
-
+    
     if (layout === 'full') {
       block.style.paddingTop = '30vh';
     }
-
+    
     this.currentCitation = null;
     if (this.citationDisplayEl) {
       this.citationDisplayEl.classList.remove('visible');
     }
-
+    
     if (layout === 'full') {
       this.hydrateInlineImages(block);
     }
-
+    
     // Populate TOC section links for this block
     this.populateTocSections(block);
-
+    
     // Wire lightbox on any images in this block
     if (this._wireLightboxOnInlineImages) this._wireLightboxOnInlineImages();
   }
 
-
   cleanLayoutArtifacts(container) {
     container.querySelectorAll('br').forEach(br => br.remove());
-
     if (container.dataset.layout !== 'full') {
       const triggers = container.querySelectorAll('[data-trigger-type]');
       triggers.forEach(t => {
@@ -256,37 +235,36 @@ class ScrollyTelling {
     }
   }
 
-
   hydrateInlineImages(container) {
     const triggers = container.querySelectorAll('[data-trigger-type="image"]');
     triggers.forEach(trigger => {
       const objId = trigger.dataset.triggerId;
       const meta  = window.collectionMetadata[objId];
       if (!meta) return;
-
+      
       let img     = trigger.querySelector('img');
       let caption = trigger.querySelector('.text-muted');
-
+      
       if (img && (!img.complete || img.naturalHeight === 0)) {
         img.remove();
         img = null;
       }
-
+      
       if (!img) {
         img     = document.createElement('img');
         img.src = meta.object_location || meta.image_small;
         img.alt = meta.image_alt_text || meta.title;
         img.className = 'img-fluid d-block mx-auto mb-2';
         img.style.maxWidth = '100%';
-
+        
         Object.assign(trigger.style, {
           position: 'relative', display: 'block', visibility: 'visible',
           height: 'auto', width: '100%', margin: '6rem 0', opacity: '1', overflow: 'visible'
         });
-
+        
         trigger.appendChild(img);
       }
-
+      
       if (meta.image_citation && !caption) {
         caption = document.createElement('div');
         caption.className = 'text-muted small text-center mt-1 mb-4 mx-auto';
@@ -296,46 +274,43 @@ class ScrollyTelling {
     });
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // TOC MANAGEMENT
   // ─────────────────────────────────────────────────────────────────
-
   populateTocSections(block) {
     if (!this.tocList) return;
-
+    
     const chapterUrl = block.dataset.chapterPath;
     if (!chapterUrl) return;
-
+    
     const chapterIdx = this.allEssays.findIndex(
       e => this.normalizeUrl(e.url) === this.normalizeUrl(chapterUrl)
     );
     if (chapterIdx === -1) return;
-
+    
     const essay     = this.allEssays[chapterIdx];
     const sectionUl = document.getElementById(`toc-sections-${essay.order}`);
     if (!sectionUl) return;
-
     if (sectionUl.dataset.populated === 'true') return;
-
+    
     const hrs = block.querySelectorAll('hr');
     if (!hrs.length) return;
-
+    
     const headerH = () => parseFloat(
       getComputedStyle(document.documentElement).getPropertyValue('--scrolly-header-h')
     ) || 52;
-
+    
     const fragment = document.createDocumentFragment();
     hrs.forEach((hr, i) => {
       if (!hr.id) hr.id = `section-break-${essay.order}-${i + 1}`;
-
+      
       const li = document.createElement('li');
       const a  = document.createElement('a');
       a.href              = `#${hr.id}`;
       a.className         = 'toc-section-rule';
       a.setAttribute('aria-label', `Section break ${i + 1} of chapter ${essay.order}`);
       a.dataset.sectionId = hr.id;
-
+      
       a.addEventListener('click', e => {
         e.preventDefault();
         const target = document.getElementById(hr.id);
@@ -344,43 +319,41 @@ class ScrollyTelling {
           window.scrollTo({ top: y, behavior: 'smooth' });
         }
       });
-
+      
       li.appendChild(a);
       fragment.appendChild(li);
     });
-
+    
     sectionUl.appendChild(fragment);
     sectionUl.dataset.populated = 'true';
     sectionUl.style.display = '';
   }
 
-
   updateTocActiveChapter(chapterIdx) {
     if (!this.tocList) return;
-
+    
     const essay = this.allEssays[chapterIdx];
     if (!essay) return;
-
+    
     const targetUrl = this.normalizeUrl(essay.url);
-
+    
     this.tocList.querySelectorAll('.scrolly-toc-link').forEach(link => {
       const isActive = this.normalizeUrl(link.getAttribute('href')) === targetUrl;
       link.classList.toggle('toc-active', isActive);
     });
-
+    
     this.tocList.querySelectorAll('.toc-section-list').forEach(ul => {
       const ulUrl = this.normalizeUrl(ul.dataset.tocChapterUrl || '');
       ul.style.display = (ulUrl === targetUrl && ul.children.length > 0) ? '' : 'none';
     });
   }
 
-
   updateTocSectionActive(triggerThreshold) {
     const rules = this.tocList
       ? this.tocList.querySelectorAll('.toc-section-rule')
       : [];
     if (!rules.length) return;
-
+    
     let activeRule = null;
     rules.forEach(rule => {
       const id     = rule.dataset.sectionId;
@@ -388,32 +361,32 @@ class ScrollyTelling {
       if (!target) return;
       if (target.getBoundingClientRect().top <= triggerThreshold) activeRule = rule;
     });
-
+    
     rules.forEach(rule => {
       rule.classList.toggle('toc-section-active', rule === activeRule);
     });
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // SCROLL HANDLING
   // ─────────────────────────────────────────────────────────────────
-
   handleScroll() {
     if (this.isTransitioning || this.isRestoring) return;
-
+    
     if (window.scrollY > this.maxScrollY) this.maxScrollY = window.scrollY;
-
+    
     const triggerThreshold = window.innerHeight / 2;
-
+    
     let newActiveId      = null;
     let lastStartParams  = null;
-
+    
     for (const trigger of this.triggers) {
       if (trigger.parentLayout === 'full') continue;
       if (trigger.type !== 'image') continue;
+      
       const rect     = trigger.element.getBoundingClientRect();
       const midpoint = rect.top + rect.height / 2;
+      
       if (midpoint < triggerThreshold) {
         if (trigger.action === 'start') {
           newActiveId     = trigger.id;
@@ -424,8 +397,9 @@ class ScrollyTelling {
         }
       }
     }
-
+    
     if (this.currentLayout !== 'full') {
+      // Normal image swap via triggers (liquid commands in markdown)
       if (newActiveId !== this.activeImageId) {
         this.updateImageVisibility(newActiveId, lastStartParams);
       }
@@ -433,78 +407,69 @@ class ScrollyTelling {
     } else {
       this.handleFullLayoutImageCitations(triggerThreshold);
     }
-
+    
     this.handleCitations(triggerThreshold);
     this.handleSeparatorFade(triggerThreshold);
     this.updateTocSectionActive(triggerThreshold);
     this.handleInfiniteScroll();
   }
 
-
   handleFullLayoutImageCitations(triggerThreshold) {
     const triggers = document.querySelectorAll(
       '.chapter-content-block[data-layout="full"] [data-trigger-type="image"]'
     );
-
+    
     let bestId  = null;
     let bestTop = -Infinity;
-
+    
     triggers.forEach(trigger => {
       const objId = trigger.dataset.triggerId;
       if (!objId) return;
+      
       const rect = trigger.getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.top > bestTop) {
         bestTop = rect.top;
         bestId  = objId;
       }
     });
-
+    
     if (bestId !== this.activeFullLayoutImageId) {
       this.activeFullLayoutImageId = bestId;
       this.updateFooterImageCitation(bestId);
     }
   }
 
-
   updateImageVisibility(newId, params) {
     if (this.currentLayout === 'full') return;
+    
     this.activeImageId = newId;
-
+    
     if (newId && !this.imageContainer.querySelector(`img[data-objectid="${newId}"]`)) {
       this.createImageElement(newId, params);
     }
-
+    
     const allImages = this.imageContainer.querySelectorAll('img');
     allImages.forEach(img => {
       const active    = img.dataset.objectid === newId;
       img.style.opacity = active ? '1' : '0';
       img.style.zIndex  = active ? '2' : '1';
     });
-
+    
     this.updateFooterImageCitation(newId);
   }
 
-
-  /**
-   * Updates:
-   *   Desktop  — #scrolly-image-citation-footer / #scrolly-image-citation-content
-   *   Mobile   — #scrolly-mobile-image-title (in the footer) + view link
-   */
   updateFooterImageCitation(objectid) {
-    // ── Desktop elements (below image panel) ────────────────────────
     const desktopContent = document.getElementById('scrolly-image-citation-content');
     const desktopWrapper = document.getElementById('scrolly-image-citation-footer');
     const desktopLink    = document.getElementById('scrolly-image-view-link');
-
-    // ── Mobile elements (in the fixed footer bar) ───────────────────
+    
     const mobileTitleEl  = document.getElementById('scrolly-mobile-image-title');
     const mobileViewLink = document.getElementById('scrolly-mobile-view-link');
-
+    
     if (objectid && window.collectionMetadata[objectid]) {
       const meta    = window.collectionMetadata[objectid];
       const itemUrl = `{{ site.baseurl }}/items/${objectid}.html`;
-
-      // Desktop (below image)
+      
       if (desktopContent) {
         desktopContent.innerHTML = meta.image_citation
           ? this.formatCitation(meta.image_citation)
@@ -512,57 +477,52 @@ class ScrollyTelling {
       }
       if (desktopLink)    { desktopLink.href = itemUrl; desktopLink.style.display = 'inline'; }
       if (desktopWrapper) desktopWrapper.classList.add('visible');
-
-      // Mobile footer
+      
       if (mobileTitleEl)  mobileTitleEl.textContent = meta.title || '';
       if (mobileViewLink) { mobileViewLink.href = itemUrl; mobileViewLink.style.display = 'inline'; }
-
     } else {
-      // Clear desktop
       if (desktopContent) desktopContent.innerHTML = '';
       if (desktopLink)    desktopLink.style.display = 'none';
       if (desktopWrapper) desktopWrapper.classList.remove('visible');
-
-      // Clear mobile footer
+      
       if (mobileTitleEl)  mobileTitleEl.textContent = '';
       if (mobileViewLink) mobileViewLink.style.display = 'none';
     }
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // LAYOUT OBSERVERS
   // ─────────────────────────────────────────────────────────────────
-
   setupLayoutObserver() {
     this.layoutObserverPaused = false;
-
+    
     this.layoutObserver = new IntersectionObserver((entries) => {
       if (this.layoutObserverPaused) return;
       if (this.layoutObserverTimeout) clearTimeout(this.layoutObserverTimeout);
-
+      
       this.layoutObserverTimeout = setTimeout(() => {
         if (this.isTransitioning || this.isRestoring) return;
-
+        
         const viewportCenter = window.innerHeight / 2;
         let closestBlock = null;
         let minDistance  = Infinity;
-
+        
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const rect        = entry.target.getBoundingClientRect();
           const blockCenter = rect.top + rect.height / 2;
           const distance    = Math.abs(viewportCenter - blockCenter);
+          
           if (distance < minDistance) {
             minDistance  = distance;
             closestBlock = entry.target;
           }
         }
-
+        
         if (closestBlock) {
           const block        = closestBlock;
           const targetLayout = block.dataset.layout;
-
+          
           if (block.dataset.chapterPath) {
             const chapterIndex = this.allEssays.findIndex(essay =>
               this.normalizeUrl(essay.url) === this.normalizeUrl(block.dataset.chapterPath)
@@ -573,11 +533,11 @@ class ScrollyTelling {
               this.updateTocActiveChapter(chapterIndex);
             }
           }
-
+          
           if (targetLayout && targetLayout !== this.currentLayout && !this.isTransitioning) {
             this.applyLayoutTransition(targetLayout);
           }
-
+          
           this.updateHistory(block);
         }
       }, 75);
@@ -585,20 +545,22 @@ class ScrollyTelling {
       rootMargin: '-35% 0px -15% 0px',
       threshold: 0
     });
-
+    
     this.separatorForwardObserver = new IntersectionObserver((entries) => {
       if (this.layoutObserverPaused || this.isTransitioning ||
           this.scrollAdjustmentCooldown || this.isRestoring) return;
-
+      
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
+        
         const separator = entry.target.closest('.chapter-separator');
         if (!separator) return;
+        
         const nextBlock = separator.nextElementSibling;
         if (!nextBlock || !nextBlock.classList.contains('chapter-content-block')) return;
-
+        
         const targetLayout = nextBlock.dataset.layout;
-
+        
         if (nextBlock.dataset.chapterPath) {
           const nextIdx = this.allEssays.findIndex(e =>
             this.normalizeUrl(e.url) === this.normalizeUrl(nextBlock.dataset.chapterPath)
@@ -609,26 +571,28 @@ class ScrollyTelling {
             this.updateTocActiveChapter(nextIdx);
           }
         }
-
+        
         if (targetLayout && targetLayout !== this.currentLayout) {
           this.applyLayoutTransition(targetLayout);
         }
       });
     }, { rootMargin: '0px 0px -98% 0px', threshold: 0 });
-
+    
     this.separatorBackwardObserver = new IntersectionObserver((entries) => {
       if (this.layoutObserverPaused || this.isTransitioning ||
           this.scrollAdjustmentCooldown || this.isRestoring) return;
-
+      
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
+        
         const separator = entry.target.closest('.chapter-separator');
         if (!separator) return;
+        
         const prevBlock = separator.previousElementSibling;
         if (!prevBlock || !prevBlock.classList.contains('chapter-content-block')) return;
-
+        
         const targetLayout = prevBlock.dataset.layout;
-
+        
         if (prevBlock.dataset.chapterPath) {
           const prevIdx = this.allEssays.findIndex(e =>
             this.normalizeUrl(e.url) === this.normalizeUrl(prevBlock.dataset.chapterPath)
@@ -639,7 +603,7 @@ class ScrollyTelling {
             this.updateTocActiveChapter(prevIdx);
           }
         }
-
+        
         if (targetLayout && targetLayout !== this.currentLayout) {
           this.applyLayoutTransition(targetLayout);
         }
@@ -647,39 +611,35 @@ class ScrollyTelling {
     }, { rootMargin: '-98% 0px 0px 0px', threshold: 0 });
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // LAYOUT TRANSITIONS
   // ─────────────────────────────────────────────────────────────────
-
   applyLayoutTransition(newLayout) {
     if (this.isRestoring) return Promise.resolve();
     if (this.currentLayout === newLayout && !this.isTransitioning) return Promise.resolve();
-
+    
     if (this.isTransitioning) {
       if (this.pendingLayout !== newLayout) this.pendingLayout = newLayout;
       return this.transitionPromise || Promise.resolve();
     }
-
+    
     this.isTransitioning  = true;
     this.currentLayout    = newLayout;
     this.scrollyContainer.dataset.layout = newLayout;
-
+    
     this.transitionPromise = this._performLayoutTransition(newLayout)
       .finally(() => {
         this.isTransitioning   = false;
         this.transitionPromise = null;
-
         if (this.pendingLayout && this.pendingLayout !== this.currentLayout) {
           const nextLayout   = this.pendingLayout;
           this.pendingLayout = null;
           setTimeout(() => this.applyLayoutTransition(nextLayout), 50);
         }
       });
-
+    
     return this.transitionPromise;
   }
-
 
   _getCurtain() {
     let curtain = document.getElementById('scrolly-transition-curtain');
@@ -712,60 +672,56 @@ class ScrollyTelling {
     await this._wait(ms);
   }
 
-
   async _performLayoutTransition(newLayout) {
     try {
       this.layoutObserverPaused = true;
-
+      
       const imageCol    = document.getElementById('scrolly-image');
       const leavingFull = this.scrollyContainer.classList.contains('layout-full') ||
                           this.scrollyContainer.dataset.layout === 'full';
       const enteringFull = newLayout === 'full';
-
+      
       await this._curtainDown(0);
-
+      
       this.currentCitation = null;
       if (this.citationDisplayEl) {
         this.citationDisplayEl.classList.remove('visible');
         this.citationDisplayEl.innerHTML = '';
       }
-
       this.chapterEndFaded = false;
-
+      
       if (enteringFull) {
         if (imageCol) { imageCol.style.transition = 'none'; imageCol.style.opacity = '0'; }
-
         this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
-
+        
         document.querySelectorAll('.chapter-content-block[data-layout="full"]')
           .forEach(block => this.hydrateInlineImages(block));
-
+        
         this.imageContainer.querySelectorAll('img').forEach(img => {
           img.style.opacity = '0'; img.style.visibility = 'hidden';
         });
-
         this.activeFullLayoutImageId = null;
         this.currentCitation         = null;
-
+        
         await this._wait(500);
         await this._curtainUp(350);
-
+        
       } else if (leavingFull) {
         if (imageCol) { imageCol.style.transition = 'none'; imageCol.style.opacity = '0'; }
-
+        
         const scrollBefore  = window.scrollY;
         const heightBefore  = document.documentElement.scrollHeight;
-
+        
         this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
-
+        
         const heightDelta = document.documentElement.scrollHeight - heightBefore;
         if (heightDelta > 0) {
           this.scrollAdjustmentCooldown = true;
           window.scrollTo(0, scrollBefore + heightDelta);
         }
-
+        
         this.imageContainer.querySelectorAll('img').forEach(img => {
           img.style.visibility = 'visible';
         });
@@ -773,27 +729,26 @@ class ScrollyTelling {
         this.activeFullLayoutImageId = null;
         this.currentCitation         = null;
         this.updateFooterImageCitation(null);
-
+        
         await this._wait(16);
         await this._curtainUp(280);
-
+        
       } else {
         this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
         await this._wait(16);
         await this._curtainUp(280);
       }
-
+      
       if (!enteringFull && imageCol) {
         imageCol.style.transition = 'opacity 0.35s ease';
         imageCol.style.opacity    = '1';
         await this._wait(350);
       }
-
+      
       if (leavingFull) this.scrollAdjustmentCooldown = false;
-
       this.layoutObserverPaused = false;
-
+      
     } catch (error) {
       console.error('Layout transition failed:', error);
       this.layoutObserverPaused     = false;
@@ -802,13 +757,12 @@ class ScrollyTelling {
     }
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // TRIGGER PARSING / ANIMATION
   // ─────────────────────────────────────────────────────────────────
-
   parseTriggers(container, layout) {
     const rawTriggers = [];
+    
     container.querySelectorAll('[data-trigger-type]').forEach(marker => {
       if (!marker.dataset.scrollyProcessed) {
         const t = {
@@ -827,7 +781,7 @@ class ScrollyTelling {
         marker.dataset.scrollyProcessed = 'true';
       }
     });
-
+    
     const pendingStarts = {};
     rawTriggers.forEach(t => {
       if (t.type !== 'image' || t.parentLayout === 'full') return;
@@ -838,20 +792,22 @@ class ScrollyTelling {
     });
   }
 
-
   renderAnimations(viewportCenter) {
     if (this.currentLayout === 'full') return;
+    
     this.imageSegments.forEach(segment => {
       if (segment.id !== this.activeImageId) return;
+      
       const sRect  = segment.start.element.getBoundingClientRect();
       const eRect  = segment.end.element.getBoundingClientRect();
       const startY = sRect.top + sRect.height / 2;
       const endY   = eRect.top + eRect.height / 2;
-
+      
       if (startY < viewportCenter && endY > viewportCenter) {
         const progress = (viewportCenter - startY) / (endY - startY);
         const sP = this.getNumericParams(segment.start);
         const eP = this.getNumericParams(segment.end);
+        
         const img = this.imageContainer.querySelector(`img[data-objectid="${segment.id}"]`);
         if (img) this.applyTransformToImage(
           img,
@@ -880,59 +836,94 @@ class ScrollyTelling {
     return { zoom: trigger.params.zoom || 10, x, y };
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // CITATIONS
   // ─────────────────────────────────────────────────────────────────
-
   handleCitations(triggerThreshold) {
     let active = null;
+    
     this.footnotes.forEach(f => {
       if (f.element.getBoundingClientRect().top <= triggerThreshold) active = f;
     });
-
+    
     if (active && this.currentCitation !== active.citationId) {
       const citation = window.citationData[active.citationId];
       if (citation) {
         const formattedText = this.formatCitation(citation.text);
         const bibUrl        = `${BIBLIOGRAPHY_URL}#${active.citationId}`;
-
+        
         if (this.citationDisplayEl) {
           this.citationDisplayEl.innerHTML =
             `<span class="citation-number">${active.number}</span>` +
             `<a href="${bibUrl}" class="bib-citation-link">${formattedText}</a>`;
           this.citationDisplayEl.classList.add('visible');
         }
-
+        
         this.currentCitation = active.citationId;
       }
     }
   }
 
-
+  // ─────────────────────────────────────────────────────────────────
+  // CHAPTER SEPARATOR FADE - REVISED (OPACITY RESTORATION FIXED)
+  // ─────────────────────────────────────────────────────────────────
   handleSeparatorFade(triggerThreshold) {
     if (this.currentLayout === 'full') return;
-
+    
+    // ── Progressive image fade-out as separator icon scrolls through viewport ──
+    for (const icon of this.separatorIcons) {
+      const iconRect  = icon.getBoundingClientRect();
+      const imageCol = document.getElementById('scrolly-image');
+      if (!imageCol) continue;
+      
+      // ── FIX: Icon has exited viewport - restore full opacity for new chapter ──
+      // This is the key fix - when icon exits (top < 0), we restore opacity to 1.0
+      // so the new chapter's images display at full opacity
+      if (iconRect.top < 0) {
+        imageCol.style.transition = 'opacity 0.3s ease';
+        imageCol.style.opacity    = '1';
+        continue;
+      }
+      
+      // ── Icon in viewport - apply progressive fade ───────────────────────────
+      if (iconRect.top >= 0 && iconRect.top <= window.innerHeight) {
+        // progress: 0 when icon at viewport bottom → 1 when at viewport top
+        const progress = 1 - (iconRect.top / window.innerHeight);
+        // Fade from 1.0 → 0.15 over the last 60% of the icon's upward travel
+        const fade = progress > 0.4
+          ? Math.max(0.15, 1 - ((progress - 0.4) / 0.6) * 0.85)
+          : 1;
+        imageCol.style.transition = 'opacity 0.1s linear';
+        imageCol.style.opacity    = fade.toFixed(3);
+      } else if (iconRect.top > window.innerHeight) {
+        // Icon not yet in view — restore full opacity
+        imageCol.style.transition = 'opacity 0.2s ease';
+        imageCol.style.opacity    = '1';
+      }
+    }
+    
+    // ── Citation panel: hide while between chapters ───────────────────────────
     let inGap = false;
     for (const icon of this.separatorIcons) {
       const iconRect   = icon.getBoundingClientRect();
       const iconCentre = iconRect.top + iconRect.height / 2;
       if (iconCentre >= triggerThreshold) continue;
-
+      
       const separator = icon.closest('.chapter-separator');
       if (!separator) continue;
+      
       const nextBlock = separator.nextElementSibling;
       if (!nextBlock || !nextBlock.classList.contains('chapter-content-block')) continue;
-
+      
       if (nextBlock.getBoundingClientRect().top >= triggerThreshold) {
         inGap = true;
         break;
       }
     }
-
+    
     if (inGap === this.chapterEndFaded) return;
     this.chapterEndFaded = inGap;
-
+    
     if (inGap) {
       if (this.citationDisplayEl) {
         this.citationDisplayEl.style.transition = 'none';
@@ -957,7 +948,7 @@ class ScrollyTelling {
           const citationId = `citation_${num.padStart(3, '0')}`;
           const bibUrl     = `${BIBLIOGRAPHY_URL}#${citationId}`;
           return `<sup id="fnref:${num}" class="footnote-ref">` +
-                 `<a href="${bibUrl}" class="footnote-link">${num}</a></sup>`;
+            `<a href="${bibUrl}" class="footnote-link">${num}</a></sup>`;
         });
       }
     });
@@ -968,35 +959,35 @@ class ScrollyTelling {
       const rawNum = sup.textContent.trim();
       const id     = `citation_${rawNum.padStart(3, '0')}`;
       if (!window.citationData[id]) return;
+      
       const marker = document.createElement('span');
       marker.className          = 'footnote-trigger-marker';
       marker.dataset.citationId = id;
       sup.parentNode.insertBefore(marker, sup);
+      
       this.footnotes.push({ element: marker, citationId: id, number: rawNum });
     });
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // INFINITE SCROLL / CHAPTER LOADING
   // ─────────────────────────────────────────────────────────────────
-
   async loadChapter(direction) {
     if (this.isLoading) return;
     this.isLoading = true;
-
+    
     const isNext    = direction === 'next';
     const targetIdx = isNext ? this.loadedRange.end + 1 : this.loadedRange.start - 1;
-
+    
     if (targetIdx < 0 || targetIdx >= this.allEssays.length) {
       this.isLoading = false;
       return;
     }
-
+    
     const targetChapter = this.allEssays[targetIdx];
     const normalizedUrl = this.normalizeUrl(targetChapter.url);
+    
     const existingBlocks = document.querySelectorAll(`[data-chapter-path="${normalizedUrl}"]`);
-
     if (existingBlocks.length > 0) {
       if (existingBlocks.length > 1) {
         for (let i = 1; i < existingBlocks.length; i++) {
@@ -1011,23 +1002,23 @@ class ScrollyTelling {
       this.isLoading = false;
       return;
     }
-
+    
     try {
       const resp   = await fetch(targetChapter.url);
       const html   = await resp.text();
       const doc    = new DOMParser().parseFromString(html, 'text/html');
       const source = doc.querySelector('.scrolly-text-content');
-
+      
       if (source) {
         const newBlock = document.createElement('div');
         newBlock.className            = 'scrolly-text-content chapter-content-block';
         newBlock.dataset.chapterPath  = normalizedUrl;
         newBlock.dataset.layout       = source.dataset.layout || 'right';
         newBlock.innerHTML            = source.innerHTML;
-
+        
         const newLayout    = newBlock.dataset.layout;
         let adjacentLayout = null;
-
+        
         if (isNext) {
           const blocks    = document.querySelectorAll('.chapter-content-block');
           const lastBlock = blocks[blocks.length - 1];
@@ -1036,11 +1027,11 @@ class ScrollyTelling {
           const firstBlock = document.querySelector('.chapter-content-block');
           adjacentLayout   = firstBlock ? firstBlock.dataset.layout : null;
         }
-
+        
         const needsLargeSeparator = newLayout === 'full' || adjacentLayout === 'full';
         const isBeforeFullLayout  = newLayout === 'full';
         const newSeparator = this.createChapterSeparator(needsLargeSeparator, isBeforeFullLayout);
-
+        
         if (isNext) {
           this.textColumn.insertBefore(newSeparator, this.loadingIndicatorEl);
           this.textColumn.insertBefore(newBlock, this.loadingIndicatorEl);
@@ -1050,15 +1041,14 @@ class ScrollyTelling {
         } else {
           const scrollYBefore   = window.scrollY;
           const docHeightBefore = document.documentElement.scrollHeight;
-
+          
           this.layoutObserverPaused = true;
           this.textColumn.prepend(newSeparator);
           this.textColumn.prepend(newBlock);
           this.loadedRange.start--;
-
           this.processNewBlock(newBlock);
           this.observeSeparator(newSeparator);
-
+          
           if (!this.isRestoring) {
             this.scrollAdjustmentCooldown = true;
             await this._wait(100);
@@ -1067,7 +1057,7 @@ class ScrollyTelling {
             await this._wait(500);
             this.scrollAdjustmentCooldown = false;
           }
-
+          
           this.layoutObserverPaused = false;
         }
       }
@@ -1078,18 +1068,17 @@ class ScrollyTelling {
     }
   }
 
-
   handleInfiniteScroll() {
     if (this.isLoading || this.isTransitioning ||
         this.scrollAdjustmentCooldown || this.isRestoring) return;
-
+    
     const currentY = window.scrollY;
     if (Math.abs(currentY - this.lastScrollY) < 10) return;
     this.lastScrollY = currentY;
-
+    
     let bottomThreshold = 2000;
     let topThreshold    = 1000;
-
+    
     if (this.loadedRange.end < this.allEssays.length - 1) {
       const nextChapter = this.allEssays[this.loadedRange.end + 1];
       const currentLast = Array.from(document.querySelectorAll('.chapter-content-block')).pop();
@@ -1101,13 +1090,14 @@ class ScrollyTelling {
         bottomThreshold = 3500;
       }
     }
-
+    
     if (this.loadedRange.start > 0) {
       const firstBlock = document.querySelector('.chapter-content-block');
       if (firstBlock && firstBlock.dataset.layout === 'full') topThreshold = 2000;
     }
-
+    
     const scrollBottom = window.scrollY + window.innerHeight;
+    
     if (document.documentElement.scrollHeight - scrollBottom < bottomThreshold &&
         this.loadedRange.end < this.allEssays.length - 1) {
       this.loadChapter('next');
@@ -1120,17 +1110,15 @@ class ScrollyTelling {
     }
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // UTILITIES
   // ─────────────────────────────────────────────────────────────────
-
   createChapterSeparator(isLarge = false, isBeforeFullLayout = false) {
     const sep = document.createElement('div');
     if (isBeforeFullLayout) {
       sep.className      = 'chapter-separator large full-layout-separator';
-      sep.style.marginBottom = '150vh';
-      sep.style.paddingTop   = '50vh';
+      sep.style.marginBottom = '80vh';
+      sep.style.paddingTop   = '25vh';
     } else if (isLarge) {
       sep.className = 'chapter-separator large';
     } else {
@@ -1143,16 +1131,19 @@ class ScrollyTelling {
   createImageElement(objectid, params) {
     const meta = window.collectionMetadata[objectid];
     if (!meta) return;
+    
     const img          = document.createElement('img');
     img.dataset.objectid = objectid;
     img.src              = meta.object_location || meta.image_small;
     img.className        = 'scrolly-sticky-img';
+    
     Object.assign(img.style, {
       position: 'absolute', top: '0', left: '0',
       width: '100%', height: '100%',
       objectFit: 'contain', opacity: '0',
       transition: 'opacity 0.6s ease-in-out', zIndex: '1'
     });
+    
     if (params) this.applyTransformToImage(img, params.zoom, params.x, params.y);
     this.imageContainer.appendChild(img);
   }
@@ -1173,8 +1164,10 @@ class ScrollyTelling {
 
   observeSeparator(separator) {
     if (!separator || !separator.classList.contains('chapter-separator')) return;
+    
     const icon = separator.querySelector('img');
     if (!icon) return;
+    
     if (this.separatorForwardObserver)  this.separatorForwardObserver.observe(icon);
     if (this.separatorBackwardObserver) this.separatorBackwardObserver.observe(icon);
     if (!this.separatorIcons.includes(icon)) this.separatorIcons.push(icon);
@@ -1190,7 +1183,7 @@ class ScrollyTelling {
   updateHeaderForChapter(idx) {
     const essay = this.allEssays[idx];
     if (!essay) return;
-
+    
     if (typeof updateChapterDisplay === 'function') {
       updateChapterDisplay({
         chapter: essay.chapter || null,
@@ -1198,7 +1191,7 @@ class ScrollyTelling {
         order:   essay.order   || idx + 1
       });
     }
-
+    
     const block = document.querySelector(
       `[data-chapter-path="${this.normalizeUrl(essay.url)}"]`
     );
@@ -1214,7 +1207,7 @@ class ScrollyTelling {
     const isLight = document.body.classList.contains('light-mode');
     const bg      = isLight ? '#ffffff' : '#111111';
     const fg      = isLight ? '#1a1a1a' : '#f0f0f0';
-
+    
     if (this.scrollyContainer) {
       this.scrollyContainer.style.backgroundColor = bg;
       this.scrollyContainer.style.color           = fg;
@@ -1224,9 +1217,9 @@ class ScrollyTelling {
     }
     if (this.citationColumnEl) {
       this.citationColumnEl.style.backgroundColor =
-        isLight ? 'rgba(255,255,255,0)' : 'rgba(17,17,17,0)';
+        isLight ? 'rgba(255,255,255,0)' : 'rgba(17,17,0)';
     }
-
+    
     const toc = document.getElementById('scrolly-toc-sidebar');
     if (toc) {
       toc.style.backgroundColor = bg;
@@ -1234,7 +1227,7 @@ class ScrollyTelling {
         ? 'rgba(0,0,0,0.08)'
         : 'rgba(255,255,255,0.08)';
     }
-
+    
     const citationDesktop = document.getElementById('scrolly-image-citation-footer');
     if (citationDesktop) {
       citationDesktop.style.backgroundColor = bg;
@@ -1242,7 +1235,7 @@ class ScrollyTelling {
         ? 'rgba(0,0,0,0.5)'
         : 'rgba(255,255,255,0.5)';
     }
-
+    
     document.querySelectorAll('.scrolly-text-content hr').forEach(hr => {
       hr.style.borderTopColor = isLight
         ? 'rgba(0,0,0,0.15)'
@@ -1250,20 +1243,9 @@ class ScrollyTelling {
     });
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // BACK-TO-TOP SUPPRESSION
   // ─────────────────────────────────────────────────────────────────
-
-  /**
-   * CollectionBuilder's _base.scss include renders a #scroll-to-top button
-   * and wires window.onscroll to show/hide it via element.style.display.
-   * Because that inline style is applied after the page loads it can race
-   * against CSS rules.  We handle it in JS instead:
-   *   1. Hide the element immediately.
-   *   2. Replace window.onscroll with a no-op so the CB handler never fires.
-   *   3. Use a MutationObserver as a safety net to catch any re-show attempt.
-   */
   _suppressBackToTop() {
     const hide = () => {
       const el = document.getElementById('scroll-to-top');
@@ -1274,28 +1256,20 @@ class ScrollyTelling {
         el.setAttribute('aria-hidden', 'true');
       }
     };
-
-    // 1. Hide immediately.
+    
     hide();
-
-    // 2. Overwrite the CB scroll handler so it can never set display:"block".
-    //    Wrap rather than replace outright in case other code also uses onscroll.
+    
     const originalOnscroll = window.onscroll;
     window.onscroll = function (e) {
-      // Suppress CB's handler entirely — our footer handles navigation.
-      // If there was a different onscroll already (unlikely), preserve it
-      // only when it isn't the CB one (CB handler references scroll-to-top).
       if (originalOnscroll) {
         const src = originalOnscroll.toString();
         if (!src.includes('scroll-to-top')) {
           originalOnscroll.call(this, e);
         }
       }
-      // Always re-hide after any onscroll fires.
       hide();
     };
-
-    // 3. MutationObserver safety net — catches any late setAttribute / style change.
+    
     const el = document.getElementById('scroll-to-top');
     if (el) {
       new MutationObserver(hide).observe(el, {
@@ -1305,53 +1279,40 @@ class ScrollyTelling {
     }
   }
 
-
   // ─────────────────────────────────────────────────────────────────
   // LIGHTBOX
   // ─────────────────────────────────────────────────────────────────
-
-  /**
-   * Build the lightbox overlay DOM once, then wire click listeners on:
-   *   - the sticky image container (left/right layouts)
-   *   - inline full-layout images (added when new blocks are processed)
-   * Re-calling this after new chapters load is safe — processed images
-   * are stamped with data-lightbox-ready to avoid duplicate listeners.
-   */
   setupLightbox() {
-    // Build overlay if it doesn't exist yet
     if (!document.getElementById('scrolly-lightbox')) {
       const overlay = document.createElement('div');
       overlay.id = 'scrolly-lightbox';
       overlay.setAttribute('role', 'dialog');
       overlay.setAttribute('aria-modal', 'true');
       overlay.setAttribute('aria-label', 'Image lightbox');
-
+      
       const closeBtn = document.createElement('button');
       closeBtn.id = 'scrolly-lightbox-close';
       closeBtn.textContent = '×';
       closeBtn.setAttribute('aria-label', 'Close lightbox');
-
+      
       const img = document.createElement('img');
       img.id  = 'scrolly-lightbox-img';
       img.alt = '';
-
+      
       const caption = document.createElement('div');
       caption.id = 'scrolly-lightbox-caption';
-
+      
       overlay.appendChild(closeBtn);
       overlay.appendChild(img);
       overlay.appendChild(caption);
       document.body.appendChild(overlay);
-
-      // Close on overlay background click
+      
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) this.closeLightbox();
       });
-
-      // Close button
+      
       closeBtn.addEventListener('click', () => this.closeLightbox());
-
-      // Escape key — only when lightbox is open
+      
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && overlay.classList.contains('active')) {
           e.preventDefault();
@@ -1359,43 +1320,34 @@ class ScrollyTelling {
         }
       });
     }
-
-    // Wire sticky image panel click (layout-left / layout-right)
+    
     if (this.imageContainer && !this.imageContainer.dataset.lightboxWired) {
       this.imageContainer.addEventListener('click', (e) => {
         if (this.currentLayout === 'full') return;
         const img = e.target.closest('img');
         if (!img) return;
-
+        
         const meta = img.dataset.objectid
           ? window.collectionMetadata[img.dataset.objectid]
           : null;
-
         const captionText = meta
           ? this.formatCitation(meta.image_citation || meta.title || '')
           : '';
-
         this.openLightbox(img.src, captionText);
       });
       this.imageContainer.dataset.lightboxWired = 'true';
     }
-
-    // Wire inline full-layout images (already in DOM or just added)
+    
     this._wireLightboxOnInlineImages();
   }
 
-
-  /**
-   * Attach lightbox click handlers to inline images inside full-layout blocks.
-   * Safe to call multiple times; each image is stamped once.
-   */
   _wireLightboxOnInlineImages() {
     document.querySelectorAll(
       '.chapter-content-block[data-layout="full"] [data-trigger-type="image"] img'
     ).forEach(img => {
       if (img.dataset.lightboxReady) return;
       img.dataset.lightboxReady = 'true';
-
+      
       img.addEventListener('click', () => {
         const trigger  = img.closest('[data-trigger-type="image"]');
         const objId    = trigger ? trigger.dataset.triggerId : null;
@@ -1408,36 +1360,34 @@ class ScrollyTelling {
     });
   }
 
-
   openLightbox(src, caption) {
     const overlay    = document.getElementById('scrolly-lightbox');
     const imgEl      = document.getElementById('scrolly-lightbox-img');
     const captionEl  = document.getElementById('scrolly-lightbox-caption');
+    
     if (!overlay || !imgEl) return;
-
+    
     imgEl.src            = src;
     captionEl.innerHTML  = caption || '';
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
-
-    // Wire inline images that arrived after setup (e.g. from lazy hydration)
+    
     this._wireLightboxOnInlineImages();
   }
-
 
   closeLightbox() {
     const overlay = document.getElementById('scrolly-lightbox');
     if (!overlay) return;
+    
     overlay.classList.remove('active');
     document.body.style.overflow = '';
-    // Blank src after transition so there's no flash of old image on next open
+    
     setTimeout(() => {
       const imgEl = document.getElementById('scrolly-lightbox-img');
       if (imgEl && !overlay.classList.contains('active')) imgEl.src = '';
     }, 300);
   }
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('scrolly-container')) {
