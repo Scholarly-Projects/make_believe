@@ -697,6 +697,34 @@ body:has(#scrolly-container) .back-to-top {
   pointer-events: auto;
   margin:     0;
   padding:    0 1rem;
+
+  /* Indicator for truncated URLs — matches citation sidebar styling */
+  .citation-url-continuation {
+    color: #8C8C8C;
+    font-style: italic;
+    margin-left: 0.25em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.2s ease, color 0.2s ease;
+
+    &:hover { color: #FFFFFF; text-decoration-color: rgba(255, 255, 255, 0.85); }
+  }
+}
+
+body.light-mode #scrolly-lightbox-caption {
+  color: #353535;
+
+  .citation-url-continuation { color: #737373; }
+
+  a {
+    text-decoration-color: rgba(0, 0, 0, 0.3);
+    &:hover { color: #000000; text-decoration-color: rgba(0, 0, 0, 0.8); }
+  }
 }
 
 /* Clickable hint on sticky images */

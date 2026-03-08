@@ -864,28 +864,33 @@ class ScrollyTelling {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // Truncate URLs in citation sidebar to "(cont.)"
-  // ─────────────────────────────────────────────────────────────────
-  truncateCitationUrls() {
-    if (!this.citationDisplayEl) return;
-    
-    // Get the main citation link element
-    const citationLink = this.citationDisplayEl.querySelector('.bib-citation-link');
-    if (!citationLink) return;
-    
-    const citationText = citationLink.innerHTML;
-    
-    // Regex to detect http:// or https:// URLs
-    const urlPattern = /(https?:\/\/[^\s<>"']+)/gi;
-    
-    // Check if citation contains a URL
-    if (urlPattern.test(citationText)) {
-      // Replace URLs with "(cont.)" indicator
-      const truncatedText = citationText.replace(urlPattern, '<span class="citation-url-continuation">(cont.)</span>');
-      citationLink.innerHTML = truncatedText;
-    }
+// ─────────────────────────────────────────────────────────────────
+// Truncate URLs in citation sidebar to "(cont.)"
+// ─────────────────────────────────────────────────────────────────
+truncateCitationUrls() {
+  if (!this.citationDisplayEl) return;
+  
+  // Get the main citation link element
+  const citationLink = this.citationDisplayEl.querySelector('.bib-citation-link');
+  if (!citationLink) return;
+  
+  let citationText = citationLink.innerHTML;
+  
+  // More robust URL pattern (same as lightbox)
+  const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
+  
+  // Check if citation contains a URL
+  if (urlPattern.test(citationText)) {
+    // Replace URLs with "(cont.)" indicator
+    const truncatedText = citationText.replace(urlPattern, (match, openBracket, closeBracket) => {
+      const hasBrackets = openBracket === '[' || closeBracket === ']';
+      return hasBrackets 
+        ? `[<span class="citation-url-continuation">(cont.)</span>]`
+        : `<span class="citation-url-continuation">(cont.)</span>`;
+    });
+    citationLink.innerHTML = truncatedText;
   }
+}
 
   // ─────────────────────────────────────────────────────────────────
   formatCitation(text) {
@@ -1390,20 +1395,51 @@ class ScrollyTelling {
     });
   }
 
-  openLightbox(src, caption) {
-    const overlay    = document.getElementById('scrolly-lightbox');
-    const imgEl      = document.getElementById('scrolly-lightbox-img');
-    const captionEl  = document.getElementById('scrolly-lightbox-caption');
-    
-    if (!overlay || !imgEl) return;
-    
-    imgEl.src            = src;
-    captionEl.innerHTML  = caption || '';
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    this._wireLightboxOnInlineImages();
+openLightbox(src, caption) {
+  const overlay    = document.getElementById('scrolly-lightbox');
+  const imgEl      = document.getElementById('scrolly-lightbox-img');
+  const captionEl  = document.getElementById('scrolly-lightbox-caption');
+  if (!overlay || !imgEl) return;
+  imgEl.src            = src;
+  captionEl.innerHTML  = caption || '';
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  
+  // ── Truncate URLs in lightbox caption ──
+  this.truncateCitationUrlsForLightbox();
+  
+  this._wireLightboxOnInlineImages();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Truncate URLs in lightbox caption to "(cont.)"
+// ─────────────────────────────────────────────────────────────────
+truncateCitationUrlsForLightbox() {
+  const captionEl = document.getElementById('scrolly-lightbox-caption');
+  if (!captionEl) return;
+  
+  let captionText = captionEl.innerHTML;
+  
+  // More robust URL pattern that handles:
+  // - http:// and https://
+  // - URLs with colons in path (ark:, doi:, etc.)
+  // - URLs wrapped in brackets [url] or parentheses (url)
+  // - URLs with trailing punctuation
+  const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
+  
+  // Check if caption contains a URL
+  if (urlPattern.test(captionText)) {
+    // Replace URLs with "(cont.)" indicator
+    // Preserve surrounding brackets if they exist
+    const truncatedText = captionText.replace(urlPattern, (match, openBracket, closeBracket) => {
+      const hasBrackets = openBracket === '[' || closeBracket === ']';
+      return hasBrackets 
+        ? `[<span class="citation-url-continuation">(cont.)</span>]`
+        : `<span class="citation-url-continuation">(cont.)</span>`;
+    });
+    captionEl.innerHTML = truncatedText;
   }
+}
 
   closeLightbox() {
     const overlay = document.getElementById('scrolly-lightbox');
