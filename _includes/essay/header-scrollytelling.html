@@ -57,18 +57,18 @@ body.light-mode .scrolly-header {
 .scrolly-hamburger .hamburger-line {
   width:  100%;
   height: 2px;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: #E4E4E4;   /* mid scale */
   border-radius: 2px;
   transition: background-color 0.2s ease;
 }
 body.light-mode .scrolly-hamburger .hamburger-line {
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: #1B1B1B;   /* inverse of #E4E4E4 */
 }
 .scrolly-hamburger:hover .hamburger-line {
-  background-color: rgba(255, 255, 255, 1);
+  background-color: #FFFFFF;   /* focus */
 }
 body.light-mode .scrolly-hamburger:hover .hamburger-line {
-  background-color: rgba(0, 0, 0, 0.95);
+  background-color: #000000;   /* inverse of #FFFFFF */
 }
 
 /* ── LEFT: site identity — spaced away from hamburger ───────────────── */
@@ -88,36 +88,42 @@ body.light-mode .scrolly-hamburger:hover .hamburger-line {
 .scrolly-site-title {
   font-size:   1.0em;
   font-weight: bold;
-  color:       rgba(255, 255, 255, 0.95);
+  color:       #FFFFFF;    /* mid scale */
   margin:      0;
   line-height: 1.2;
   cursor:      pointer;
   white-space: nowrap;
   transition:  color 0.2s ease;
 }
-body.light-mode .scrolly-site-title       { color: rgba(0, 0, 0, 0.9); }
-.scrolly-site-title:hover                 { color: #fff; }
-body.light-mode .scrolly-site-title:hover { color: #000; }
+body.light-mode .scrolly-site-title       { color: #1B1B1B; }   /* inverse of #E4E4E4 */
+.scrolly-site-title:hover                 { color: #FFFFFF; }   /* focus */
+body.light-mode .scrolly-site-title:hover { color: #000000; }   /* inverse of #FFFFFF */
 
+/* ═══════════════════════════════════════════════════════════════════
+   FONT SIZE ADJUSTMENT: Subtitle (increased from 0.68em → 0.78em)
+   ═══════════════════════════════════════════════════════════════════ */
 .scrolly-site-subtitle {
-  font-size:   0.68em;
+  font-size:   0.78em;
   font-weight: 400;
-  color:       rgba(255, 255, 255, 0.55);
+  color:       #E4E4E4;    /* base scale — one step below title */
   margin:      0;
   line-height: 1.3;
   white-space: normal;
 }
-body.light-mode .scrolly-site-subtitle { color: rgba(0, 0, 0, 0.5); }
+body.light-mode .scrolly-site-subtitle { color: #353535; }   /* inverse of #CACACA */
 
+/* ═══════════════════════════════════════════════════════════════════
+   FONT SIZE ADJUSTMENT: Author (increased from 0.65em → 0.75em)
+   ═══════════════════════════════════════════════════════════════════ */
 .scrolly-site-author {
-  font-size:   0.65em;
+  font-size:   0.75em;
   font-weight: 300;
-  color:       rgba(255, 255, 255, 0.42);
+  color:       #CACACA;    /* muted — tertiary metadata */
   margin:      0;
   line-height: 1.25;
   white-space: nowrap;
 }
-body.light-mode .scrolly-site-author { color: rgba(0, 0, 0, 0.4); }
+body.light-mode .scrolly-site-author { color: #737373; }   /* inverse of #8C8C8C */
 
 /* ── CENTER: chapter title — absolutely centered in the header ────── */
 .scrolly-header-chapter-wrap {
@@ -138,7 +144,7 @@ body.light-mode .scrolly-site-author { color: rgba(0, 0, 0, 0.4); }
 .scrolly-chapter-title-display {
   font-size:     0.95em;
   font-weight:   bold;
-  color:         rgba(255, 255, 255, 0.92);
+  color:         #E4E4E4;    /* mid scale — same tier as site title */
   text-align:    center;
   white-space:   nowrap;
   overflow:      hidden;
@@ -146,7 +152,7 @@ body.light-mode .scrolly-site-author { color: rgba(0, 0, 0, 0.4); }
   max-width:     100%;
   transition:    opacity 0.3s ease;
 }
-body.light-mode .scrolly-chapter-title-display { color: rgba(0, 0, 0, 0.84); }
+body.light-mode .scrolly-chapter-title-display { color: #1B1B1B; }   /* inverse of #E4E4E4 */
 
 /* ── RIGHT: theme controls ───────────────────────────────────────── */
 .scrolly-header-controls {
@@ -163,18 +169,18 @@ body.light-mode .scrolly-chapter-title-display { color: rgba(0, 0, 0, 0.84); }
   width:  13px; height: 13px;
   flex-shrink: 0;
   fill:   none;
-  stroke: rgba(255, 255, 255, 0.72);
+  stroke: #CACACA;    /* base scale */
   stroke-width: 2;
   stroke-linecap: round;
   opacity: 0.7;
   transition: stroke 0.25s ease, opacity 0.25s ease;
 }
-body.light-mode .sun-icon { stroke: rgba(0, 0, 0, 0.62); }
+body.light-mode .sun-icon { stroke: #737373; }   /* inverse of #8C8C8C (muted icon) */
 
 .theme-toggle {
   position: relative;
   width: 34px; height: 18px;
-  background-color: rgba(255, 255, 255, 0.82);
+  background-color: rgba(255, 255, 255, 0.82);   /* track — UI element, not text */
   border-radius: 9px;
   cursor: pointer;
   border: none;
@@ -212,24 +218,24 @@ body.light-mode .theme-toggle::after      { background-color: #ffffff; transform
 .scrolly-mobile-title {
   font-size:   0.92em;
   font-weight: bold;
-  color:       rgba(255, 255, 255, 0.95);
+  color:       #FFFFFF;    /* mid scale — matches desktop site title tier */
   line-height: 1.2;
   cursor:      pointer;
   white-space: nowrap;
 }
-body.light-mode .scrolly-mobile-title { color: rgba(0, 0, 0, 0.9); }
+body.light-mode .scrolly-mobile-title { color: #000000; }   /* inverse of #E4E4E4 */
 
 .scrolly-mobile-meta {
-  font-size:   0.62em;
-  color:       rgba(255, 255, 255, 0.45);
+  font-size:   0.72em;     /* ← INCREASED to match desktop subtitle */
+  color:       #E4E4E4;    /* muted — subtitle/author tier */
   line-height: 1.3;
   text-align:  center;
 }
-body.light-mode .scrolly-mobile-meta { color: rgba(0, 0, 0, 0.4); }
+body.light-mode .scrolly-mobile-meta { color: #1B1B1B; }   /* inverse of #8C8C8C */
 
 .scrolly-mobile-chapter {
   font-size:   0.67em;
-  color:       rgba(255, 255, 255, 0.55);
+  color:       #CACACA;    /* base scale — chapter label */
   line-height: 1.3;
   margin-top:  0.08rem;
   white-space: nowrap;
@@ -238,7 +244,7 @@ body.light-mode .scrolly-mobile-meta { color: rgba(0, 0, 0, 0.4); }
   max-width:   100%;
   transition:  opacity 0.3s ease;
 }
-body.light-mode .scrolly-mobile-chapter { color: rgba(0, 0, 0, 0.46); }
+body.light-mode .scrolly-mobile-chapter { color: #353535; }   /* inverse of #CACACA */
 
 /* ── Off-canvas TOC ──────────────────────────────────────────────── */
 .offcanvas-menu {
@@ -267,40 +273,40 @@ body.light-mode .offcanvas-menu {
 .offcanvas-close {
   position: absolute; top: 1rem; right: 1rem;
   background: none; border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: #CACACA;    /* base scale */
   font-size: 1.25em;
   cursor: pointer;
   padding: 0.25rem;
   z-index: 1003;
   line-height: 1;
 }
-body.light-mode .offcanvas-close { color: rgba(0, 0, 0, 0.48); }
+body.light-mode .offcanvas-close { color: #353535; }   /* inverse of #CACACA */
 
 .offcanvas-toc-heading {
   font-size:      0.7em;
   font-weight:    700;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  color:          rgba(255, 255, 255, 0.32);
+  color:          #8C8C8C;    /* muted label — matches desktop TOC heading */
   margin:         0 0 0.85rem 0;
   font-family:    "Times New Roman", Times, serif;
 }
-body.light-mode .offcanvas-toc-heading { color: rgba(0, 0, 0, 0.32); }
+body.light-mode .offcanvas-toc-heading { color: #737373; }   /* inverse of #8C8C8C */
 
 /* ── Offcanvas link colours — beats Bootstrap blue on non-essay pages ── */
 .offcanvas-menu a,
 .offcanvas-menu .scrolly-toc-link {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: #CACACA !important;   /* base scale */
   text-decoration: none !important;
 }
 .offcanvas-menu a:hover,
 .offcanvas-menu .scrolly-toc-link:hover {
-  color: rgba(255, 255, 255, 0.95) !important;
+  color: #FFFFFF !important;   /* focus */
   background-color: rgba(255, 255, 255, 0.06);
   border-radius: 3px;
 }
 .offcanvas-menu .scrolly-toc-link.toc-active {
-  color: rgba(255, 255, 255, 0.95) !important;
+  color: #FFFFFF !important;   /* focus */
   font-weight: 600;
 }
 .offcanvas-menu .toc-divider {
@@ -309,15 +315,15 @@ body.light-mode .offcanvas-toc-heading { color: rgba(0, 0, 0, 0.32); }
 }
 body.light-mode .offcanvas-menu a,
 body.light-mode .offcanvas-menu .scrolly-toc-link {
-  color: rgba(0, 0, 0, 0.58) !important;
+  color: #353535 !important;   /* inverse of #CACACA */
 }
 body.light-mode .offcanvas-menu a:hover,
 body.light-mode .offcanvas-menu .scrolly-toc-link:hover {
-  color: rgba(0, 0, 0, 0.88) !important;
+  color: #000000 !important;   /* inverse of #FFFFFF */
   background-color: rgba(0, 0, 0, 0.05);
 }
 body.light-mode .offcanvas-menu .scrolly-toc-link.toc-active {
-  color: rgba(0, 0, 0, 0.9) !important;
+  color: #000000 !important;   /* inverse of #FFFFFF */
 }
 body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0.1); }
 

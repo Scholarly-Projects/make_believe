@@ -4,12 +4,21 @@
 
 /* ============================================================================
    SCROLLYTELLING STYLES
+   Shared across essay-left, essay-right, and essay-full-image layouts.
+
+   Desktop grid (left & right layouts):
+     [TOC 14%] | [Image 40% / Text 36%] | [Citation 10%]
+
+   Desktop grid (full layout):
+     [TOC 14%] | [Text 1fr]   (citation becomes a fixed right rail)
    ============================================================================ */
 
-/* ── Global ─────────────────────────────────────────────────────────────── */
+
+/* ── Global ──────────────────────────────────────────────────────────────── */
 footer:not(.scrolly-footer) { display: none !important; }
 
-/* ── Container ──────────────────────────────────────────────────────────── */
+
+/* ── Container ───────────────────────────────────────────────────────────── */
 .scrolly-container {
   display: grid;
   min-height: 100vh;
@@ -17,9 +26,9 @@ footer:not(.scrolly-footer) { display: none !important; }
   overflow: visible;
 
   --scrolly-bg-color:       #111111;
-  --scrolly-text-color:     #f0f0f0;
-  --scrolly-border-color:   rgba(255, 255, 255, 0.1);
-  --scrolly-citation-color: rgba(255, 255, 255, 0.7);
+  --scrolly-text-color:     #E4E4E4;   /* mid-scale; body prose */
+  --scrolly-border-color:   transparent;
+  --scrolly-citation-color: #CACACA;   /* base-scale; citation sidebar */
 
   background-color: var(--scrolly-bg-color);
   color:            var(--scrolly-text-color);
@@ -37,14 +46,15 @@ footer:not(.scrolly-footer) { display: none !important; }
   pointer-events: none;
 }
 
+
 /* ── Light-mode ──────────────────────────────────────────────────────────── */
 body.light-mode .scrolly-container,
 .light-mode    .scrolly-container,
 .scrolly-container.light-mode {
   --scrolly-bg-color:       #ffffff;
-  --scrolly-text-color:     #1a1a1a;
-  --scrolly-border-color:   rgba(0, 0, 0, 0.08);
-  --scrolly-citation-color: rgba(0, 0, 0, 0.65);
+  --scrolly-text-color:     #1B1B1B;   /* inverse of #E4E4E4 */
+  --scrolly-border-color:   transparent;
+  --scrolly-citation-color: #353535;   /* inverse of #CACACA */
 }
 
 body.light-mode .scrolly-citation-display a,
@@ -53,13 +63,14 @@ body.light-mode .scrolly-citation-display a,
 }
 body.light-mode .scrolly-citation-display a:hover,
 .light-mode     .scrolly-citation-display a:hover {
-  color: #000;
+  color: #000000;
   text-decoration-color: rgba(0, 0, 0, 0.8);
 }
 body.light-mode .scrolly-text-content hr,
 .light-mode     .scrolly-text-content hr {
   border-top-color: rgba(0, 0, 0, 0.15);
 }
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LAYOUT GRID
@@ -103,7 +114,7 @@ body.light-mode .scrolly-text-content hr,
     top:    0;
     width:  10vw;
     height: 100vh;
-    border-left:  1px solid var(--scrolly-border-color);
+    border-left:  none var(--scrolly-border-color);
     border-right: none;
     grid-area: unset;
   }
@@ -111,8 +122,9 @@ body.light-mode .scrolly-text-content hr,
   .scrolly-citation-display { text-align: left; }
 }
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   TOC SIDEBAR
+   TOC SIDEBAR — fixed, never scrolls
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-toc-sidebar {
@@ -124,7 +136,7 @@ body.light-mode .scrolly-text-content hr,
   height: calc(100vh - var(--scrolly-header-h, 52px) - 7rem - 2.8rem - 1rem);
   overflow-y: auto;
   padding:      1.1rem 0.85rem 2rem 1rem;
-  border-right: 1px solid var(--scrolly-border-color);
+  border-right: none var(--scrolly-border-color);
   background-color: var(--scrolly-bg-color);
   z-index: 50;
 
@@ -142,17 +154,18 @@ body.light-mode .scrolly-toc-sidebar {
 }
 
 .scrolly-toc-heading {
-  font-size:      0.7em;
-  font-weight:    700;
+  font-size:      1em;
+  font-weight:    1000;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  color:          rgba(255, 255, 255, 0.32);
+  color:          #FFFFF;;   
   margin: 0 0 0.85rem 0;
   padding: 0;
   font-family: "Times New Roman", Times, serif;
 }
-body.light-mode .scrolly-toc-heading { color: rgba(0, 0, 0, 0.32); }
+body.light-mode .scrolly-toc-heading { color: #000000; } 
 
+/* ── Lists ───────────────────────────────────────────────────────────────── */
 .scrolly-toc-list {
   list-style: none;
   margin:  0;
@@ -165,30 +178,30 @@ body.light-mode .scrolly-toc-heading { color: rgba(0, 0, 0, 0.32); }
   padding:    0.32rem 0.4rem;
   font-size:  0.93em;
   font-family: "Times New Roman", Times, serif;
-  color:      rgba(255, 255, 255, 0.6);
+  color:      #CACACA;   /* base scale */
   text-decoration: none;
   border-radius: 3px;
   line-height: 1.5;
   transition: color 0.18s ease, background-color 0.18s ease;
 
-  &:hover      { color: rgba(255, 255, 255, 0.92); background-color: rgba(255, 255, 255, 0.06); }
-  &.toc-active { color: rgba(255, 255, 255, 0.95); font-weight: 600; }
+  &:hover      { color: #E4E4E4; background-color: rgba(255, 255, 255, 0.06); }  /* mid scale */
+  &.toc-active { color: #FFFFFF; font-weight: 600; }                              /* focus */
 }
-body.light-mode .scrolly-toc-link            { color: rgba(0,0,0,0.55); }
-body.light-mode .scrolly-toc-link:hover      { color: rgba(0,0,0,0.85); background-color: rgba(0,0,0,0.05); }
-body.light-mode .scrolly-toc-link.toc-active { color: rgba(0,0,0,0.9); }
+body.light-mode .scrolly-toc-link            { color: #353535; }          /* inverse of #CACACA */
+body.light-mode .scrolly-toc-link:hover      { color: #1B1B1B; background-color: rgba(0,0,0,0.05); } /* inverse of #E4E4E4 */
+body.light-mode .scrolly-toc-link.toc-active { color: #000000; }          /* inverse of #FFFFFF */
 
 .toc-chapter-entry > .scrolly-toc-link {
   padding-left: 1.1rem;
   font-size:    0.88em;
-  color:        rgba(255, 255, 255, 0.52);
+  color:        #CACACA;   /* base scale — same tier as top-level but slightly smaller */
 
-  &:hover      { color: rgba(255, 255, 255, 0.88); }
-  &.toc-active { color: rgba(255, 255, 255, 0.95); font-weight: 600; }
+  &:hover      { color: #E4E4E4; }   /* mid scale */
+  &.toc-active { color: #FFFFFF; font-weight: 600; }  /* focus */
 }
-body.light-mode .toc-chapter-entry > .scrolly-toc-link            { color: rgba(0,0,0,0.48); }
-body.light-mode .toc-chapter-entry > .scrolly-toc-link:hover      { color: rgba(0,0,0,0.82); }
-body.light-mode .toc-chapter-entry > .scrolly-toc-link.toc-active { color: rgba(0,0,0,0.9); }
+body.light-mode .toc-chapter-entry > .scrolly-toc-link            { color: #353535; }
+body.light-mode .toc-chapter-entry > .scrolly-toc-link:hover      { color: #1B1B1B; }
+body.light-mode .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
 
 .toc-section-list {
   list-style: none;
@@ -221,6 +234,7 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   margin:     0.7rem 0;
 }
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
    IMAGE COLUMN
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -229,6 +243,8 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   grid-area: image;
   position:  sticky;
   top:    var(--scrolly-header-h, 52px);
+  /* Reserve space above the footer (2.8rem) so the sticky image never
+     sits behind the fixed footer bar on desktop.                      */
   height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
   display:        flex;
   flex-direction: column;
@@ -263,6 +279,9 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   z-index: 1;
 }
 
+/* ── Desktop image citation — below the image frame ─────────────────────── */
+/* Sits directly under the image sticky panel; replaces the old footer       */
+/* citation. Height is fixed so the image frame has a predictable anchor.    */
 .scrolly-image-citation-desktop {
   flex-shrink: 0;
   flex:        0 0 auto;
@@ -270,7 +289,7 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   overflow:    hidden;
   padding:     0.55rem 1rem 0.65rem;
   font-size:   0.71em;
-  color:       rgba(255, 255, 255, 0.5);
+  color:       #CACACA;   /* base scale */
   line-height: 1.4;
   border-top:  1px solid var(--scrolly-border-color);
   background-color: var(--scrolly-bg-color);
@@ -280,20 +299,21 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
     display:    inline-block;
     margin-top: 0.2rem;
     font-size:  0.9em;
-    color:      rgba(255, 255, 255, 0.42);
+    color:      #8C8C8C;   /* muted — below base, it's a secondary action */
     text-decoration: underline;
     text-underline-offset: 2px;
     transition: color 0.15s ease;
 
-    &:hover { color: rgba(255, 255, 255, 0.8); }
+    &:hover { color: #E4E4E4; }   /* mid scale on hover */
   }
 }
 
 body.light-mode .scrolly-image-citation-desktop {
-  color: rgba(0,0,0,0.5);
-  .citation-view-link       { color: rgba(0,0,0,0.42); }
-  .citation-view-link:hover { color: rgba(0,0,0,0.78); }
+  color: #353535;   /* inverse of #CACACA */
+  .citation-view-link       { color: #737373; }   /* inverse of #8C8C8C */
+  .citation-view-link:hover { color: #1B1B1B; }   /* inverse of #E4E4E4 */
 }
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TEXT COLUMN
@@ -308,6 +328,8 @@ body.light-mode .scrolly-image-citation-desktop {
   transition: all 0.5s ease;
 }
 
+/* Add bottom padding equal to footer height so the last content line is
+   never hidden behind the fixed footer on both left/right and full layouts. */
 .scrolly-container.layout-left  .scrolly-text-content,
 .scrolly-container.layout-right .scrolly-text-content {
   padding:    50vh 10% calc(20rem + 2.8rem);
@@ -326,6 +348,7 @@ body.light-mode .scrolly-image-citation-desktop {
   line-height: 1.6;
   font-size:   1.05rem;
 }
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CITATION SIDEBAR
@@ -374,24 +397,30 @@ body.light-mode .scrolly-image-citation-desktop {
     text-underline-offset: 2px;
     transition: text-decoration-color 0.2s ease, color 0.2s ease;
 
-    &:hover { color: #fff; text-decoration-color: rgba(255, 255, 255, 0.85); }
+    &:hover { color: #FFFFFF; text-decoration-color: rgba(255, 255, 255, 0.85); }   /* focus */
   }
 }
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   FOOTER
+   FOOTER — fixed bottom bar, desktop + mobile
+   (Defined here for layout awareness; visual styles live in
+    footer-scrollytelling.html to keep self-contained.)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-footer {
+  /* Ensure footer sits above all content layers */
   z-index: 999;
 }
 
+/* Give the TOC sidebar clearance so it doesn't run behind the footer */
 .scrolly-toc-sidebar {
   padding-bottom: calc(2.8rem + 1rem);
 }
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   CHAPTER SEPARATORS - REDUCED HEIGHTS (CURTAIN REMOVED)
+   CHAPTER SEPARATORS
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .chapter-separator {
@@ -399,51 +428,39 @@ body.light-mode .scrolly-image-citation-desktop {
   background:  transparent;
   display:     flex;
   align-items: flex-start;
-  padding-top: 10vh;
+  padding-top: 20vh;
   justify-content: center;
-  height:      50vh;
+  height:      90vh;
   box-sizing:  border-box;
-  position:    relative;
 
-  &.large { 
-    height: 70vh; 
-  }
+  &.large { height: 120vh; }
 
   img {
     opacity:    1 !important;
     visibility: visible !important;
     display:    block;
     width:      40px;
+    /* Smooth transition for both opacity and the light/dark filter */
     transition: opacity 0.3s ease, filter 0.3s ease;
+    /* Dark mode default: icon is white circle / dark interior — no filter needed */
     filter: none;
   }
 }
 
+/* Light mode: invert the chapter separator icon so a white-on-dark icon
+   becomes dark-on-white, matching the bright reading environment. */
 body.light-mode .chapter-separator img {
   filter: invert(1);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LAYOUT TRANSITION CURTAIN (kept for layout changes only)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-#scrolly-transition-curtain {
-  position: fixed;
-  inset:    0;
-  background:     var(--scrolly-bg-color, #111111);
-  z-index:        9998;
-  opacity:        0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   BREAKOUT BLOCKS
+   BREAKOUT BLOCKS (full-layout blocks inside left/right container)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-container.layout-right .chapter-content-block[data-layout="full"] {
   width:       76vw;
-  margin-left: -124%;
+  margin-left: -124%;          /* shift left by image col (42vw) relative to text col (34vw) */
   background-color: var(--scrolly-bg-color);
   z-index:   20;
   position:  relative;
@@ -468,6 +485,7 @@ body.light-mode .chapter-separator img {
 
   > * { width: 100%; max-width: 900px; }
 }
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TRIGGER MARKERS
@@ -497,6 +515,7 @@ body.light-mode .chapter-separator img {
   display:    block;
   max-width:  100%;
 }
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CHAPTER TITLE STYLING
@@ -540,8 +559,22 @@ body.light-mode .chapter-separator img {
   letter-spacing: -0.02em;
 }
 
+
+/* ── Layout Transition Curtain ───────────────────────────────────────────── */
+#scrolly-transition-curtain {
+  position: fixed;
+  inset:    0;
+  background:     var(--scrolly-bg-color, #111111);
+  z-index:        9998;
+  opacity:        0;
+  pointer-events: none;
+}
+
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   HIDE BACK-TO-TOP BUTTON
+   HIDE BACK-TO-TOP BUTTON in the reading interface
+   CollectionBuilder renders a #back-to-top or .back-to-top element globally.
+   Suppress it site-wide when the scrolly header is present.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #back-to-top,
@@ -553,8 +586,11 @@ body:has(#scrolly-container) .back-to-top {
   display: none !important;
 }
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   IMAGE LIGHTBOX
+   IMAGE LIGHTBOX / SPOTLIGHT
+   A full-screen overlay that centres an image when clicked.
+   The overlay is injected by scrollytelling-handler.js.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #scrolly-lightbox {
@@ -584,7 +620,7 @@ body:has(#scrolly-container) .back-to-top {
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
   transform:  scale(0.96);
   transition: transform 0.28s ease;
-  cursor:     default;
+  cursor:     default;          /* image itself doesn't show zoom-out cursor */
 }
 
 #scrolly-lightbox.active img {
@@ -597,7 +633,7 @@ body:has(#scrolly-container) .back-to-top {
   right: 1.5rem;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.65);
+  color: #CACACA;   /* base scale */
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
@@ -605,32 +641,36 @@ body:has(#scrolly-container) .back-to-top {
   transition: color 0.15s ease;
   z-index: 10001;
 }
-#scrolly-lightbox-close:hover { color: #fff; }
+#scrolly-lightbox-close:hover { color: #FFFFFF; }   /* focus on hover */
 
+/* Caption below the expanded image */
 #scrolly-lightbox-caption {
   position: absolute;
   bottom:   1.5rem;
   left:     50%;
   transform: translateX(-50%);
   font-size:  0.78em;
-  color:      rgba(255, 255, 255, 0.55);
+  color:      #8C8C8C;   /* muted — secondary metadata */
   text-align: center;
   max-width:  70vw;
   line-height: 1.4;
   pointer-events: none;
 }
 
+/* Clickable hint on sticky images */
 .scrolly-image-frame img,
 .scrolly-image-container img {
   cursor: zoom-in;
 }
 
+/* Inline full-layout images */
 .chapter-content-block[data-layout="full"] [data-trigger-type="image"] img {
   cursor: zoom-in;
 }
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE  (≤ 992px)
+   MOBILE  (≤ 992px) — REVISED FOR CHAPTER TITLE VISIBILITY
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 992px) {
@@ -651,34 +691,94 @@ body:has(#scrolly-container) .back-to-top {
     display: none !important;
   }
 
+  /* ═════════════════════════════════════════════════════════════════════════
+     IMAGE COLUMN — MOBILE
+     ═════════════════════════════════════════════════════════════════════════ */
   .scrolly-image-column {
     grid-area:  image !important;
     position:   sticky !important;
     top:        calc(var(--scrolly-header-h, 52px) + env(safe-area-inset-top, 0px)) !important;
-    height:     calc(50vh - var(--scrolly-header-h, 52px)) !important;
+    height:     calc(35vh - var(--scrolly-header-h, 52px)) !important;
     flex-direction: row !important;
     width:      100% !important;
-    padding-top: 0.75rem !important;
+    padding:    0.5rem 0 1.5rem 0 !important;
     z-index:    20 !important;
     background-color: var(--scrolly-bg-color, #111111);
     display:    flex !important;
     order:      1 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .scrolly-image-frame { flex: 1; width: 100%; height: 100%; }
+  body.light-mode .scrolly-image-column {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
 
+  .scrolly-image-frame { 
+    flex: 1; 
+    width: 100%; 
+    height: 100%;
+    padding: 0 1rem;
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     TEXT COLUMN — MOBILE
+     REVISED: Increased margin-top and adjusted gradient fade
+     ═════════════════════════════════════════════════════════════════════════ */
   .scrolly-text-column {
     grid-area:  text !important;
     border:     none !important;
     z-index:    1 !important;
     position:   relative !important;
-    margin-top: 6px !important;
+    /* REVISED: Increased from 2rem to 3rem for more clearance */
+    margin-top: 3rem !important;
     width:      100% !important;
     order:      2 !important;
   }
 
+  /* REVISED: Gradient fade overlay — reduced height so it doesn't cover titles */
+  .scrolly-text-column::before {
+    content:  '';
+    position: absolute;
+    top:      0;
+    left:     0;
+    right:    0;
+    /* REVISED: Reduced from 4em to 2.5em to clear chapter titles */
+    height:   2.5em;
+    background: linear-gradient(
+      to bottom,
+      var(--scrolly-bg-color, #111111) 0%,
+      transparent 100%
+    );
+    z-index:        5;
+    pointer-events: none;
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     TEXT CONTENT — MOBILE
+     REVISED: Increased top padding for title clearance
+     ═════════════════════════════════════════════════════════════════════════ */
   .scrolly-text-content {
-    padding: 30vh 8% calc(10rem + 2.8rem) !important;
+    /* REVISED: Increased top padding from 1rem to 2rem */
+    padding: 2rem 8% calc(10rem + 2.8rem) !important;
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     CHAPTER TITLES — MOBILE
+     REVISED: Additional top margin to ensure full visibility
+     ═════════════════════════════════════════════════════════════════════════ */
+  .scrolly-text-content .chapter-title {
+    /* REVISED: Increased margins for breathing room */
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    /* Ensure title isn't affected by any overflow hiding */
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Full layout chapter titles need extra clearance */
+  .scrolly-container.layout-full .chapter-title {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
   }
 
   .scrolly-container:not(.layout-full) .chapter-content-block[data-layout="full"] {
@@ -691,14 +791,5 @@ body:has(#scrolly-container) .back-to-top {
   .scrolly-container.layout-full .scrolly-citation-column {
     display:  none !important;
     position: static !important;
-  }
-
-  .chapter-separator {
-    padding-top: 8vh;
-    height: 40vh;
-    
-    &.large {
-      height: 55vh;
-    }
   }
 }

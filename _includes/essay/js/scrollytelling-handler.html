@@ -1215,11 +1215,11 @@ class ScrollyTelling {
     if (this.imageContainer) {
       this.imageContainer.style.backgroundColor   = bg;
     }
+
     if (this.citationColumnEl) {
-      this.citationColumnEl.style.backgroundColor =
-        isLight ? 'rgba(255,255,255,0)' : 'rgba(17,17,0)';
+      this.citationColumnEl.style.backgroundColor = bg;
     }
-    
+
     const toc = document.getElementById('scrolly-toc-sidebar');
     if (toc) {
       toc.style.backgroundColor = bg;
