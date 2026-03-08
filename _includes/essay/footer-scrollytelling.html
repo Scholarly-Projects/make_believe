@@ -1,168 +1,106 @@
 <style>
-/* Scrollytelling footer styles */
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLLYTELLING FOOTER
+   Shows on both desktop and mobile.
+   Desktop : [← Prev Title]          [Next Title →]
+   Mobile  : [←] [image title – View Item] [→]
+   ═══════════════════════════════════════════════════════════════════ */
+
 .scrolly-footer {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   z-index: 999;
+  height: 2.8rem;
   background-color: rgba(17, 17, 17, 0.95);
   backdrop-filter: blur(10px);
-  padding: 0.75rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.3s ease;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  gap: 0.75rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.scrolly-footer.light-mode {
+body.light-mode .scrolly-footer {
   background-color: rgba(255, 255, 255, 0.95);
   border-top-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Navigation arrows */
-.chapter-nav {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
-  display: flex;
+/* ── Nav links (prev / next) ─────────────────────────────────────── */
+.scrolly-footer-nav {
+  display:     flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
+  gap:         0.45rem;
   text-decoration: none;
+  color:       rgba(255, 255, 255, 0.68);
+  font-size:   0.8em;
+  max-width:   38%;
+  min-width:   0;
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+  cursor:      pointer;
+  transition:  color 0.15s ease, opacity 0.15s ease;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+.scrolly-footer-nav:hover { color: rgba(255, 255, 255, 0.95); }
+.scrolly-footer-nav[disabled] {
+  opacity: 0.25;
+  pointer-events: none;
 }
 
-.chapter-nav:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
-  transform: scale(1.1);
+body.light-mode .scrolly-footer-nav       { color: rgba(0, 0, 0, 0.52); }
+body.light-mode .scrolly-footer-nav:hover { color: rgba(0, 0, 0, 0.88); }
+
+.scrolly-footer-arrow {
+  font-size:   1.25em;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
-.chapter-nav:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  transform: none;
+.scrolly-footer-chapter-label {
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+  font-size:     0.88em;
 }
 
-.scrolly-footer.light-mode .chapter-nav {
-  color: rgba(0, 0, 0, 0.75);
-}
-
-.scrolly-footer.light-mode .chapter-nav:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: #000;
-}
-
-/* Citation wrapper */
-.scrolly-citation-wrapper {
-  display: flex;
-  flex: 1;
+/* ── Center zone — image citation on mobile ──────────────────────── */
+.scrolly-footer-center {
+  flex:            1 1 auto;
+  display:         none;   /* hidden on desktop */
+  align-items:     center;
   justify-content: center;
-  align-items: center;
-  min-width: 0;
-  max-width: 100%;
+  min-width:       0;
+  gap:             0.35rem;
+  font-size:       0.78em;
+  color:           rgba(255, 255, 255, 0.65);
+  overflow:        hidden;
 }
 
-/* Image citation — centered, full wrapper width */
-.scrolly-image-citation-footer {
-  font-size: 0.85em;
-  color: rgba(255, 255, 255, 0.85);
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity {{ site.data.theme.scrollytelling.fade-duration | default: 0.3 }}s ease,
-              transform {{ site.data.theme.scrollytelling.fade-duration | default: 0.3 }}s ease;
-  min-width: 0;
-  max-width: 70%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-sizing: border-box;
+body.light-mode .scrolly-footer-center { color: rgba(0, 0, 0, 0.52); }
+
+.scrolly-mobile-image-title {
+  font-style:    italic;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  flex-shrink:   1;
 }
 
-.scrolly-image-citation-footer.visible {
-  opacity: 1;
-  transform: translateY(0);
+.scrolly-mobile-view-link {
+  flex-shrink:          0;
+  color:                rgba(255, 255, 255, 0.45);
+  text-decoration:      underline;
+  text-underline-offset: 2px;
+  font-size:            0.92em;
+  white-space:          nowrap;
 }
+body.light-mode .scrolly-mobile-view-link { color: rgba(0, 0, 0, 0.42); }
 
-.scrolly-footer.light-mode .scrolly-image-citation-footer {
-  color: rgba(0, 0, 0, 0.75);
-}
-
-/* Citation content */
-.scrolly-citation-content {
-  width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  line-height: 1.4;
-  max-width: 100%;
-  text-align: center;
-}
-
-/* Citation label */
-.scrolly-citation-label {
-  font-size: 0.75em;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.35rem;
-  display: block;
-  color: rgba(255, 255, 255, 0.6);
-  width: 100%;
-  text-align: center;
-}
-
-.scrolly-footer.light-mode .scrolly-citation-label {
-  color: rgba(0, 0, 0, 0.5);
-}
-
-/* "View Item" link styling */
-.view-item-link {
-  display: inline-block;
-  margin-top: 0.25rem;
-  font-size: 0.85em;
-  color: var(--bs-link-color) !important;
-  text-decoration: underline !important;
-  opacity: 0.9;
-  transition: opacity 0.2s ease;
-}
-
-.view-item-link:hover {
-  opacity: 1;
-  text-decoration: underline !important;
-}
-
-/* ── Mobile title-only citation ──────────────────────────────────────────
-   Wraps freely so long titles never get clipped. Footer height grows to
-   fit; arrows are centered vertically via align-self.                   */
-.scrolly-mobile-citation {
-  display: none;                  /* hidden on desktop                   */
-  font-size: 0.78em;
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  line-height: 1.4;
-  min-width: 0;
-}
-
-.scrolly-footer.light-mode .scrolly-mobile-citation {
-  color: rgba(0, 0, 0, 0.75);
-}
-
-.scrolly-mobile-citation .mobile-image-title {
-  font-style: italic;
-}
-
-/* ── In-text footnote superscript links ─────────────────────────────── */
+/* ── In-text footnote superscript links ─────────────────────────── */
 .footnote-ref .footnote-link {
   color: inherit;
   text-decoration: none;
@@ -170,195 +108,211 @@
   padding-bottom: 1px;
   transition: color 0.15s ease, border-bottom-color 0.15s ease;
 }
-
 .footnote-ref .footnote-link:hover {
   color: var(--bs-link-color, #6ea8fe);
   border-bottom-style: solid;
 }
 
-/* ── Responsive ──────────────────────────────────────────────────────── */
+/* ── Mobile adjustments ──────────────────────────────────────────── */
 @media (max-width: 992px) {
   .scrolly-footer {
-    padding: 0.4rem 1.25rem !important;
-    min-height: unset !important;
-    align-items: stretch !important;  /* let children control their own vertical alignment */
-    flex-direction: row !important;
-    flex-wrap: nowrap;
+    height: auto;
+    min-height: 2.8rem;
+    padding: 0.4rem 0.85rem;
+    align-items: stretch;
   }
 
-  /* Arrows stay vertically centred regardless of how tall the citation grows */
-  .chapter-nav {
-    width: 36px !important;
-    height: auto !important;
-    font-size: 1.25rem !important;
-    align-self: center !important;
+  .scrolly-footer-nav {
+    align-self:  center;
+    max-width:   none;
     flex-shrink: 0;
-  }
-
-  /* Hide the full desktop citation; show the compact mobile version */
-  .scrolly-citation-wrapper {
-    display: none !important;
-  }
-
-  /* Mobile citation: wraps freely so long titles never get clipped */
-  .scrolly-mobile-citation {
-    display: flex !important;
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 0.35rem 0.5rem;
-    align-items: center;
+    width:       2.2rem;
     justify-content: center;
+  }
+
+  /* Hide desktop chapter labels; show only arrows on mobile */
+  .scrolly-footer-chapter-label { display: none; }
+
+  /* Show the mobile citation zone */
+  .scrolly-footer-center {
+    display:     flex;
+    align-self:  center;
     white-space: normal;
-    overflow: visible;
-    word-break: break-word;
+    overflow:    visible;
+    word-break:  break-word;
   }
 }
 </style>
 
 <footer class="scrolly-footer" id="scrolly-footer">
-  <!-- Previous Chapter Arrow -->
-  <a href="#" class="chapter-nav prev" id="prev-chapter" aria-label="Previous chapter" disabled>
-    ❮
+
+  <!-- Prev -->
+  <a class="scrolly-footer-nav scrolly-footer-prev"
+     id="scrolly-footer-prev"
+     href="#"
+     aria-label="Previous">
+    <span class="scrolly-footer-arrow">❮</span>
+    <span class="scrolly-footer-chapter-label" id="scrolly-footer-prev-label"></span>
   </a>
 
-  <!-- Desktop: full citation centered -->
-  <div class="scrolly-citation-wrapper">
-    <div class="scrolly-image-citation-footer" id="scrolly-image-citation-footer">
-      <span class="scrolly-citation-label">Image</span>
-      <div class="scrolly-citation-content">
-        <span id="scrolly-image-citation-content"></span>
-        <a href="#" class="view-item-link" id="scrolly-image-view-link" style="display:none">, View Item</a>
-      </div>
-    </div>
+  <!-- Center: mobile image citation only -->
+  <div class="scrolly-footer-center" id="scrolly-footer-center">
+    <span class="scrolly-mobile-image-title" id="scrolly-mobile-image-title"></span>
+    <a class="scrolly-mobile-view-link" id="scrolly-mobile-view-link" style="display:none;">— View Item</a>
   </div>
 
-  <!-- Mobile: title + View Item link only -->
-  <div class="scrolly-mobile-citation" id="scrolly-mobile-citation">
-    <span class="mobile-image-title" id="scrolly-mobile-image-title"></span><a href="#" class="view-item-link" id="scrolly-mobile-view-link" style="display:none">&thinsp;&mdash;&thinsp;View Item</a>
-  </div>
-
-  <!-- Next Chapter Arrow -->
-  <a href="#" class="chapter-nav next" id="next-chapter" aria-label="Next chapter" disabled>
-    ❯
+  <!-- Next -->
+  <a class="scrolly-footer-nav scrolly-footer-next"
+     id="scrolly-footer-next"
+     href="#"
+     aria-label="Next">
+    <span class="scrolly-footer-chapter-label" id="scrolly-footer-next-label"></span>
+    <span class="scrolly-footer-arrow">❯</span>
   </a>
+
 </footer>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var prevChapterLink = document.getElementById('prev-chapter');
-  var nextChapterLink = document.getElementById('next-chapter');
+(function () {
+  'use strict';
 
-  function normalize(url) {
-    return (url || '').replace(/\/$/, '').replace(/\.html$/, '');
-  }
-
-  // ── 1. Main site navigation sequence ─────────────────────────────────
-  var allNavItems = [
+  // ── 1. Full site navigation sequence (Liquid-generated) ────────────
+  window.allNavItems = [
     { url: '{{ "/" | relative_url }}', title: 'Home' },
     {% assign sorted_essays = site.essay | sort: 'order' %}
-    {% for item in sorted_essays %}
-    { url: '{{ item.url | relative_url }}', title: {{ item.title | jsonify }} },
+    {% for essay in sorted_essays %}
+    {
+      url:     '{{ essay.url | prepend: site.baseurl }}',
+      title:   {{ essay.title   | jsonify }},
+      chapter: {{ essay.chapter | jsonify }},
+      order:   {{ essay.order }}
+    },
     {% endfor %}
     {% for nav in site.data.config-nav %}
-    {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+      {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
     { url: '{{ nav.stub | relative_url }}', title: {{ nav.display_name | jsonify }} },
-    {% endunless %}
+      {% endunless %}
     {% endfor %}
-  ].filter(function(item) { return item.url; });
+  ].filter(function (item) { return item && item.url; });
 
-  // ── 2. Item-level page sequence ───────────────────────────────────────
-  var allItemPages = [
+  // ── 2. Item-page sequence (for arrow-key nav on /items/ pages) ─────
+  window.allItemPages = [
     {% for item in site.data[site.metadata] %}
     { url: '{{ site.baseurl }}/items/{{ item.objectid }}.html', title: {{ item.title | jsonify }} },
     {% endfor %}
-  ].filter(function(item) { return item.url; });
+  ].filter(function (item) { return item && item.url; });
 
-  var currentUrl = normalize(window.location.pathname);
-
-  var itemBasePattern = normalize('{{ site.baseurl }}/items/');
-  var onItemPage = currentUrl.startsWith(itemBasePattern) &&
-                   currentUrl.length > itemBasePattern.length;
-
-  // ── 3. Wire footer arrows to the main nav sequence ────────────────────
-  var mainIndex = allNavItems.findIndex(function(item) {
-    return normalize(item.url) === currentUrl;
-  });
-
-  console.log('[footer-scrollytelling] currentUrl:', currentUrl);
-  console.log('[footer-scrollytelling] mainIndex:', mainIndex, '/', allNavItems.length - 1);
-
-  if (prevChapterLink) {
-    if (mainIndex > 0) {
-      var prevItem = allNavItems[mainIndex - 1];
-      prevChapterLink.href                = prevItem.url;
-      prevChapterLink.removeAttribute('disabled');
-      prevChapterLink.style.opacity       = '1';
-      prevChapterLink.style.pointerEvents = '';
-      prevChapterLink.title               = 'Previous: ' + prevItem.title;
-    } else {
-      prevChapterLink.href                = '#';
-      prevChapterLink.setAttribute('disabled', 'disabled');
-      prevChapterLink.style.opacity       = '0.3';
-      prevChapterLink.style.pointerEvents = 'none';
-      prevChapterLink.title               = 'No previous';
-    }
+  // ── 3. Determine prev / next based on current page ─────────────────
+  function normalize(url) {
+    return (url || '').replace(window.location.origin, '').replace(/\/+$/, '').replace(/\.html$/, '');
   }
 
-  if (nextChapterLink) {
-    if (mainIndex >= 0 && mainIndex < allNavItems.length - 1) {
-      var nextItem = allNavItems[mainIndex + 1];
-      nextChapterLink.href                = nextItem.url;
-      nextChapterLink.removeAttribute('disabled');
-      nextChapterLink.style.opacity       = '1';
-      nextChapterLink.style.pointerEvents = '';
-      nextChapterLink.title               = 'Next: ' + nextItem.title;
-    } else if (mainIndex === allNavItems.length - 1) {
-      nextChapterLink.href                = allNavItems[0].url;
-      nextChapterLink.removeAttribute('disabled');
-      nextChapterLink.style.opacity       = '1';
-      nextChapterLink.style.pointerEvents = '';
-      nextChapterLink.title               = 'Back to: ' + allNavItems[0].title;
-    } else {
-      nextChapterLink.href                = allNavItems[0].url;
-      nextChapterLink.removeAttribute('disabled');
-      nextChapterLink.style.opacity       = '1';
-      nextChapterLink.style.pointerEvents = '';
-      nextChapterLink.title               = 'Back to: ' + allNavItems[0].title;
-    }
-  }
+  var currentPath   = normalize(window.location.pathname);
+  var itemBase      = normalize('{{ site.baseurl }}/items/');
+  var onItemPage    = currentPath.startsWith(itemBase) && currentPath.length > itemBase.length;
 
-  // ── 4. Keyboard navigation ────────────────────────────────────────────
-  var keyPrevUrl = null;
-  var keyNextUrl = null;
+  var prevUrl = null, prevTitle = null;
+  var nextUrl = null, nextTitle = null;
 
   if (onItemPage) {
-    var itemIndex = allItemPages.findIndex(function(item) {
-      return normalize(item.url) === currentUrl;
+    // Item pages: cycle through all items
+    var itemIdx = window.allItemPages.findIndex(function (p) {
+      return normalize(p.url) === currentPath;
     });
 
-    keyPrevUrl = (itemIndex > 0)
-      ? allItemPages[itemIndex - 1].url
-      : allItemPages[allItemPages.length - 1].url;
+    if (itemIdx > 0) {
+      prevUrl   = window.allItemPages[itemIdx - 1].url;
+      prevTitle = window.allItemPages[itemIdx - 1].title;
+    } else if (itemIdx === 0) {
+      // Wrap to last item
+      prevUrl   = window.allItemPages[window.allItemPages.length - 1].url;
+      prevTitle = window.allItemPages[window.allItemPages.length - 1].title;
+    }
 
-    keyNextUrl = (itemIndex >= 0 && itemIndex < allItemPages.length - 1)
-      ? allItemPages[itemIndex + 1].url
-      : allItemPages[0].url;
+    if (itemIdx >= 0 && itemIdx < window.allItemPages.length - 1) {
+      nextUrl   = window.allItemPages[itemIdx + 1].url;
+      nextTitle = window.allItemPages[itemIdx + 1].title;
+    } else if (itemIdx === window.allItemPages.length - 1) {
+      // Wrap to first item
+      nextUrl   = window.allItemPages[0].url;
+      nextTitle = window.allItemPages[0].title;
+    }
+
   } else {
-    keyPrevUrl = (prevChapterLink && !prevChapterLink.hasAttribute('disabled'))
-      ? prevChapterLink.getAttribute('href') : null;
-    keyNextUrl = nextChapterLink
-      ? nextChapterLink.getAttribute('href') : null;
+    // Main sequence: home → essays → config-nav → (last → home)
+    var navIdx = window.allNavItems.findIndex(function (item) {
+      return normalize(item.url) === currentPath;
+    });
+
+    if (navIdx > 0) {
+      prevUrl   = window.allNavItems[navIdx - 1].url;
+      prevTitle = window.allNavItems[navIdx - 1].title;
+    }
+    // Home (idx 0) has no prev — left arrow is disabled.
+
+    if (navIdx >= 0 && navIdx < window.allNavItems.length - 1) {
+      nextUrl   = window.allNavItems[navIdx + 1].url;
+      nextTitle = window.allNavItems[navIdx + 1].title;
+    } else if (navIdx === window.allNavItems.length - 1) {
+      // Last item → cycle back to Home
+      nextUrl   = window.allNavItems[0].url;
+      nextTitle = window.allNavItems[0].title;
+    }
   }
 
-  document.addEventListener('keydown', function(e) {
+  // ── 4. Wire up footer buttons ──────────────────────────────────────
+  var prevEl        = document.getElementById('scrolly-footer-prev');
+  var nextEl        = document.getElementById('scrolly-footer-next');
+  var prevLabelEl   = document.getElementById('scrolly-footer-prev-label');
+  var nextLabelEl   = document.getElementById('scrolly-footer-next-label');
+
+  function applyNav(el, labelEl, url, title) {
+    if (!el) return;
+    if (url) {
+      el.href = url;
+      el.removeAttribute('disabled');
+      el.style.opacity       = '';
+      el.style.pointerEvents = '';
+      if (labelEl) labelEl.textContent = title || '';
+    } else {
+      el.setAttribute('disabled', 'disabled');
+      el.style.opacity       = '0.25';
+      el.style.pointerEvents = 'none';
+      if (labelEl) labelEl.textContent = '';
+    }
+  }
+
+  applyNav(prevEl, prevLabelEl, prevUrl, prevTitle);
+  applyNav(nextEl, nextLabelEl, nextUrl, nextTitle);
+
+  // ── 5. Keyboard navigation ─────────────────────────────────────────
+  // Exposed so the scrollytelling JS handler can check if the footer
+  // is managing keyboard events and skip its own listener.
+  window.scrollyFooterOwnsKeyboard = true;
+
+  document.addEventListener('keydown', function (e) {
     var tag = document.activeElement ? document.activeElement.tagName : '';
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (document.activeElement && document.activeElement.isContentEditable) return;
 
-    if (e.key === 'ArrowLeft' || e.key === 'Left') {
-      if (keyPrevUrl && keyPrevUrl !== '#') window.location.href = keyPrevUrl;
-    } else if (e.key === 'ArrowRight' || e.key === 'Right') {
-      if (keyNextUrl && keyNextUrl !== '#') window.location.href = keyNextUrl;
+    if ((e.key === 'ArrowLeft'  || e.key === 'Left')  && prevUrl) {
+      e.preventDefault();
+      window.location.href = prevUrl;
+    } else if ((e.key === 'ArrowRight' || e.key === 'Right') && nextUrl) {
+      e.preventDefault();
+      window.location.href = nextUrl;
     }
   });
-});
+
+  // ── 6. Light-mode sync ─────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    // updateTheme() in the handler also handles the footer background via
+    // CSS variables; this covers the case where theme is toggled live.
+    new MutationObserver(function () {
+      var footer = document.getElementById('scrolly-footer');
+      if (footer) footer.classList.toggle('light-mode', document.body.classList.contains('light-mode'));
+    }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  });
+
+}());
 </script>

@@ -63,8 +63,7 @@ window.allEssays = [
     </ul>
   </aside>
 
-  <!-- ── 2. TEXT COLUMN ──────────────────────────────────────────────── -->
-  <!-- In layout-left the text column precedes the image column in the grid -->
+  <!-- ── 2. TEXT COLUMN (left layout: text before image in grid) ──────── -->
   <div class="scrolly-text-column" id="scrolly-text">
     <div class="scrolly-text-content chapter-content-block"
          data-chapter-path="{{ page.url | prepend: site.baseurl }}"
@@ -99,18 +98,9 @@ window.allEssays = [
     </div>
   </div>
 
-  <!-- ── 4. CITATION COLUMN (injected by JS) ─────────────────────────── -->
+  <!-- ── 4. CITATION COLUMN (JS-created) ─────────────────────────────── -->
 
 </div><!-- /.scrolly-container -->
 
-<!-- ── 5. MOBILE CITATION BAR ────────────────────────────────────────── -->
-<div class="scrolly-mobile-citation-bar" id="scrolly-mobile-citation">
-  <button class="scrolly-mobile-nav-btn" id="scrolly-mobile-prev"
-          aria-label="Previous chapter" title="Previous chapter">&#8249;</button>
-  <div class="mobile-citation-center">
-    <span class="mobile-citation-title" id="scrolly-mobile-image-title"></span>
-    <a class="mobile-view-link" id="scrolly-mobile-view-link" style="display:none;">— View Item</a>
-  </div>
-  <button class="scrolly-mobile-nav-btn" id="scrolly-mobile-next"
-          aria-label="Next chapter" title="Next chapter">&#8250;</button>
-</div>
+<!-- ── 5. FOOTER (desktop + mobile prev/next navigation) ─────────────── -->
+{% include essay/footer-scrollytelling.html %}

@@ -69,7 +69,7 @@ window.allEssays = [
       <div class="scrolly-image-container" id="scrolly-image-container"></div>
     </div>
 
-    <!-- Desktop: image citation sits below the frame, replaces the old footer -->
+    <!-- Desktop: image citation sits below the frame -->
     <div class="scrolly-image-citation-desktop" id="scrolly-image-citation-footer">
       <div id="scrolly-image-citation-content"></div>
       <a id="scrolly-image-view-link"
@@ -98,22 +98,9 @@ window.allEssays = [
     </div>
   </div>
 
-  <!-- ── 4. CITATION COLUMN (JS-created, but reserve the grid area) ─── -->
-  <!-- scrollytelling-handler.js will inject #scrolly-citation-display here -->
+  <!-- ── 4. CITATION COLUMN (JS-created) ─────────────────────────────── -->
 
 </div><!-- /.scrolly-container -->
 
-<!-- ── 5. MOBILE CITATION BAR (fixed bottom, hidden on desktop) ──────── -->
-<div class="scrolly-mobile-citation-bar" id="scrolly-mobile-citation">
-  <!-- ‹ Prev chapter -->
-  <button class="scrolly-mobile-nav-btn" id="scrolly-mobile-prev"
-          aria-label="Previous chapter" title="Previous chapter">&#8249;</button>
-  <!-- Citation centre zone -->
-  <div class="mobile-citation-center">
-    <span class="mobile-citation-title" id="scrolly-mobile-image-title"></span>
-    <a class="mobile-view-link" id="scrolly-mobile-view-link" style="display:none;">— View Item</a>
-  </div>
-  <!-- Next chapter › -->
-  <button class="scrolly-mobile-nav-btn" id="scrolly-mobile-next"
-          aria-label="Next chapter" title="Next chapter">&#8250;</button>
-</div>
+<!-- ── 5. FOOTER (desktop + mobile prev/next navigation) ─────────────── -->
+{% include essay/footer-scrollytelling.html %}

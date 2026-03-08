@@ -57,10 +57,10 @@ class ScrollyTelling {
     this.activeFullLayoutImageId = null;
 
     // DOM Elements
-    this.textColumn      = document.getElementById('scrolly-text');
-    this.imageContainer  = document.getElementById('scrolly-image-container');
+    this.textColumn       = document.getElementById('scrolly-text');
+    this.imageContainer   = document.getElementById('scrolly-image-container');
     this.scrollyContainer = document.getElementById('scrolly-container');
-    this.textContentEl   = document.querySelector('.scrolly-text-content');
+    this.textContentEl    = document.querySelector('.scrolly-text-content');
     this.loadingIndicatorEl = document.getElementById('chapter-loading-indicator');
 
     // Citation sidebar — created in init()
@@ -132,91 +132,19 @@ class ScrollyTelling {
     this.populateTocSections(this.textContentEl);
     this.updateTocActiveChapter(idx);
 
-    // ── Desktop: left/right arrow key navigation ─────────────────────
-    document.addEventListener('keydown', (e) => {
-      // Only fire on desktop (where the mobile footer is hidden).
-      // Skip if a text input / textarea is focused.
-      const tag = document.activeElement && document.activeElement.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (document.activeElement && document.activeElement.isContentEditable) return;
+    // ── Keyboard navigation is handled by footer-scrollytelling.html ─
+    // (window.scrollyFooterOwnsKeyboard === true when footer is loaded)
+    // No keyboard listener registered here to avoid conflicts.
 
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        this._keyboardNavigate('next');
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        this._keyboardNavigate('prev');
-      }
-    });
+    // ── Lightbox ─────────────────────────────────────────────────────
+    this.setupLightbox();
 
-    // ── Mobile: prev/next chapter buttons in the footer bar ──────────
-    const mobileNext = document.getElementById('scrolly-mobile-next');
-    const mobilePrev = document.getElementById('scrolly-mobile-prev');
-    if (mobileNext) mobileNext.addEventListener('click', () => this._keyboardNavigate('next'));
-    if (mobilePrev) mobilePrev.addEventListener('click', () => this._keyboardNavigate('prev'));
-
-    // Keep nav button disabled state in sync
-    this._updateMobileNavButtons();
-  }
-
-
-  // ─────────────────────────────────────────────────────────────────
-  // CHAPTER NAVIGATION (keyboard + mobile buttons)
-  // ─────────────────────────────────────────────────────────────────
-
-  /**
-   * Navigate to the previous or next chapter in allEssays order.
-   * Used by both desktop keyboard arrows and mobile footer buttons.
-   */
-  async _keyboardNavigate(direction) {
-    if (this.isTransitioning || this.isLoading) return;
-
-    const isNext   = direction === 'next';
-    const targetIdx = isNext
-      ? this.activeChapterIndex + 1
-      : this.activeChapterIndex - 1;
-
-    if (targetIdx < 0 || targetIdx >= this.allEssays.length) return;
-
-    const targetEssay = this.allEssays[targetIdx];
-
-    // If the target block is already loaded, scroll to its top.
-    const normalizedUrl = this.normalizeUrl(targetEssay.url);
-    const existingBlock = document.querySelector(`[data-chapter-path="${normalizedUrl}"]`);
-
-    if (existingBlock) {
-      const headerH = parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue('--scrolly-header-h')
-      ) || 52;
-      const y = existingBlock.getBoundingClientRect().top + window.scrollY - headerH - 16;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    } else {
-      // Load the chapter first, then scroll
-      await this.loadChapter(direction);
-      await new Promise(r => setTimeout(r, 400));   // wait for DOM insertion
-      const newBlock = document.querySelector(`[data-chapter-path="${normalizedUrl}"]`);
-      if (newBlock) {
-        const headerH = parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue('--scrolly-header-h')
-        ) || 52;
-        const y = newBlock.getBoundingClientRect().top + window.scrollY - headerH - 16;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    }
-
-    this._updateMobileNavButtons();
-  }
-
-
-  /**
-   * Sync the disabled state of the mobile prev/next buttons
-   * based on the active chapter position in the list.
-   */
-  _updateMobileNavButtons() {
-    const prevBtn = document.getElementById('scrolly-mobile-prev');
-    const nextBtn = document.getElementById('scrolly-mobile-next');
-    if (prevBtn) prevBtn.disabled = this.activeChapterIndex <= 0;
-    if (nextBtn) nextBtn.disabled = this.activeChapterIndex >= this.allEssays.length - 1;
+    // ── Suppress CollectionBuilder's back-to-top button ──────────────
+    // _base.scss injects a #scroll-to-top element controlled by
+    // window.onscroll which sets element.style.display = "block" inline.
+    // CSS !important can't reliably beat a JS inline-style set in a later
+    // event, so we neutralize it here instead.
+    this._suppressBackToTop();
   }
 
 
@@ -308,6 +236,9 @@ class ScrollyTelling {
 
     // Populate TOC section links for this block
     this.populateTocSections(block);
+
+    // Wire lightbox on any images in this block
+    if (this._wireLightboxOnInlineImages) this._wireLightboxOnInlineImages();
   }
 
 
@@ -370,11 +301,6 @@ class ScrollyTelling {
   // TOC MANAGEMENT
   // ─────────────────────────────────────────────────────────────────
 
-  /**
-   * Scans a chapter block for <hr> elements (rendered from `---` in the
-   * essay Markdown) and adds a clickable dash-rule marker to the TOC for
-   * each one.  Each <hr> gets a unique id so the rule can scroll-link to it.
-   */
   populateTocSections(block) {
     if (!this.tocList) return;
 
@@ -390,30 +316,23 @@ class ScrollyTelling {
     const sectionUl = document.getElementById(`toc-sections-${essay.order}`);
     if (!sectionUl) return;
 
-    // Only populate once per chapter block
     if (sectionUl.dataset.populated === 'true') return;
 
-    // Find all horizontal rules — these come from `---` section breaks
     const hrs = block.querySelectorAll('hr');
     if (!hrs.length) return;
 
     const headerH = () => parseFloat(
-      getComputedStyle(document.documentElement)
-        .getPropertyValue('--scrolly-header-h')
+      getComputedStyle(document.documentElement).getPropertyValue('--scrolly-header-h')
     ) || 52;
 
     const fragment = document.createDocumentFragment();
     hrs.forEach((hr, i) => {
-      // Stamp a unique id on the <hr> itself if it doesn't have one
-      if (!hr.id) {
-        hr.id = `section-break-${essay.order}-${i + 1}`;
-      }
+      if (!hr.id) hr.id = `section-break-${essay.order}-${i + 1}`;
 
       const li = document.createElement('li');
-      // <a> is rendered as a thin horizontal bar via .toc-section-rule CSS
       const a  = document.createElement('a');
-      a.href             = `#${hr.id}`;
-      a.className        = 'toc-section-rule';
+      a.href              = `#${hr.id}`;
+      a.className         = 'toc-section-rule';
       a.setAttribute('aria-label', `Section break ${i + 1} of chapter ${essay.order}`);
       a.dataset.sectionId = hr.id;
 
@@ -436,9 +355,6 @@ class ScrollyTelling {
   }
 
 
-  /**
-   * Sets the active chapter link in the TOC and updates section visibility.
-   */
   updateTocActiveChapter(chapterIdx) {
     if (!this.tocList) return;
 
@@ -452,7 +368,6 @@ class ScrollyTelling {
       link.classList.toggle('toc-active', isActive);
     });
 
-    // Show section list for active chapter; collapse others
     this.tocList.querySelectorAll('.toc-section-list').forEach(ul => {
       const ulUrl = this.normalizeUrl(ul.dataset.tocChapterUrl || '');
       ul.style.display = (ulUrl === targetUrl && ul.children.length > 0) ? '' : 'none';
@@ -460,10 +375,6 @@ class ScrollyTelling {
   }
 
 
-  /**
-   * Highlights the closest section-break rule as the reader scrolls.
-   * Targets .toc-section-rule elements (the HR-derived dash markers).
-   */
   updateTocSectionActive(triggerThreshold) {
     const rules = this.tocList
       ? this.tocList.querySelectorAll('.toc-section-rule')
@@ -475,9 +386,7 @@ class ScrollyTelling {
       const id     = rule.dataset.sectionId;
       const target = id ? document.getElementById(id) : null;
       if (!target) return;
-      if (target.getBoundingClientRect().top <= triggerThreshold) {
-        activeRule = rule;
-      }
+      if (target.getBoundingClientRect().top <= triggerThreshold) activeRule = rule;
     });
 
     rules.forEach(rule => {
@@ -577,18 +486,17 @@ class ScrollyTelling {
 
 
   /**
-   * Updates citation content in:
-   *   • Desktop: #scrolly-image-citation-footer / #scrolly-image-citation-content
-   *   • Mobile:  #scrolly-mobile-citation / #scrolly-mobile-image-title
+   * Updates:
+   *   Desktop  — #scrolly-image-citation-footer / #scrolly-image-citation-content
+   *   Mobile   — #scrolly-mobile-image-title (in the footer) + view link
    */
   updateFooterImageCitation(objectid) {
-    // ── Desktop elements ────────────────────────────────────────────
+    // ── Desktop elements (below image panel) ────────────────────────
     const desktopContent = document.getElementById('scrolly-image-citation-content');
     const desktopWrapper = document.getElementById('scrolly-image-citation-footer');
     const desktopLink    = document.getElementById('scrolly-image-view-link');
 
-    // ── Mobile elements ─────────────────────────────────────────────
-    const mobileWrapper  = document.getElementById('scrolly-mobile-citation');
+    // ── Mobile elements (in the fixed footer bar) ───────────────────
     const mobileTitleEl  = document.getElementById('scrolly-mobile-image-title');
     const mobileViewLink = document.getElementById('scrolly-mobile-view-link');
 
@@ -596,7 +504,7 @@ class ScrollyTelling {
       const meta    = window.collectionMetadata[objectid];
       const itemUrl = `{{ site.baseurl }}/items/${objectid}.html`;
 
-      // Desktop
+      // Desktop (below image)
       if (desktopContent) {
         desktopContent.innerHTML = meta.image_citation
           ? this.formatCitation(meta.image_citation)
@@ -605,7 +513,7 @@ class ScrollyTelling {
       if (desktopLink)    { desktopLink.href = itemUrl; desktopLink.style.display = 'inline'; }
       if (desktopWrapper) desktopWrapper.classList.add('visible');
 
-      // Mobile
+      // Mobile footer
       if (mobileTitleEl)  mobileTitleEl.textContent = meta.title || '';
       if (mobileViewLink) { mobileViewLink.href = itemUrl; mobileViewLink.style.display = 'inline'; }
 
@@ -615,7 +523,7 @@ class ScrollyTelling {
       if (desktopLink)    desktopLink.style.display = 'none';
       if (desktopWrapper) desktopWrapper.classList.remove('visible');
 
-      // Clear mobile
+      // Clear mobile footer
       if (mobileTitleEl)  mobileTitleEl.textContent = '';
       if (mobileViewLink) mobileViewLink.style.display = 'none';
     }
@@ -759,11 +667,11 @@ class ScrollyTelling {
 
     this.transitionPromise = this._performLayoutTransition(newLayout)
       .finally(() => {
-        this.isTransitioning  = false;
+        this.isTransitioning   = false;
         this.transitionPromise = null;
 
         if (this.pendingLayout && this.pendingLayout !== this.currentLayout) {
-          const nextLayout  = this.pendingLayout;
+          const nextLayout   = this.pendingLayout;
           this.pendingLayout = null;
           setTimeout(() => this.applyLayoutTransition(nextLayout), 50);
         }
@@ -1092,13 +1000,13 @@ class ScrollyTelling {
     if (existingBlocks.length > 0) {
       if (existingBlocks.length > 1) {
         for (let i = 1; i < existingBlocks.length; i++) {
-          const dup = existingBlocks[i];
+          const dup  = existingBlocks[i];
           const prev = dup.previousElementSibling;
           if (prev && prev.classList.contains('chapter-separator')) prev.remove();
           dup.remove();
         }
       }
-      if (isNext && targetIdx > this.loadedRange.end)    this.loadedRange.end = targetIdx;
+      if (isNext  && targetIdx > this.loadedRange.end)   this.loadedRange.end   = targetIdx;
       if (!isNext && targetIdx < this.loadedRange.start) this.loadedRange.start = targetIdx;
       this.isLoading = false;
       return;
@@ -1112,13 +1020,13 @@ class ScrollyTelling {
 
       if (source) {
         const newBlock = document.createElement('div');
-        newBlock.className = 'scrolly-text-content chapter-content-block';
+        newBlock.className            = 'scrolly-text-content chapter-content-block';
         newBlock.dataset.chapterPath  = normalizedUrl;
         newBlock.dataset.layout       = source.dataset.layout || 'right';
         newBlock.innerHTML            = source.innerHTML;
 
-        const newLayout      = newBlock.dataset.layout;
-        let adjacentLayout   = null;
+        const newLayout    = newBlock.dataset.layout;
+        let adjacentLayout = null;
 
         if (isNext) {
           const blocks    = document.querySelectorAll('.chapter-content-block');
@@ -1129,8 +1037,8 @@ class ScrollyTelling {
           adjacentLayout   = firstBlock ? firstBlock.dataset.layout : null;
         }
 
-        const needsLargeSeparator  = newLayout === 'full' || adjacentLayout === 'full';
-        const isBeforeFullLayout   = newLayout === 'full';
+        const needsLargeSeparator = newLayout === 'full' || adjacentLayout === 'full';
+        const isBeforeFullLayout  = newLayout === 'full';
         const newSeparator = this.createChapterSeparator(needsLargeSeparator, isBeforeFullLayout);
 
         if (isNext) {
@@ -1140,7 +1048,7 @@ class ScrollyTelling {
           this.processNewBlock(newBlock);
           this.observeSeparator(newSeparator);
         } else {
-          const scrollYBefore  = window.scrollY;
+          const scrollYBefore   = window.scrollY;
           const docHeightBefore = document.documentElement.scrollHeight;
 
           this.layoutObserverPaused = true;
@@ -1183,9 +1091,9 @@ class ScrollyTelling {
     let topThreshold    = 1000;
 
     if (this.loadedRange.end < this.allEssays.length - 1) {
-      const nextChapter  = this.allEssays[this.loadedRange.end + 1];
-      const currentLast  = Array.from(document.querySelectorAll('.chapter-content-block')).pop();
-      const nextBlock    = document.querySelector(
+      const nextChapter = this.allEssays[this.loadedRange.end + 1];
+      const currentLast = Array.from(document.querySelectorAll('.chapter-content-block')).pop();
+      const nextBlock   = document.querySelector(
         `[data-chapter-path="${this.normalizeUrl(nextChapter.url)}"]`
       );
       if ((currentLast && currentLast.dataset.layout === 'full') ||
@@ -1220,7 +1128,7 @@ class ScrollyTelling {
   createChapterSeparator(isLarge = false, isBeforeFullLayout = false) {
     const sep = document.createElement('div');
     if (isBeforeFullLayout) {
-      sep.className = 'chapter-separator large full-layout-separator';
+      sep.className      = 'chapter-separator large full-layout-separator';
       sep.style.marginBottom = '150vh';
       sep.style.paddingTop   = '50vh';
     } else if (isLarge) {
@@ -1295,9 +1203,6 @@ class ScrollyTelling {
       `[data-chapter-path="${this.normalizeUrl(essay.url)}"]`
     );
     if (block) this.updateHistory(block);
-
-    // Keep mobile nav button disabled state in sync
-    this._updateMobileNavButtons();
   }
 
   setupThemeObserver() {
@@ -1307,34 +1212,32 @@ class ScrollyTelling {
 
   updateTheme() {
     const isLight = document.body.classList.contains('light-mode');
-    const light   = isLight ? '#ffffff' : '#111111';
-    const dark    = isLight ? '#1a1a1a' : '#f0f0f0';
+    const bg      = isLight ? '#ffffff' : '#111111';
+    const fg      = isLight ? '#1a1a1a' : '#f0f0f0';
 
     if (this.scrollyContainer) {
-      this.scrollyContainer.style.backgroundColor = light;
-      this.scrollyContainer.style.color           = dark;
+      this.scrollyContainer.style.backgroundColor = bg;
+      this.scrollyContainer.style.color           = fg;
     }
     if (this.imageContainer) {
-      this.imageContainer.style.backgroundColor   = light;
+      this.imageContainer.style.backgroundColor   = bg;
     }
     if (this.citationColumnEl) {
       this.citationColumnEl.style.backgroundColor =
         isLight ? 'rgba(255,255,255,0)' : 'rgba(17,17,17,0)';
     }
 
-    // TOC sidebar
     const toc = document.getElementById('scrolly-toc-sidebar');
     if (toc) {
-      toc.style.backgroundColor = light;
+      toc.style.backgroundColor = bg;
       toc.style.borderRightColor = isLight
         ? 'rgba(0,0,0,0.08)'
         : 'rgba(255,255,255,0.08)';
     }
 
-    // Desktop citation below image
     const citationDesktop = document.getElementById('scrolly-image-citation-footer');
     if (citationDesktop) {
-      citationDesktop.style.backgroundColor = light;
+      citationDesktop.style.backgroundColor = bg;
       citationDesktop.style.color = isLight
         ? 'rgba(0,0,0,0.5)'
         : 'rgba(255,255,255,0.5)';
@@ -1345,6 +1248,193 @@ class ScrollyTelling {
         ? 'rgba(0,0,0,0.15)'
         : 'rgba(255,255,255,0.2)';
     });
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────
+  // BACK-TO-TOP SUPPRESSION
+  // ─────────────────────────────────────────────────────────────────
+
+  /**
+   * CollectionBuilder's _base.scss include renders a #scroll-to-top button
+   * and wires window.onscroll to show/hide it via element.style.display.
+   * Because that inline style is applied after the page loads it can race
+   * against CSS rules.  We handle it in JS instead:
+   *   1. Hide the element immediately.
+   *   2. Replace window.onscroll with a no-op so the CB handler never fires.
+   *   3. Use a MutationObserver as a safety net to catch any re-show attempt.
+   */
+  _suppressBackToTop() {
+    const hide = () => {
+      const el = document.getElementById('scroll-to-top');
+      if (el) {
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+        el.style.setProperty('pointer-events', 'none', 'important');
+        el.setAttribute('aria-hidden', 'true');
+      }
+    };
+
+    // 1. Hide immediately.
+    hide();
+
+    // 2. Overwrite the CB scroll handler so it can never set display:"block".
+    //    Wrap rather than replace outright in case other code also uses onscroll.
+    const originalOnscroll = window.onscroll;
+    window.onscroll = function (e) {
+      // Suppress CB's handler entirely — our footer handles navigation.
+      // If there was a different onscroll already (unlikely), preserve it
+      // only when it isn't the CB one (CB handler references scroll-to-top).
+      if (originalOnscroll) {
+        const src = originalOnscroll.toString();
+        if (!src.includes('scroll-to-top')) {
+          originalOnscroll.call(this, e);
+        }
+      }
+      // Always re-hide after any onscroll fires.
+      hide();
+    };
+
+    // 3. MutationObserver safety net — catches any late setAttribute / style change.
+    const el = document.getElementById('scroll-to-top');
+    if (el) {
+      new MutationObserver(hide).observe(el, {
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      });
+    }
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────
+  // LIGHTBOX
+  // ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Build the lightbox overlay DOM once, then wire click listeners on:
+   *   - the sticky image container (left/right layouts)
+   *   - inline full-layout images (added when new blocks are processed)
+   * Re-calling this after new chapters load is safe — processed images
+   * are stamped with data-lightbox-ready to avoid duplicate listeners.
+   */
+  setupLightbox() {
+    // Build overlay if it doesn't exist yet
+    if (!document.getElementById('scrolly-lightbox')) {
+      const overlay = document.createElement('div');
+      overlay.id = 'scrolly-lightbox';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-label', 'Image lightbox');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.id = 'scrolly-lightbox-close';
+      closeBtn.textContent = '×';
+      closeBtn.setAttribute('aria-label', 'Close lightbox');
+
+      const img = document.createElement('img');
+      img.id  = 'scrolly-lightbox-img';
+      img.alt = '';
+
+      const caption = document.createElement('div');
+      caption.id = 'scrolly-lightbox-caption';
+
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(img);
+      overlay.appendChild(caption);
+      document.body.appendChild(overlay);
+
+      // Close on overlay background click
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) this.closeLightbox();
+      });
+
+      // Close button
+      closeBtn.addEventListener('click', () => this.closeLightbox());
+
+      // Escape key — only when lightbox is open
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+          e.preventDefault();
+          this.closeLightbox();
+        }
+      });
+    }
+
+    // Wire sticky image panel click (layout-left / layout-right)
+    if (this.imageContainer && !this.imageContainer.dataset.lightboxWired) {
+      this.imageContainer.addEventListener('click', (e) => {
+        if (this.currentLayout === 'full') return;
+        const img = e.target.closest('img');
+        if (!img) return;
+
+        const meta = img.dataset.objectid
+          ? window.collectionMetadata[img.dataset.objectid]
+          : null;
+
+        const captionText = meta
+          ? this.formatCitation(meta.image_citation || meta.title || '')
+          : '';
+
+        this.openLightbox(img.src, captionText);
+      });
+      this.imageContainer.dataset.lightboxWired = 'true';
+    }
+
+    // Wire inline full-layout images (already in DOM or just added)
+    this._wireLightboxOnInlineImages();
+  }
+
+
+  /**
+   * Attach lightbox click handlers to inline images inside full-layout blocks.
+   * Safe to call multiple times; each image is stamped once.
+   */
+  _wireLightboxOnInlineImages() {
+    document.querySelectorAll(
+      '.chapter-content-block[data-layout="full"] [data-trigger-type="image"] img'
+    ).forEach(img => {
+      if (img.dataset.lightboxReady) return;
+      img.dataset.lightboxReady = 'true';
+
+      img.addEventListener('click', () => {
+        const trigger  = img.closest('[data-trigger-type="image"]');
+        const objId    = trigger ? trigger.dataset.triggerId : null;
+        const meta     = objId ? window.collectionMetadata[objId] : null;
+        const caption  = meta
+          ? this.formatCitation(meta.image_citation || meta.title || '')
+          : '';
+        this.openLightbox(img.src, caption);
+      });
+    });
+  }
+
+
+  openLightbox(src, caption) {
+    const overlay    = document.getElementById('scrolly-lightbox');
+    const imgEl      = document.getElementById('scrolly-lightbox-img');
+    const captionEl  = document.getElementById('scrolly-lightbox-caption');
+    if (!overlay || !imgEl) return;
+
+    imgEl.src            = src;
+    captionEl.innerHTML  = caption || '';
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // Wire inline images that arrived after setup (e.g. from lazy hydration)
+    this._wireLightboxOnInlineImages();
+  }
+
+
+  closeLightbox() {
+    const overlay = document.getElementById('scrolly-lightbox');
+    if (!overlay) return;
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    // Blank src after transition so there's no flash of old image on next open
+    setTimeout(() => {
+      const imgEl = document.getElementById('scrolly-lightbox-img');
+      if (imgEl && !overlay.classList.contains('active')) imgEl.src = '';
+    }, 300);
   }
 }
 

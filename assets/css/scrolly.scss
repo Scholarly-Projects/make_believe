@@ -74,12 +74,10 @@ body.light-mode .scrolly-text-content hr,
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LAYOUT GRID
-   TOC column is 170px — same as citation — so both sidebars have equal width.
-   The .scrolly-toc-sidebar uses position:fixed and overlays the 170px gutter.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-container.layout-right {
-  grid-template-columns: 14% 40% 36% 10%;
+  grid-template-columns: 14% 42% 34% 10%;
   grid-template-areas:   "toc image text citation";
   align-items: flex-start;
 
@@ -89,7 +87,7 @@ body.light-mode .scrolly-text-content hr,
 }
 
 .scrolly-container.layout-left {
-  grid-template-columns: 14% 36% 40% 10%;
+  grid-template-columns: 14% 34% 42% 10%;
   grid-template-areas:   "toc text image citation";
   align-items: flex-start;
 
@@ -127,17 +125,15 @@ body.light-mode .scrolly-text-content hr,
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TOC SIDEBAR — fixed, never scrolls
-   Top offset pushes CONTENTS label roughly 1/4 down the viewport to match
-   the template_redesign reference visual.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-toc-sidebar {
-  grid-area: toc;       /* reserves the grid column for layout flow */
+  grid-area: toc;
   position:  fixed;
   left:  0;
   top:   calc(var(--scrolly-header-h, 52px) + 7rem);
   width: 14%;
-  height: calc(100vh - var(--scrolly-header-h, 52px) - 7rem - 2rem);
+  height: calc(100vh - var(--scrolly-header-h, 52px) - 7rem - 2.8rem - 1rem);
   overflow-y: auto;
   padding:      1.1rem 0.85rem 2rem 1rem;
   border-right: 1px solid var(--scrolly-border-color);
@@ -177,16 +173,15 @@ body.light-mode .scrolly-toc-heading { color: rgba(0, 0, 0, 0.32); }
   li { margin: 0; padding: 0; }
 }
 
-/* Top-level link (Home, site-nav) */
 .scrolly-toc-link {
   display:    block;
   padding:    0.32rem 0.4rem;
-  font-size:  0.93em;          /* larger — matches essay body scale */
+  font-size:  0.93em;
   font-family: "Times New Roman", Times, serif;
   color:      rgba(255, 255, 255, 0.6);
   text-decoration: none;
   border-radius: 3px;
-  line-height: 1.5;            /* roomier, echoing _essay.scss line-height: 2 */
+  line-height: 1.5;
   transition: color 0.18s ease, background-color 0.18s ease;
 
   &:hover      { color: rgba(255, 255, 255, 0.92); background-color: rgba(255, 255, 255, 0.06); }
@@ -196,7 +191,6 @@ body.light-mode .scrolly-toc-link            { color: rgba(0,0,0,0.55); }
 body.light-mode .scrolly-toc-link:hover      { color: rgba(0,0,0,0.85); background-color: rgba(0,0,0,0.05); }
 body.light-mode .scrolly-toc-link.toc-active { color: rgba(0,0,0,0.9); }
 
-/* Essay chapter links — indented, slightly dimmer */
 .toc-chapter-entry > .scrolly-toc-link {
   padding-left: 1.1rem;
   font-size:    0.88em;
@@ -209,25 +203,17 @@ body.light-mode .toc-chapter-entry > .scrolly-toc-link            { color: rgba(
 body.light-mode .toc-chapter-entry > .scrolly-toc-link:hover      { color: rgba(0,0,0,0.82); }
 body.light-mode .toc-chapter-entry > .scrolly-toc-link.toc-active { color: rgba(0,0,0,0.9); }
 
-/* Section sub-list — HR-derived dash markers */
 .toc-section-list {
   list-style: none;
   margin:  0.05rem 0 0.22rem 1.35rem;
   padding: 0;
-
-  /* Each li gets more breathing room so the rules are scannable */
   li { margin: 0; padding: 0.38rem 0; }
 }
 
-/*
- * .toc-section-rule — thin horizontal bar representing a markdown `---`.
- * Padding on the <li> parent (above) provides the vertical spacing.
- * Hover/active states animate width for a subtle affordance.
- */
 .toc-section-rule {
   display:    block;
   width:      22px;
-  height:     2px;             /* slightly thicker for visibility */
+  height:     2px;
   background-color: rgba(255, 255, 255, 0.28);
   border: none;
   margin:  0;
@@ -235,8 +221,8 @@ body.light-mode .toc-chapter-entry > .scrolly-toc-link.toc-active { color: rgba(
   cursor:  pointer;
   transition: background-color 0.15s ease, width 0.15s ease;
 
-  &:hover              { background-color: rgba(255, 255, 255, 0.65);  width: 34px; }
-  &.toc-section-active { background-color: rgba(255, 255, 255, 0.58);  width: 28px; }
+  &:hover              { background-color: rgba(255, 255, 255, 0.65); width: 34px; }
+  &.toc-section-active { background-color: rgba(255, 255, 255, 0.58); width: 28px; }
 }
 body.light-mode .toc-section-rule                    { background-color: rgba(0,0,0,0.22); }
 body.light-mode .toc-section-rule:hover              { background-color: rgba(0,0,0,0.55); }
@@ -257,7 +243,9 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   grid-area: image;
   position:  sticky;
   top:    var(--scrolly-header-h, 52px);
-  height: calc(100vh - var(--scrolly-header-h, 52px));
+  /* Reserve space above the footer (2.8rem) so the sticky image never
+     sits behind the fixed footer bar on desktop.                      */
+  height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
   display:        flex;
   flex-direction: column;
   overflow: hidden;
@@ -291,21 +279,21 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   z-index: 1;
 }
 
+/* ── Desktop image citation — below the image frame ─────────────────────── */
+/* Sits directly under the image sticky panel; replaces the old footer       */
+/* citation. Height is fixed so the image frame has a predictable anchor.    */
 .scrolly-image-citation-desktop {
-  flex-shrink:  0;
-  flex:         0 0 auto;
-  /* Fixed height = padding (top 0.55rem + bottom 0.65rem = 1.2rem) +
-     4 text lines at font-size 0.71em * line-height 1.4 ≈ 3.98em ≈ 4em.
-     Using rem so the box never collapses even when empty.              */
-  height:       5.5rem;
-  overflow:     hidden;
-  padding:      0.55rem 1rem 0.65rem;
-  font-size:    0.71em;
-  color:        rgba(255, 255, 255, 0.5);
-  line-height:  1.4;
-  border-top:   1px solid var(--scrolly-border-color);
+  flex-shrink: 0;
+  flex:        0 0 auto;
+  height:      5.5rem;
+  overflow:    hidden;
+  padding:     0.55rem 1rem 0.65rem;
+  font-size:   0.71em;
+  color:       rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+  border-top:  1px solid var(--scrolly-border-color);
   background-color: var(--scrolly-bg-color);
-  box-sizing:   border-box;
+  box-sizing:  border-box;
 
   .citation-view-link {
     display:    inline-block;
@@ -340,9 +328,11 @@ body.light-mode .scrolly-image-citation-desktop {
   transition: all 0.5s ease;
 }
 
+/* Add bottom padding equal to footer height so the last content line is
+   never hidden behind the fixed footer on both left/right and full layouts. */
 .scrolly-container.layout-left  .scrolly-text-content,
 .scrolly-container.layout-right .scrolly-text-content {
-  padding:    50vh 10% 20rem;
+  padding:    50vh 10% calc(20rem + 2.8rem);
   max-width:  none;
   margin:     0;
   text-align: left;
@@ -351,7 +341,7 @@ body.light-mode .scrolly-image-citation-desktop {
 }
 
 .scrolly-container.layout-full .scrolly-text-content {
-  padding:    4rem 2rem !important;
+  padding:    4rem 2rem calc(4rem + 2.8rem) !important;
   max-width:  900px;
   margin:     0 auto !important;
   text-align: left;
@@ -368,7 +358,7 @@ body.light-mode .scrolly-image-citation-desktop {
   grid-area: citation;
   position:  sticky;
   top:    var(--scrolly-header-h, 52px);
-  height: calc(100vh - var(--scrolly-header-h, 52px));
+  height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
   display:         flex;
   align-items:     center;
   justify-content: center;
@@ -413,101 +403,19 @@ body.light-mode .scrolly-image-citation-desktop {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE CITATION BAR  (fixed bottom — hidden on desktop)
-   Layout: [← prev] [citation title … — View Item] [next →]
+   FOOTER — fixed bottom bar, desktop + mobile
+   (Defined here for layout awareness; visual styles live in
+    footer-scrollytelling.html to keep self-contained.)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.scrolly-mobile-citation-bar {
-  display: none;     /* turned on in @media block */
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 800;
-  background-color: rgba(17, 17, 17, 0.96);
-  backdrop-filter:  blur(8px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding:    0.4rem 0.6rem;
-  align-items:     center;
-  justify-content: space-between;
-  gap:     0.4rem;
-  font-size: 0.75em;
-  color:   rgba(255, 255, 255, 0.6);
-  min-height: 2.8rem;
-
-  /* Centre zone: citation text + view link */
-  .mobile-citation-center {
-    display:       flex;
-    flex:          1 1 auto;
-    align-items:   center;
-    gap:           0.5rem;
-    min-width:     0;
-    overflow:      hidden;
-  }
-
-  .mobile-citation-title {
-    flex:          1 1 auto;
-    font-style:    italic;
-    white-space:   nowrap;
-    overflow:      hidden;
-    text-overflow: ellipsis;
-  }
-
-  .mobile-view-link {
-    flex-shrink: 0;
-    font-size:   0.9em;
-    color:       rgba(255, 255, 255, 0.5);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    white-space: nowrap;
-  }
+.scrolly-footer {
+  /* Ensure footer sits above all content layers */
+  z-index: 999;
 }
 
-/* Prev / Next chapter arrow buttons (mobile footer) */
-.scrolly-mobile-nav-btn {
-  flex-shrink:     0;
-  width:           2rem;
-  height:          2rem;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  background:      none;
-  border:          1px solid rgba(255, 255, 255, 0.2);
-  border-radius:   3px;
-  color:           rgba(255, 255, 255, 0.65);
-  font-size:       1.15em;
-  cursor:          pointer;
-  line-height:     1;
-  padding:         0;
-  transition:      color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
-
-  &:hover:not(:disabled) {
-    color:            rgba(255, 255, 255, 0.95);
-    border-color:     rgba(255, 255, 255, 0.55);
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-
-  &:disabled {
-    opacity:  0.25;
-    cursor:   default;
-  }
-}
-
-body.light-mode .scrolly-mobile-citation-bar {
-  background-color: rgba(255, 255, 255, 0.96);
-  border-top-color: rgba(0, 0, 0, 0.1);
-  color: rgba(0, 0, 0, 0.55);
-
-  .mobile-view-link { color: rgba(0, 0, 0, 0.45); }
-}
-
-body.light-mode .scrolly-mobile-nav-btn {
-  border-color: rgba(0, 0, 0, 0.18);
-  color:        rgba(0, 0, 0, 0.55);
-
-  &:hover:not(:disabled) {
-    color:            rgba(0, 0, 0, 0.9);
-    border-color:     rgba(0, 0, 0, 0.45);
-    background-color: rgba(0, 0, 0, 0.05);
-  }
+/* Give the TOC sidebar clearance so it doesn't run behind the footer */
+.scrolly-toc-sidebar {
+  padding-bottom: calc(2.8rem + 1rem);
 }
 
 
@@ -539,13 +447,11 @@ body.light-mode .scrolly-mobile-nav-btn {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    BREAKOUT BLOCKS (full-layout blocks inside left/right container)
-   TOC 14% + citation 10% = 24%; breakout width = 76vw.
-   layout-right: image 40vw, text 36vw → margin-left = -(40/36)*100% ≈ -111%
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scrolly-container.layout-right .chapter-content-block[data-layout="full"] {
   width:       76vw;
-  margin-left: -111%;          /* shift left by image col (40vw) relative to text col (36vw) */
+  margin-left: -124%;          /* shift left by image col (42vw) relative to text col (34vw) */
   background-color: var(--scrolly-bg-color);
   z-index:   20;
   position:  relative;
@@ -657,6 +563,105 @@ body.light-mode .scrolly-mobile-nav-btn {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   HIDE BACK-TO-TOP BUTTON in the reading interface
+   CollectionBuilder renders a #back-to-top or .back-to-top element globally.
+   Suppress it site-wide when the scrolly header is present.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#back-to-top,
+.back-to-top,
+a[href="#top"].btn,
+.scrolly-header ~ #back-to-top,
+body:has(#scrolly-container) #back-to-top,
+body:has(#scrolly-container) .back-to-top {
+  display: none !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   IMAGE LIGHTBOX / SPOTLIGHT
+   A full-screen overlay that centres an image when clicked.
+   The overlay is injected by scrollytelling-handler.js.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#scrolly-lightbox {
+  position:   fixed;
+  inset:      0;
+  z-index:    10000;
+  display:    flex;
+  align-items:     center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.88);
+  opacity:    0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+  cursor:     zoom-out;
+}
+
+#scrolly-lightbox.active {
+  opacity:        1;
+  pointer-events: auto;
+}
+
+#scrolly-lightbox img {
+  max-width:  90vw;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 2px;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
+  transform:  scale(0.96);
+  transition: transform 0.28s ease;
+  cursor:     default;          /* image itself doesn't show zoom-out cursor */
+}
+
+#scrolly-lightbox.active img {
+  transform: scale(1);
+}
+
+/* Close button */
+#scrolly-lightbox-close {
+  position: absolute;
+  top:   1.25rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s ease;
+  z-index: 10001;
+}
+#scrolly-lightbox-close:hover { color: #fff; }
+
+/* Caption below the expanded image */
+#scrolly-lightbox-caption {
+  position: absolute;
+  bottom:   1.5rem;
+  left:     50%;
+  transform: translateX(-50%);
+  font-size:  0.78em;
+  color:      rgba(255, 255, 255, 0.55);
+  text-align: center;
+  max-width:  70vw;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+/* Clickable hint on sticky images */
+.scrolly-image-frame img,
+.scrolly-image-container img {
+  cursor: zoom-in;
+}
+
+/* Inline full-layout images */
+.chapter-content-block[data-layout="full"] [data-trigger-type="image"] img {
+  cursor: zoom-in;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
    MOBILE  (≤ 992px)
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -704,15 +709,16 @@ body.light-mode .scrolly-mobile-nav-btn {
     order:      2 !important;
   }
 
-  .scrolly-text-content { padding: 30vh 8% 10rem !important; }
+  /* Extra bottom padding on mobile to clear the footer */
+  .scrolly-text-content {
+    padding: 30vh 8% calc(10rem + 2.8rem) !important;
+  }
 
   .scrolly-container:not(.layout-full) .chapter-content-block[data-layout="full"] {
     width:       100% !important;
     margin-left: 0 !important;
     padding:     2rem 8% !important;
   }
-
-  .scrolly-mobile-citation-bar { display: flex; }
 
   .scrolly-container.layout-full .scrolly-image-column  { display: none !important; }
   .scrolly-container.layout-full .scrolly-citation-column {
