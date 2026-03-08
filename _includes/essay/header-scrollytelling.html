@@ -5,6 +5,17 @@
    Mobile:  [hamburger] [stacked title/chapter]        [toggle]
    ═══════════════════════════════════════════════════════════════════ */
 
+/* ── Suppress the default CollectionBuilder / Bootstrap navbar ──────
+   Any page that includes this header include also gets the CB default
+   layout navbar (because they use layout: default as a base).
+   Hide it unconditionally — the scrolly header replaces it entirely.
+   Using !important ensures it wins over Bootstrap's own display rules. */
+nav.navbar,
+#navbar,
+.navbar:not(.offcanvas-menu .navbar) {
+  display: none !important;
+}
+
 .scrolly-header {
   position: fixed;
   top: 0; left: 0; right: 0;
