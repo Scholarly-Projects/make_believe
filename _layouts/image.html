@@ -58,6 +58,8 @@ layout: default
     #about-wrapper {
         padding-top: 120px;
         padding-bottom: 6rem; /* Clears the fixed scrollytelling footer */
+        overflow-x: hidden;  /* Prevents horizontal overflow from blowing out the viewport */
+        max-width: 100%;
     }
     @media screen and (max-width: 768px) {
         #about-wrapper {
@@ -70,6 +72,7 @@ layout: default
     #image-citation-list {
         list-style: none;
         padding-left: 0;
+        max-width: 100%;
     }
     #image-citation-list li {
         display: flex;
@@ -77,6 +80,8 @@ layout: default
         gap: 1.5rem;
         margin-bottom: 0.75em;
         line-height: 1.6;
+        min-width: 0;        /* Lets flex children shrink below their content size */
+        max-width: 100%;
         /* Offset anchor so the fixed footer doesn't obscure the target entry */
         scroll-margin-top: 140px;
     }
@@ -104,8 +109,11 @@ layout: default
     /* Citation text column — hanging indent */
     .img-cite-text {
         flex: 1 1 auto;
+        min-width: 0;        /* Critical: allows the flex child to shrink and wrap */
         padding-left: 2em;
         text-indent: -2em;
+        word-break: break-word;      /* Breaks long URLs that would otherwise overflow */
+        overflow-wrap: break-word;
     }
 
     /* "View Item" link column */
@@ -143,6 +151,19 @@ layout: default
     }
     #image-citation-list li:target .img-cite-text {
         padding-left: calc(2em - 3px);
+    }
+
+    @media screen and (max-width: 576px) {
+        .img-cite-thumb-col {
+            flex: 0 0 44px; /* Shrink thumbnail on very narrow screens */
+        }
+        .img-cite-thumb {
+            width: 44px;
+            height: 44px;
+        }
+        .img-cite-link-col {
+            flex: 0 0 auto; /* Stop enforcing fixed width on very narrow screens */
+        }
     }
 </style>
 <div id="about-wrapper">

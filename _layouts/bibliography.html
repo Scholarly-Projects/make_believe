@@ -55,16 +55,21 @@ layout: default
 {% endif %}
 <style>
     #about-wrapper {
-        padding-top: 120px; /* Added spacing to clear the fixed header */
+        padding-top: 120px;
+        padding-bottom: 6rem; /* Clears the fixed scrollytelling footer */
+        overflow-x: hidden;  /* Prevents horizontal overflow from blowing out the viewport */
+        max-width: 100%;
     }
     @media screen and (max-width: 768px) {
         #about-wrapper {
-            padding-top: 100px; /* Adjust for smaller screens */
+            padding-top: 100px;
+            padding-bottom: 5rem;
         }
     }
     #bibliography-list {
         list-style: none;
         padding-left: 0;
+        max-width: 100%;
     }
     #bibliography-list li {
         display: flex;
@@ -72,14 +77,19 @@ layout: default
         gap: 1.5rem;
         margin-bottom: 0.75em;
         line-height: 1.6;
+        min-width: 0;        /* Lets flex children shrink below their content size */
+        max-width: 100%;
         /* Offset anchor so the fixed footer doesn't obscure the target entry */
         scroll-margin-top: 140px;
     }
     /* The citation text sits in a growing column; hanging indent is applied here */
     .bib-text {
         flex: 1 1 auto;
+        min-width: 0;        /* Critical: allows the flex child to shrink and wrap */
         padding-left: 2em;
         text-indent: -2em;
+        word-break: break-word;      /* Breaks long URLs that would otherwise overflow */
+        overflow-wrap: break-word;
     }
     /* The back button column is fixed-width and right-aligned */
     .bib-back-col {
@@ -124,6 +134,11 @@ layout: default
         color: #fff;
         background-color: #2563eb;
         text-decoration: none;
+    }
+    @media screen and (max-width: 576px) {
+        .bib-back-col {
+            flex: 0 0 auto; /* Stop enforcing fixed width on very narrow screens */
+        }
     }
 </style>
 <div id="about-wrapper">
