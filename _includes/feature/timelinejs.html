@@ -1,6 +1,6 @@
 {% comment %}
 
-    Embed a TimelineJS feature, https://timeline.knightlab.com/  
+    Embed a TimelineJS feature, https://timeline.knightlab.com/
 
     E.G. --> {% include feature/timelinejs.html %}
 
@@ -13,64 +13,19 @@
 
 {% endcomment %}
 {%- assign json = include.json | default: '/assets/data/timelinejs.json' | relative_url -%}
-<!-- timelinejs, https://timeline.knightlab.com/   -->
+<!-- timelinejs, https://timeline.knightlab.com/ -->
 <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
-
-<style>
-  /* Hide caption text below timeline images */
-  #timeline-embed .tl-caption {
-    display: none !important;
-  }
-</style>
 
 <div id="timeline-embed" style="width: 100%; height: 800px" class="mb-4"></div>
 
 <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 <script type="text/javascript">
-    var timeline_config = {
-        start_at_end: false,
-        timenav_height: 180,
-        timenav_height_min: 150,
-        optimal_tick_width: 60,
-        scale_factor: 2,
-        show_nav: true,
-        show_timeline: true,
-        slide_padding: 0,
-        slide_default_fade: 0,
-        width: '100%',
-        height: '100%',
-        language: 'en',
-        ga_property_id: null,
-        track_events: ['back_to_start', 'nav_next', 'nav_previous', 'slide_milestone']
-    };
-    
-    timeline = new TL.Timeline('timeline-embed', '{{ json }}', timeline_config);
-    
-    /* ── Force Same-Tab Navigation for All Timeline Links ─────────── */
-    function fixLinkTargets() {
-        var timelineEmbed = document.getElementById('timeline-embed');
-        if (!timelineEmbed) return;
-        
-        // Find all links within the timeline
-        var links = timelineEmbed.querySelectorAll('a[href*="/items/"]');
-        links.forEach(function(link) {
-            link.setAttribute('target', '_self');
-            link.removeAttribute('rel');
-            // Prevent default and handle navigation manually
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                var href = link.getAttribute('href');
-                if (href) {
-                    window.location.href = href;
-                }
-            });
-        });
-    }
-    
-    // Apply on load and slide changes
-    timeline.on('loaded', fixLinkTargets);
-    timeline.on('change', function() {
-        setTimeout(fixLinkTargets, 150);
-    });
-    timeline.on('resize', fixLinkTargets);
+    // The TL.Timeline constructor takes at least two arguments:
+    // the id of the Timeline container (no '#'), and
+    // the URL to your JSON data file or Google spreadsheet.
+    // the id must refer to an element "above" this code,
+    // and the element must have CSS styling to give it width and height
+    // optionally, a third argument with configuration options can be passed.
+    // See below for more about options.
+    timeline = new TL.Timeline('timeline-embed', '{{ json }}');
 </script>
