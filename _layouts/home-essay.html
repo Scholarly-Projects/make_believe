@@ -25,8 +25,10 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas: "left middle right";
-  min-height: calc(100vh - 120px);
-  margin-top: 120px;
+  /* Top edge matches the scrolly TOC sidebar's fixed top position exactly:
+     top: calc(var(--scrolly-header-h, 52px) + 1.5rem) in scrolly.scss     */
+  margin-top: calc(var(--scrolly-header-h, 52px) + 1.5rem);
+  min-height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem);
   background-color: #ffffff;
 }
 
@@ -78,7 +80,11 @@ body {
   grid-area: middle;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* flex-start so the TOC heading sits at the same vertical position as
+     .scrolly-toc-sidebar's top: calc(var(--scrolly-header-h, 52px) + 1.5rem).
+     The grid margin-top already places the column top at that offset, so
+     flex-start aligns the heading flush with it — matching the sidebar.    */
+  justify-content: flex-start;
   padding: 3rem 2rem 3rem 2.5rem;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -135,8 +141,10 @@ body {
   display: flex;
   flex-direction: column;
   padding: 0 1.5rem 1rem 1rem;
-  height: calc(100vh - 120px - 55px);
-  max-height: calc(100vh - 120px - 55px);
+  /* Height uses the same CSS variable so the right column stays in sync
+     with both the grid top and the scrolly sidebar.                        */
+  height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem - 55px);
+  max-height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem - 55px);
   overflow: hidden;
 }
 
