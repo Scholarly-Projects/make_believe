@@ -6,17 +6,111 @@ custom-foot: js/browse-js.html
 
 {% include essay/header-scrollytelling.html %}
 
+<link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
+
 <style>
-    #browse-wrapper {
-        padding-top: 120px; /* Added spacing to clear the fixed header */
+    /* ── Light-mode overrides for the scrolly TOC sidebar ── */
+    #bib-toc-sidebar.scrolly-toc-sidebar {
+        background-color: #ffffff;
+        scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
     }
+    #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.15);
+    }
+    #bib-toc-sidebar .scrolly-toc-heading {
+        color: #000000;
+    }
+    #bib-toc-sidebar .scrolly-toc-link {
+        color: #353535;
+    }
+    #bib-toc-sidebar .scrolly-toc-link:hover {
+        color: #1B1B1B;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    #bib-toc-sidebar .scrolly-toc-link.toc-active {
+        color: #000000;
+        font-weight: 600;
+    }
+    #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link {
+        color: #353535;
+    }
+    #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover {
+        color: #1B1B1B;
+    }
+    #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active {
+        color: #000000;
+    }
+    #bib-toc-sidebar .toc-section-rule {
+        background-color: rgba(0, 0, 0, 0.22);
+    }
+    #bib-toc-sidebar .toc-section-rule:hover {
+        background-color: rgba(0, 0, 0, 0.55);
+    }
+    #bib-toc-sidebar .toc-section-rule.toc-section-active {
+        background-color: rgba(0, 0, 0, 0.48);
+    }
+
+    /* ── Browse wrapper: offset right to clear the fixed TOC sidebar ── */
+    #browse-wrapper {
+        margin-left: 14%;
+        padding-top: 120px;
+        padding-bottom: 6rem; /* Clears the fixed scrollytelling footer */
+    }
+
+    @media screen and (max-width: 992px) {
+        #bib-toc-sidebar {
+            display: none !important;
+        }
+        #browse-wrapper {
+            margin-left: 0 !important;
+        }
+    }
+
     @media screen and (max-width: 768px) {
         #browse-wrapper {
-            padding-top: 100px; /* Adjust for smaller screens */
+            padding-top: 100px;
+            padding-bottom: 5rem;
         }
     }
 </style>
 
+<!-- ── TOC SIDEBAR ───────────────────────────────────────────────────────── -->
+<aside class="scrolly-toc-sidebar" id="bib-toc-sidebar" aria-label="Table of contents">
+    <p class="scrolly-toc-heading">Contents</p>
+    <ul class="scrolly-toc-list" id="scrolly-toc-list">
+
+        <li>
+            <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
+        </li>
+
+        {% assign toc_essays = site.essay | sort: 'order' %}
+        {% for essay in toc_essays %}
+        <li class="toc-chapter-entry">
+            <a href="{{ essay.url | prepend: site.baseurl }}"
+               class="scrolly-toc-link"
+               data-toc-chapter="{{ essay.order }}">
+                {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+            </a>
+        </li>
+        {% endfor %}
+
+        <hr class="toc-divider">
+
+        {% for nav in site.data.config-nav %}
+            {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+        <li>
+            <a href="{{ nav.stub | relative_url }}"
+               class="scrolly-toc-link {% if nav.stub == page.url %}toc-active{% endif %}">
+                {{ nav.display_name }}
+            </a>
+        </li>
+            {% endunless %}
+        {% endfor %}
+
+    </ul>
+</aside>
+
+<!-- ── MAIN CONTENT ──────────────────────────────────────────────────────── -->
 <div id="browse-wrapper">
     <div class="row mb-2">
         <div class="col-7 col-lg-9">{{ content }}</div>
@@ -70,7 +164,7 @@ custom-foot: js/browse-js.html
                             <input type="text" id="endDate" class="me-2 form-control" placeholder="End Date">
                         </div>
                     </div>
-                    <button class="btn btn-success" type="submit" title="Filter items" id="filterButton" >Search</button>
+                    <button class="btn btn-success" type="submit" title="Filter items" id="filterButton">Search</button>
                     <button class="btn btn-outline-secondary filter d-none d-lg-flex" onclick="resetFilter(); return false;" data-filter="">Reset</button>
                 </div>
             </form>
@@ -93,7 +187,6 @@ custom-foot: js/browse-js.html
                 </div>
                 <button class="btn btn-outline-secondary filter p-1 d-lg-none float-end" onclick="resetFilter(); return false;" data-filter="">Reset</button>
             </div>
-           
         </div>
     </div>
 

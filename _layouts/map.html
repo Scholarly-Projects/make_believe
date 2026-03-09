@@ -4,17 +4,56 @@ layout: default
 custom-foot: js/map-js.html
 ---
 {% include essay/header-scrollytelling.html %}
+
+<link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
+
 <style>
+  /* ── Light-mode overrides for the scrolly TOC sidebar ── */
+  #bib-toc-sidebar.scrolly-toc-sidebar {
+    background-color: #ffffff;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  }
+  #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+  #bib-toc-sidebar .scrolly-toc-heading {
+    color: #000000;
+  }
+  #bib-toc-sidebar .scrolly-toc-link {
+    color: #353535;
+  }
+  #bib-toc-sidebar .scrolly-toc-link:hover {
+    color: #1B1B1B;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  #bib-toc-sidebar .scrolly-toc-link.toc-active {
+    color: #000000;
+    font-weight: 600;
+  }
+  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link {
+    color: #353535;
+  }
+  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover {
+    color: #1B1B1B;
+  }
+  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active {
+    color: #000000;
+  }
+  #bib-toc-sidebar .toc-section-rule {
+    background-color: rgba(0, 0, 0, 0.22);
+  }
+  #bib-toc-sidebar .toc-section-rule:hover {
+    background-color: rgba(0, 0, 0, 0.55);
+  }
+  #bib-toc-sidebar .toc-section-rule.toc-section-active {
+    background-color: rgba(0, 0, 0, 0.48);
+  }
+
   /* ── Hide everything that isn't the map ───────────────────────────── */
-  /* CB's default layout renders a main content wrapper and possible
-     padding divs. Remove any gap they introduce.                        */
   body,
   html {
     overflow: hidden;
   }
-
-  /* The CB default layout injects a #maincontent wrapper with padding.
-     Zero it out so the map can claim the full viewport.                 */
   #maincontent,
   #cb-page-content,
   .container,
@@ -26,12 +65,13 @@ custom-foot: js/map-js.html
   }
 
   /* ── Map wrapper ──────────────────────────────────────────────────── */
-  /* Sits between the fixed header (--scrolly-header-h) at the top and
-     the fixed footer (2.8rem) at the bottom. No extra band anywhere.   */
+  /* The sidebar occupies a fixed 14% on the left, so we shift the map's
+     left edge to match rather than using margin-left (which has no effect
+     on position:fixed elements).                                         */
   #map-wrapper {
     position: fixed;
     top:    var(--scrolly-header-h, 52px);
-    left:   0;
+    left:   14%;             /* clears the TOC sidebar */
     right:  0;
     bottom: 2.8rem;          /* matches .scrolly-footer height */
     margin: 0;
@@ -39,7 +79,6 @@ custom-foot: js/map-js.html
     overflow: hidden;
     background: #e8e4da;     /* neutral fallback while tiles load */
   }
-
   #map {
     width:  100%;
     height: 100%;
@@ -48,15 +87,54 @@ custom-foot: js/map-js.html
   }
 
   /* ── Mobile ───────────────────────────────────────────────────────── */
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
+    #bib-toc-sidebar {
+      display: none !important;
+    }
     #map-wrapper {
-      /* On mobile the header is slightly shorter; the CSS variable
-         updates automatically via the JS in header-scrollytelling.html */
-      top: var(--scrolly-header-h, 52px);
+      left: 0;               /* full width when sidebar is hidden */
+      top:  var(--scrolly-header-h, 52px);
     }
   }
 </style>
 
+<!-- ── TOC SIDEBAR ───────────────────────────────────────────────────────── -->
+<aside class="scrolly-toc-sidebar" id="bib-toc-sidebar" aria-label="Table of contents">
+  <p class="scrolly-toc-heading">Contents</p>
+  <ul class="scrolly-toc-list" id="scrolly-toc-list">
+
+    <li>
+      <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
+    </li>
+
+    {% assign toc_essays = site.essay | sort: 'order' %}
+    {% for essay in toc_essays %}
+    <li class="toc-chapter-entry">
+      <a href="{{ essay.url | prepend: site.baseurl }}"
+         class="scrolly-toc-link"
+         data-toc-chapter="{{ essay.order }}">
+        {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+      </a>
+    </li>
+    {% endfor %}
+
+    <hr class="toc-divider">
+
+    {% for nav in site.data.config-nav %}
+      {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+    <li>
+      <a href="{{ nav.stub | relative_url }}"
+         class="scrolly-toc-link {% if nav.stub == page.url %}toc-active{% endif %}">
+        {{ nav.display_name }}
+      </a>
+    </li>
+      {% endunless %}
+    {% endfor %}
+
+  </ul>
+</aside>
+
+<!-- ── MAP ───────────────────────────────────────────────────────────────── -->
 <div id="map-wrapper">
   <h2 class="visually-hidden">Map of Collection Items</h2>
   <div id="map"></div>

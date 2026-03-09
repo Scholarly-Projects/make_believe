@@ -6,6 +6,7 @@
 layout: default
 ---
 {% include essay/header-scrollytelling.html %}
+
 {% if page.about-featured-image or page.heading or page.sub-heading %}
 {% assign jumboId = page.about-featured-image %}
 {% if jumboId contains '/' %}
@@ -18,6 +19,7 @@ layout: default
     #about-feature {
         padding: 4rem 0;
         margin-bottom: 1rem;
+        margin-left: 14%; /* Offset by TOC sidebar width */
         {% if page.about-featured-image %}
         background-color: #e9ecef;
         background-image: url({{ jumboSrc }});
@@ -54,13 +56,70 @@ layout: default
     </div>
 </div>
 {% endif %}
+
+<link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
+
 <style>
+    /* ── Light-mode overrides for the scrolly TOC sidebar ── */
+    #bib-toc-sidebar.scrolly-toc-sidebar {
+        background-color: #ffffff;
+        scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    }
+    #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.15);
+    }
+    #bib-toc-sidebar .scrolly-toc-heading {
+        color: #000000;
+    }
+    #bib-toc-sidebar .scrolly-toc-link {
+        color: #353535;
+    }
+    #bib-toc-sidebar .scrolly-toc-link:hover {
+        color: #1B1B1B;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    #bib-toc-sidebar .scrolly-toc-link.toc-active {
+        color: #000000;
+        font-weight: 600;
+    }
+    #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link {
+        color: #353535;
+    }
+    #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover {
+        color: #1B1B1B;
+    }
+    #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active {
+        color: #000000;
+    }
+    #bib-toc-sidebar .toc-section-rule {
+        background-color: rgba(0, 0, 0, 0.22);
+    }
+    #bib-toc-sidebar .toc-section-rule:hover {
+        background-color: rgba(0, 0, 0, 0.55);
+    }
+    #bib-toc-sidebar .toc-section-rule.toc-section-active {
+        background-color: rgba(0, 0, 0, 0.48);
+    }
+
+    /* ── Main content area: offset right to clear the fixed TOC sidebar ── */
     #about-wrapper {
+        margin-left: 14%;
         padding-top: 120px;
-        padding-bottom: 6rem; /* Clears the fixed scrollytelling footer */
-        overflow-x: hidden;  /* Prevents horizontal overflow from blowing out the viewport */
+        padding-bottom: 6rem;
+        overflow-x: hidden;
         max-width: 100%;
     }
+
+    @media screen and (max-width: 992px) {
+        #bib-toc-sidebar {
+            display: none !important;
+        }
+        #about-wrapper,
+        #about-feature {
+            margin-left: 0 !important;
+        }
+    }
+
     @media screen and (max-width: 768px) {
         #about-wrapper {
             padding-top: 100px;
@@ -80,9 +139,8 @@ layout: default
         gap: 1.5rem;
         margin-bottom: 0.75em;
         line-height: 1.6;
-        min-width: 0;        /* Lets flex children shrink below their content size */
+        min-width: 0;
         max-width: 100%;
-        /* Offset anchor so the fixed footer doesn't obscure the target entry */
         scroll-margin-top: 140px;
     }
 
@@ -109,10 +167,10 @@ layout: default
     /* Citation text column — hanging indent */
     .img-cite-text {
         flex: 1 1 auto;
-        min-width: 0;        /* Critical: allows the flex child to shrink and wrap */
+        min-width: 0;
         padding-left: 2em;
         text-indent: -2em;
-        word-break: break-word;      /* Breaks long URLs that would otherwise overflow */
+        word-break: break-word;
         overflow-wrap: break-word;
     }
 
@@ -155,36 +213,56 @@ layout: default
 
     @media screen and (max-width: 576px) {
         .img-cite-thumb-col {
-            flex: 0 0 44px; /* Shrink thumbnail on very narrow screens */
+            flex: 0 0 44px;
         }
         .img-cite-thumb {
             width: 44px;
             height: 44px;
         }
         .img-cite-link-col {
-            flex: 0 0 auto; /* Stop enforcing fixed width on very narrow screens */
+            flex: 0 0 auto;
         }
     }
 </style>
-<div id="about-wrapper">
-    <div id="about-toc-wrapper">
-        {% unless page.toc == false %}
-        <div id="about-toc">
-            <div id="about-toc-title">
-                <button class="btn btn-light" data-bs-toggle="collapse" data-bs-target="#about-toc-list" aria-expanded="false" aria-controls="about-toc-list">
-                    Contents
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </button>
-            </div>
-            <div id="about-toc-list" class="collapse">
-                {% include cb/jekyll-toc.html html=content sanitize=true h_min=1 h_max=3 skip_no_ids=true class="jekyll-toc-list" credits=page.credits %}
-            </div>
-        </div>
-        {% endunless %}
-    </div>
 
+<!-- ── TOC SIDEBAR ───────────────────────────────────────────────────────── -->
+<aside class="scrolly-toc-sidebar" id="bib-toc-sidebar" aria-label="Table of contents">
+    <p class="scrolly-toc-heading">Contents</p>
+    <ul class="scrolly-toc-list" id="scrolly-toc-list">
+
+        <li>
+            <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
+        </li>
+
+        {% assign toc_essays = site.essay | sort: 'order' %}
+        {% for essay in toc_essays %}
+        <li class="toc-chapter-entry">
+            <a href="{{ essay.url | prepend: site.baseurl }}"
+               class="scrolly-toc-link"
+               data-toc-chapter="{{ essay.order }}">
+                {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+            </a>
+        </li>
+        {% endfor %}
+
+        <hr class="toc-divider">
+
+        {% for nav in site.data.config-nav %}
+            {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+        <li>
+            <a href="{{ nav.stub | relative_url }}"
+               class="scrolly-toc-link {% if nav.stub == page.url %}toc-active{% endif %}">
+                {{ nav.display_name }}
+            </a>
+        </li>
+            {% endunless %}
+        {% endfor %}
+
+    </ul>
+</aside>
+
+<!-- ── MAIN CONTENT ──────────────────────────────────────────────────────── -->
+<div id="about-wrapper">
     <div id="about-contents-wrapper">
         {{ content }}
 
@@ -240,4 +318,5 @@ layout: default
     </div>
     {% endif %}
 </div>
+
 {% include essay/footer-scrollytelling.html %}
