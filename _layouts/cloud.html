@@ -6,51 +6,174 @@ layout: default
 ---
 {% include essay/header-scrollytelling.html %}
 <style>
+  /* ── Suppress CB default layout padding ──────────────────────────── */
+  #maincontent,
+  #cb-page-content,
+  .container,
+  .container-fluid,
+  main {
+    padding:  0 !important;
+    margin:   0 !important;
+  }
+
+  /* ── Cloud wrapper: fills the viewport between fixed header and footer */
+  #cloud-wrapper {
+    position: fixed;
+    top:    var(--scrolly-header-h, 52px);
+    left:   0;
+    right:  0;
+    bottom: 2.8rem;          /* matches .scrolly-footer height */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #F4F4F4;     /* dark mode: light background */
+  }
+
+  /* ── Scrollable inner container ───────────────────────────────────── */
+  #cloud-inner {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1.5rem 1.25rem 2rem;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  }
+
+  /* ── Cloud term boxes: light background, #1C1C1D borders and text ── */
+  /* The CB cloud include renders <a> buttons for each term. Target both
+     the button/badge variants CB might output.                          */
+  #cloud-inner .btn,
+  #cloud-inner a.badge,
+  #cloud-inner a[class*="badge"],
+  #cloud-inner [id^="cloud-div-"] a,
+  #cloud-inner [id^="cloud-div-"] .btn {
+    background-color: #F4F4F4 !important;
+    border-color:     #1C1C1D !important;
+    color:            #1C1C1D !important;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  #cloud-inner .btn:hover,
+  #cloud-inner a.badge:hover,
+  #cloud-inner a[class*="badge"]:hover,
+  #cloud-inner [id^="cloud-div-"] a:hover,
+  #cloud-inner [id^="cloud-div-"] .btn:hover {
+    background-color: #1C1C1D !important;
+    border-color:     #1C1C1D !important;
+    color:            #F4F4F4 !important;
+  }
+
+  /* Any free text in the cloud container (headings, page content) */
+  #cloud-inner,
+  #cloud-inner p,
+  #cloud-inner h1,
+  #cloud-inner h2,
+  #cloud-inner h3,
+  #cloud-inner h4 {
+    color: #1C1C1D;
+  }
+
+  /* ── Light-mode overrides: dark background, light text/borders ────── */
+  body.light-mode #cloud-wrapper {
+    background: #1C1C1D;
+  }
+
+  body.light-mode #cloud-inner {
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+
+  body.light-mode #cloud-inner .btn,
+  body.light-mode #cloud-inner a.badge,
+  body.light-mode #cloud-inner a[class*="badge"],
+  body.light-mode #cloud-inner [id^="cloud-div-"] a,
+  body.light-mode #cloud-inner [id^="cloud-div-"] .btn {
+    background-color: #1C1C1D !important;
+    border-color:     #E4E4E4 !important;
+    color:            #E4E4E4 !important;
+  }
+
+  body.light-mode #cloud-inner .btn:hover,
+  body.light-mode #cloud-inner a.badge:hover,
+  body.light-mode #cloud-inner a[class*="badge"]:hover,
+  body.light-mode #cloud-inner [id^="cloud-div-"] a:hover,
+  body.light-mode #cloud-inner [id^="cloud-div-"] .btn:hover {
+    background-color: #E4E4E4 !important;
+    border-color:     #E4E4E4 !important;
+    color:            #1C1C1D !important;
+  }
+
+  body.light-mode #cloud-inner,
+  body.light-mode #cloud-inner p,
+  body.light-mode #cloud-inner h1,
+  body.light-mode #cloud-inner h2,
+  body.light-mode #cloud-inner h3,
+  body.light-mode #cloud-inner h4 {
+    color: #E4E4E4;
+  }
+
+  /* ── Mobile ───────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
     #cloud-wrapper {
-        position: relative;
-        padding-top: 0;
-        padding-bottom: 110px;
-        margin-top: -100px;
-        height: calc(100vh + 100px);
-    }
-    @media screen and (max-width: 768px) {
-        #cloud-wrapper {
-            margin-top: -80px;
-            height: calc(100vh + 80px);
-            padding-bottom: 100px;
-        }
+      top: var(--scrolly-header-h, 52px);
     }
     #cloud-inner {
-        height: 100%;
-        width: 100%;
-        margin-top: 0;
-        overflow-y: auto;
+      padding: 1rem 0.85rem 1.5rem;
     }
+  }
 </style>
 <div id="cloud-wrapper">
-    <h2 class="visually-hidden">Term Cloud</h2>
-    <div id="cloud-inner">
-        {{ content }}
-        {%- comment -%}
-            Figure out default "Subjects" and "Locations" page cloud values as configured in "theme.yml",
-            and set default values for cloud include.
-        {%- endcomment -%}
-        {%- if page.cloud-fields == "site.data.theme.subjects-fields" -%}
-            {% assign fields = site.data.theme.subjects-fields %}
-            {% assign min = site.data.theme.subjects-min | default: 1 %}
-            {% assign stopwords = site.data.theme.subjects-stopwords %}
-        {%- elsif page.cloud-fields == "site.data.theme.locations-fields" -%}
-            {% assign fields = site.data.theme.locations-fields %}
-            {% assign min = site.data.theme.locations-min | default: 1 %}
-            {% assign stopwords = site.data.theme.locations-stopwords %}
-        {%- else -%}
-            {% assign fields = page.cloud-fields | default: "subjects" %}
-            {% assign min = page.cloud-min | default: 1 %}
-            {% assign stopwords = page.cloud-stopwords %}
-        {%- endif -%}
-        {% assign cloud_id = "cloud-div-" | append: fields | slugify %}
-        <div id="{{ cloud_id }}" class="text-center my-4 bg-{{ page.background | default: 'light' }} border rounded p-2"></div>
-        {% include js/cloud-js.html id=cloud_id fields=fields min=min stopwords=stopwords shuffle=page.shuffle button=page.button %}
-    </div>
+  <h2 class="visually-hidden">Term Cloud</h2>
+  <div id="cloud-inner">
+    {{ content }}
+    {%- comment -%}
+        Figure out default "Subjects" and "Locations" page cloud values as configured in "theme.yml",
+        and set default values for cloud include.
+    {%- endcomment -%}
+    {%- if page.cloud-fields == "site.data.theme.subjects-fields" -%}
+        {% assign fields = site.data.theme.subjects-fields %}
+        {% assign min = site.data.theme.subjects-min | default: 1 %}
+        {% assign stopwords = site.data.theme.subjects-stopwords %}
+    {%- elsif page.cloud-fields == "site.data.theme.locations-fields" -%}
+        {% assign fields = site.data.theme.locations-fields %}
+        {% assign min = site.data.theme.locations-min | default: 1 %}
+        {% assign stopwords = site.data.theme.locations-stopwords %}
+    {%- else -%}
+        {% assign fields = page.cloud-fields | default: "subjects" %}
+        {% assign min = page.cloud-min | default: 1 %}
+        {% assign stopwords = page.cloud-stopwords %}
+    {%- endif -%}
+    {% assign cloud_id = "cloud-div-" | append: fields | slugify %}
+    <div id="{{ cloud_id }}" class="text-center my-4 border rounded p-2"></div>
+    {% include js/cloud-js.html id=cloud_id fields=fields min=min stopwords=stopwords shuffle=page.shuffle button=page.button %}
+  </div>
 </div>
+<script>
+/* ── Arrow-key scrolling for the cloud inner container ───────────────
+   The footer-scrollytelling.html script owns ArrowLeft / ArrowRight
+   for page navigation. This script handles ArrowUp / ArrowDown so the
+   reader can scroll the cloud without touching the scrollbar.          */
+(function () {
+  'use strict';
+  var SCROLL_STEP = 120; /* pixels per keypress */
+
+  document.addEventListener('keydown', function (e) {
+    /* Skip if focus is inside a text input */
+    var tag = document.activeElement ? document.activeElement.tagName : '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (document.activeElement && document.activeElement.isContentEditable) return;
+
+    var inner = document.getElementById('cloud-inner');
+    if (!inner) return;
+
+    if (e.key === 'ArrowDown' || e.key === 'Down') {
+      e.preventDefault();
+      inner.scrollBy({ top: SCROLL_STEP, behavior: 'smooth' });
+    } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+      e.preventDefault();
+      inner.scrollBy({ top: -SCROLL_STEP, behavior: 'smooth' });
+    }
+  });
+}());
+</script>
 {% include essay/footer-scrollytelling.html %}

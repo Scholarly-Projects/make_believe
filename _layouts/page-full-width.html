@@ -2,6 +2,215 @@
 # Sets page in container-fluid to fill window with min gutter
 layout: default
 ---
-<div class="container-fluid my-4">
+{% include essay/header-scrollytelling.html %}
+<style>
+  /* ── Suppress CB default layout padding ──────────────────────────── */
+  #maincontent,
+  #cb-page-content,
+  .container,
+  .container-fluid,
+  main {
+    padding:  0 !important;
+    margin:   0 !important;
+  }
+
+  /* ── Page wrapper: fills the viewport between fixed header and footer */
+  #page-full-wrapper {
+    position: fixed;
+    top:    var(--scrolly-header-h, 52px);
+    left:   0;
+    right:  0;
+    bottom: 2.8rem;          /* matches .scrolly-footer height */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #F4F4F4;
+    transition: background-color 0.3s ease;
+  }
+
+  body.light-mode #page-full-wrapper {
+    background: #1C1C1D;
+  }
+
+  /* ── Scrollable inner container ───────────────────────────────────── */
+  /* Default: padded + scrollable for text-based full-width pages.
+     When timelinejs.html is the page content, the include's own
+     <style> block overrides padding and overflow via !important so the
+     embed fills the full container without a gap or double scrollbar.  */
+  #page-full-inner {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2rem 1.5rem 2.5rem;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    max-width: 100%;
+  }
+
+  body.light-mode #page-full-inner {
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+
+  /* ── Timeline-specific: zero padding when embed is present ───────── */
+  #page-full-inner:has(#timeline-embed) {
+    padding:  0;
+    overflow: hidden;
+  }
+
+  /* ── Typography ───────────────────────────────────────────────────── */
+  #page-full-inner,
+  #page-full-inner p,
+  #page-full-inner li,
+  #page-full-inner h1,
+  #page-full-inner h2,
+  #page-full-inner h3,
+  #page-full-inner h4,
+  #page-full-inner h5,
+  #page-full-inner h6 {
+    color: #1C1C1D;
+  }
+
+  body.light-mode #page-full-inner,
+  body.light-mode #page-full-inner p,
+  body.light-mode #page-full-inner li,
+  body.light-mode #page-full-inner h1,
+  body.light-mode #page-full-inner h2,
+  body.light-mode #page-full-inner h3,
+  body.light-mode #page-full-inner h4,
+  body.light-mode #page-full-inner h5,
+  body.light-mode #page-full-inner h6 {
+    color: #E4E4E4;
+  }
+
+  /* ── Links ────────────────────────────────────────────────────────── */
+  #page-full-inner a {
+    color: #2563eb;
+    transition: color 0.15s ease;
+  }
+  #page-full-inner a:hover {
+    color: #1d4ed8;
+  }
+
+  body.light-mode #page-full-inner a {
+    color: #6ea8fe;
+  }
+  body.light-mode #page-full-inner a:hover {
+    color: #93bbff;
+  }
+
+  /* ── Mobile ───────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    #page-full-wrapper {
+      top: var(--scrolly-header-h, 52px);
+    }
+    #page-full-inner {
+      padding: 1.25rem 1rem 2rem;
+    }
+  }
+</style>
+<div id="page-full-wrapper">
+  <div id="page-full-inner">
     {{ content }}
+  </div>
 </div>
+
+<script>
+/* ── Timeline keyboard navigation ────────────────────────────────────
+   This layout hosts an embedded timeline (e.g. TimelineJS / Knightlab).
+   ArrowLeft / ArrowRight should move the reader backward / forward
+   through timeline slides — NOT navigate away to a different page.
+
+   Strategy:
+   1. Tell the footer script to stand down for left/right keys by
+      setting window.scrollyFooterOwnsKeyboard = false BEFORE the
+      footer include runs and registers its own listener.
+   2. Register a capturing listener (useCapture: true) so this handler
+      fires before any bubbling listeners the footer might add.
+   3. Locate the timeline's prev/next buttons by trying the selectors
+      TimelineJS uses, then fall back to generic arrow-button patterns.
+   4. ArrowUp / ArrowDown scroll the page wrapper as before.           */
+
+/* Disable footer left/right page-nav for this layout */
+window.scrollyFooterOwnsKeyboard = false;
+
+(function () {
+  'use strict';
+
+  var SCROLL_STEP = 120;
+
+  /* Ordered list of selector pairs [prev, next] to try.
+     TimelineJS 3 uses .tl-slidenav-previous / .tl-slidenav-next.
+     Some builds also expose buttons with aria-labels.                  */
+  var NAV_SELECTORS = [
+    ['.tl-slidenav-previous', '.tl-slidenav-next'],
+    ['[class*="slidenav-prev"]', '[class*="slidenav-next"]'],
+    ['[aria-label*="previous" i]', '[aria-label*="next" i]'],
+    ['[aria-label*="prev" i]',     '[aria-label*="next" i]'],
+    ['.tl-button-prev', '.tl-button-next'],
+  ];
+
+  function findNavButtons() {
+    for (var i = 0; i < NAV_SELECTORS.length; i++) {
+      var prev = document.querySelector(NAV_SELECTORS[i][0]);
+      var next = document.querySelector(NAV_SELECTORS[i][1]);
+      if (prev || next) return { prev: prev, next: next };
+    }
+    return null;
+  }
+
+  function findNavInFrames() {
+    var frames = document.querySelectorAll('iframe');
+    for (var f = 0; f < frames.length; f++) {
+      try {
+        var doc = frames[f].contentDocument || frames[f].contentWindow.document;
+        for (var i = 0; i < NAV_SELECTORS.length; i++) {
+          var prev = doc.querySelector(NAV_SELECTORS[i][0]);
+          var next = doc.querySelector(NAV_SELECTORS[i][1]);
+          if (prev || next) return { prev: prev, next: next };
+        }
+      } catch (e) { /* cross-origin iframe — skip */ }
+    }
+    return null;
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var tag = document.activeElement ? document.activeElement.tagName : '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (document.activeElement && document.activeElement.isContentEditable) return;
+
+    var key = e.key;
+
+    /* ── Up / Down: scroll the wrapper ─────────────────────────────── */
+    if (key === 'ArrowDown' || key === 'Down') {
+      var inner = document.getElementById('page-full-inner');
+      if (inner) { e.preventDefault(); inner.scrollBy({ top: SCROLL_STEP, behavior: 'smooth' }); }
+      return;
+    }
+    if (key === 'ArrowUp' || key === 'Up') {
+      var inner = document.getElementById('page-full-inner');
+      if (inner) { e.preventDefault(); inner.scrollBy({ top: -SCROLL_STEP, behavior: 'smooth' }); }
+      return;
+    }
+
+    /* ── Left / Right: drive timeline prev / next ───────────────────── */
+    if (key === 'ArrowLeft' || key === 'Left' || key === 'ArrowRight' || key === 'Right') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      var btns = findNavButtons() || findNavInFrames();
+      if (!btns) return;
+
+      if ((key === 'ArrowLeft' || key === 'Left') && btns.prev) {
+        btns.prev.click();
+      } else if ((key === 'ArrowRight' || key === 'Right') && btns.next) {
+        btns.next.click();
+      }
+    }
+
+  }, true /* capture phase — fires before footer's bubble-phase listener */);
+
+}());
+</script>
+{% include essay/footer-scrollytelling.html %}
