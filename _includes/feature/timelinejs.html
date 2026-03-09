@@ -1,23 +1,229 @@
 {% comment %}
-
     Embed a TimelineJS feature, https://timeline.knightlab.com/
-
     E.G. --> {% include feature/timelinejs.html %}
-
     Embeds a TimelineJS built from a JSON file appropriate for any CollectionBuilder page (such as Home or About page).
     CB templates automatically generate a timelinejs json file in "assets/data/timelinejs.json" including all items in metadata with a value in "date" field.
     By default, this include uses this json file. 
-
     Options:
     - "json" = (optional) path or link to timelinejs json file. 
-
 {% endcomment %}
 {%- assign json = include.json | default: '/assets/data/timelinejs.json' | relative_url -%}
+
 <!-- timelinejs, https://timeline.knightlab.com/ -->
 <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
 
-<div id="timeline-embed" style="width: 100%; height: 800px" class="mb-4"></div>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   TIMELINEJS SITE OVERRIDES
+   Scoped entirely to .tl-timeline so nothing bleeds outside the embed.
+   Follows the typography and color conventions in _essay.scss and
+   the scrolly CSS variable system.
+   Dark-mode is the default; body.light-mode provides the inversion.
+   ═══════════════════════════════════════════════════════════════════ */
 
+/* ── Typography: apply Times New Roman throughout ───────────────── */
+.tl-timeline,
+.tl-timeline p,
+.tl-timeline h1,
+.tl-timeline h2,
+.tl-timeline h3,
+.tl-timeline h4,
+.tl-timeline h5,
+.tl-timeline h6,
+.tl-timeline .tl-headline,
+.tl-timeline .tl-headline-title,
+.tl-timeline .tl-headline-date,
+.tl-timeline .tl-text,
+.tl-timeline .tl-caption,
+.tl-timeline .tl-credit,
+.tl-timeline .tl-slidenav-title,
+.tl-timeline .tl-slidenav-description,
+.tl-timeline .tl-timemarker-text h2.tl-headline,
+.tl-timeline blockquote,
+.tl-timeline blockquote p {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+/* ── Line heights: generous for prose, tighter for UI labels ─────── */
+.tl-timeline p             { line-height: 1.9; }
+.tl-timeline blockquote p  { line-height: 1.6; }
+.tl-timeline .tl-caption,
+.tl-timeline .tl-credit    { line-height: 1.5; }
+.tl-timeline .tl-headline-date,
+.tl-timeline .tl-timemarker-text h2.tl-headline { line-height: 1.3; }
+
+/* ── Dark mode (default site state) ─────────────────────────────── */
+
+/* Slide area background and text */
+.tl-timeline                      { background-color: #111111; color: #E4E4E4; }
+.tl-timeline .tl-storyslider      { background-color: #111111; }
+.tl-timeline .tl-slider-background { background-color: #111111; }
+
+/* Headings */
+.tl-timeline h1,
+.tl-timeline h2,
+.tl-timeline h3,
+.tl-timeline h4,
+.tl-timeline h5,
+.tl-timeline h6               { color: #E4E4E4; }
+
+/* Body text and headline */
+.tl-timeline p                { color: #CACACA; }
+.tl-timeline .tl-text         { color: #CACACA; }
+.tl-timeline .tl-text p       { color: #CACACA; }
+.tl-timeline .tl-headline-date,
+.tl-timeline h3.tl-headline-date { color: #8C8C8C !important; }
+.tl-timeline .tl-headline-date small,
+.tl-timeline h3.tl-headline-date small { color: #8C8C8C !important; }
+
+/* Links */
+.tl-timeline a                { color: #6ea8fe; }
+.tl-timeline a:hover          { color: #93bbff; text-decoration: underline; }
+.tl-timeline p a              { color: #6ea8fe; }
+.tl-timeline p a:hover        { color: #93bbff; }
+
+/* Caption and credit */
+.tl-timeline .tl-caption      { color: #8C8C8C; }
+.tl-timeline .tl-credit       { color: #8C8C8C; }
+
+/* Slide nav arrows */
+.tl-timeline .tl-slidenav-previous .tl-slidenav-content-container .tl-slidenav-icon,
+.tl-timeline .tl-slidenav-next     .tl-slidenav-content-container .tl-slidenav-icon,
+.tl-timeline .tl-slidenav-previous .tl-slidenav-content-container .tl-slidenav-title,
+.tl-timeline .tl-slidenav-next     .tl-slidenav-content-container .tl-slidenav-title,
+.tl-timeline .tl-slidenav-previous .tl-slidenav-content-container .tl-slidenav-description,
+.tl-timeline .tl-slidenav-next     .tl-slidenav-content-container .tl-slidenav-description {
+  color: #CACACA;
+  text-shadow: none;
+}
+
+/* Time navigation bar */
+.tl-timeline .tl-timenav           { background-color: #1a1a1a; border-top-color: #2a2a2a; }
+.tl-timeline .tl-timeaxis-background { background-color: #1a1a1a; border-top-color: #2a2a2a; }
+.tl-timeline .tl-timegroup         { background-color: #1a1a1a; }
+.tl-timeline .tl-timegroup.tl-timegroup-alternate { background-color: #161616; }
+
+/* Time axis tick labels */
+.tl-timeline .tl-timeaxis .tl-timeaxis-content-container .tl-timeaxis-major .tl-timeaxis-tick {
+  color: #8C8C8C;
+  font-family: "Times New Roman", Times, serif !important;
+}
+.tl-timeline .tl-timeaxis .tl-timeaxis-content-container .tl-timeaxis-minor .tl-timeaxis-tick {
+  color: #5a5a5a;
+  font-family: "Times New Roman", Times, serif !important;
+}
+.tl-timeline .tl-timeaxis .tl-timeaxis-content-container .tl-timeaxis-major { background-color: #1a1a1a; }
+
+/* Time marker cards */
+.tl-timeline .tl-timemarker .tl-timemarker-content-container {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  box-shadow: none;
+}
+.tl-timeline .tl-timemarker .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline {
+  color: #8C8C8C;
+}
+.tl-timeline .tl-timemarker.tl-timemarker-active .tl-timemarker-content-container {
+  background-color: #E4E4E4;
+  border-color: rgba(228, 228, 228, 0.4);
+}
+.tl-timeline .tl-timemarker.tl-timemarker-active .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline {
+  color: #111111;
+}
+
+/* Blockquote */
+.tl-timeline blockquote,
+.tl-timeline blockquote p { color: #8C8C8C; }
+
+/* Media border between slide content and media */
+.tl-timeline .tl-media .tl-media-content-container.tl-media-content-container-text {
+  border-right-color: rgba(255, 255, 255, 0.1);
+}
+.tl-timeline .tl-skinny .tl-slide .tl-slide-content-container .tl-slide-content .tl-media {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Attribution */
+.tl-timeline .tl-attribution {
+  background-color: rgba(17, 17, 17, 0.85);
+}
+.tl-timeline .tl-attribution a { color: #5a5a5a; }
+
+/* ── Light mode overrides ────────────────────────────────────────── */
+body.light-mode .tl-timeline                       { background-color: #ffffff; color: #1B1B1B; }
+body.light-mode .tl-timeline .tl-storyslider       { background-color: #ffffff; }
+body.light-mode .tl-timeline .tl-slider-background { background-color: #ffffff; }
+
+body.light-mode .tl-timeline h1,
+body.light-mode .tl-timeline h2,
+body.light-mode .tl-timeline h3,
+body.light-mode .tl-timeline h4,
+body.light-mode .tl-timeline h5,
+body.light-mode .tl-timeline h6   { color: #1B1B1B; }
+
+body.light-mode .tl-timeline p    { color: #353535; }
+body.light-mode .tl-timeline .tl-text   { color: #353535; }
+body.light-mode .tl-timeline .tl-text p { color: #353535; }
+body.light-mode .tl-timeline .tl-headline-date,
+body.light-mode .tl-timeline h3.tl-headline-date { color: #737373 !important; }
+body.light-mode .tl-timeline .tl-headline-date small,
+body.light-mode .tl-timeline h3.tl-headline-date small { color: #737373 !important; }
+
+body.light-mode .tl-timeline a        { color: #0d6efd; }
+body.light-mode .tl-timeline a:hover  { color: #0a58ca; }
+body.light-mode .tl-timeline p a      { color: #0d6efd; }
+body.light-mode .tl-timeline p a:hover { color: #0a58ca; }
+
+body.light-mode .tl-timeline .tl-caption { color: #737373; }
+body.light-mode .tl-timeline .tl-credit  { color: #737373; }
+
+body.light-mode .tl-timeline .tl-slidenav-previous .tl-slidenav-content-container .tl-slidenav-icon,
+body.light-mode .tl-timeline .tl-slidenav-next     .tl-slidenav-content-container .tl-slidenav-icon,
+body.light-mode .tl-timeline .tl-slidenav-previous .tl-slidenav-content-container .tl-slidenav-title,
+body.light-mode .tl-timeline .tl-slidenav-next     .tl-slidenav-content-container .tl-slidenav-title {
+  color: #353535;
+  text-shadow: 1px 1px 1px #fff;
+}
+
+body.light-mode .tl-timeline .tl-timenav              { background-color: #f2f2f2; border-top-color: #e5e5e5; }
+body.light-mode .tl-timeline .tl-timeaxis-background  { background-color: #ffffff; border-top-color: #e5e5e5; }
+body.light-mode .tl-timeline .tl-timegroup            { background-color: #f2f2f2; }
+body.light-mode .tl-timeline .tl-timegroup.tl-timegroup-alternate { background-color: #fafafa; }
+
+body.light-mode .tl-timeline .tl-timeaxis .tl-timeaxis-content-container .tl-timeaxis-major .tl-timeaxis-tick { color: #737373; }
+body.light-mode .tl-timeline .tl-timeaxis .tl-timeaxis-content-container .tl-timeaxis-minor .tl-timeaxis-tick { color: #bfbfbf; }
+body.light-mode .tl-timeline .tl-timeaxis .tl-timeaxis-content-container .tl-timeaxis-major { background-color: #ffffff; }
+
+body.light-mode .tl-timeline .tl-timemarker .tl-timemarker-content-container {
+  background-color: #e5e5e5;
+  border-color: #d9d9d9;
+  box-shadow: 1px 1px 1px #fff;
+}
+body.light-mode .tl-timeline .tl-timemarker .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline {
+  color: #bfbfbf;
+}
+body.light-mode .tl-timeline .tl-timemarker.tl-timemarker-active .tl-timemarker-content-container {
+  background-color: #ffffff;
+  border-color: rgba(51, 51, 51, 0.5);
+  box-shadow: 1px 1px 3px rgba(145, 145, 145, 0.5);
+}
+body.light-mode .tl-timeline .tl-timemarker.tl-timemarker-active .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline {
+  color: #333333;
+}
+
+body.light-mode .tl-timeline blockquote,
+body.light-mode .tl-timeline blockquote p { color: #737373; }
+
+body.light-mode .tl-timeline .tl-media .tl-media-content-container.tl-media-content-container-text {
+  border-right-color: #e6e6e6;
+}
+
+body.light-mode .tl-timeline .tl-attribution            { background-color: rgba(255, 255, 255, 0.85); }
+body.light-mode .tl-timeline .tl-attribution a          { color: #cccccc; }
+body.light-mode .tl-timeline .tl-attribution a:hover    { color: #000000; }
+</style>
+
+<div id="timeline-embed" style="width: 100%; height: 800px" class="mb-4"></div>
 <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 <script type="text/javascript">
     // The TL.Timeline constructor takes at least two arguments:
