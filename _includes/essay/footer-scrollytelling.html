@@ -2,7 +2,7 @@
 /* ═══════════════════════════════════════════════════════════════════
    SCROLLYTELLING FOOTER
    Shows on both desktop and mobile.
-   Desktop : [← Prev Title]          [Next Title →]
+   Desktop : [←]  [→]
    Mobile  : [←] [image title – View Item] [→]
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -31,15 +31,9 @@ body.light-mode .scrolly-footer {
 .scrolly-footer-nav {
   display:     flex;
   align-items: center;
-  gap:         0.45rem;
   text-decoration: none;
   color:       #CACACA;    /* base scale */
   font-size:   0.8em;
-  max-width:   38%;
-  min-width:   0;
-  white-space: nowrap;
-  overflow:    hidden;
-  text-overflow: ellipsis;
   cursor:      pointer;
   transition:  color 0.15s ease, opacity 0.15s ease;
   line-height: 1.3;
@@ -58,13 +52,6 @@ body.light-mode .scrolly-footer-nav:hover { color: #000000; }   /* inverse of #F
   font-size:   1.25em;
   flex-shrink: 0;
   line-height: 1;
-}
-
-.scrolly-footer-chapter-label {
-  overflow:      hidden;
-  text-overflow: ellipsis;
-  white-space:   nowrap;
-  font-size:     0.88em;
 }
 
 /* ── Center zone — image citation on mobile ──────────────────────── */
@@ -124,14 +111,10 @@ body.light-mode .scrolly-mobile-view-link { color: #737373; }   /* inverse of #8
 
   .scrolly-footer-nav {
     align-self:  center;
-    max-width:   none;
     flex-shrink: 0;
     width:       2.2rem;
     justify-content: center;
   }
-
-  /* Hide desktop chapter labels; show only arrows on mobile */
-  .scrolly-footer-chapter-label { display: none; }
 
   /* Show the mobile citation zone */
   .scrolly-footer-center {
@@ -152,7 +135,6 @@ body.light-mode .scrolly-mobile-view-link { color: #737373; }   /* inverse of #8
      href="#"
      aria-label="Previous">
     <span class="scrolly-footer-arrow">❮</span>
-    <span class="scrolly-footer-chapter-label" id="scrolly-footer-prev-label"></span>
   </a>
 
   <!-- Center: mobile image citation only -->
@@ -166,7 +148,6 @@ body.light-mode .scrolly-mobile-view-link { color: #737373; }   /* inverse of #8
      id="scrolly-footer-next"
      href="#"
      aria-label="Next">
-    <span class="scrolly-footer-chapter-label" id="scrolly-footer-next-label"></span>
     <span class="scrolly-footer-arrow">❯</span>
   </a>
 
@@ -207,87 +188,64 @@ body.light-mode .scrolly-mobile-view-link { color: #737373; }   /* inverse of #8
     return (url || '').replace(window.location.origin, '').replace(/\/+$/, '').replace(/\.html$/, '');
   }
 
-  var currentPath   = normalize(window.location.pathname);
-  var itemBase      = normalize('{{ site.baseurl }}/items/');
-  var onItemPage    = currentPath.startsWith(itemBase) && currentPath.length > itemBase.length;
+  var currentPath = normalize(window.location.pathname);
+  var itemBase    = normalize('{{ site.baseurl }}/items/');
+  var onItemPage  = currentPath.startsWith(itemBase) && currentPath.length > itemBase.length;
 
-  var prevUrl = null, prevTitle = null;
-  var nextUrl = null, nextTitle = null;
+  var prevUrl = null;
+  var nextUrl = null;
 
   if (onItemPage) {
-    // Item pages: cycle through all items
     var itemIdx = window.allItemPages.findIndex(function (p) {
       return normalize(p.url) === currentPath;
     });
-
     if (itemIdx > 0) {
-      prevUrl   = window.allItemPages[itemIdx - 1].url;
-      prevTitle = window.allItemPages[itemIdx - 1].title;
+      prevUrl = window.allItemPages[itemIdx - 1].url;
     } else if (itemIdx === 0) {
-      // Wrap to last item
-      prevUrl   = window.allItemPages[window.allItemPages.length - 1].url;
-      prevTitle = window.allItemPages[window.allItemPages.length - 1].title;
+      prevUrl = window.allItemPages[window.allItemPages.length - 1].url;
     }
-
     if (itemIdx >= 0 && itemIdx < window.allItemPages.length - 1) {
-      nextUrl   = window.allItemPages[itemIdx + 1].url;
-      nextTitle = window.allItemPages[itemIdx + 1].title;
+      nextUrl = window.allItemPages[itemIdx + 1].url;
     } else if (itemIdx === window.allItemPages.length - 1) {
-      // Wrap to first item
-      nextUrl   = window.allItemPages[0].url;
-      nextTitle = window.allItemPages[0].title;
+      nextUrl = window.allItemPages[0].url;
     }
 
   } else {
-    // Main sequence: home → essays → config-nav → (last → home)
     var navIdx = window.allNavItems.findIndex(function (item) {
       return normalize(item.url) === currentPath;
     });
-
     if (navIdx > 0) {
-      prevUrl   = window.allNavItems[navIdx - 1].url;
-      prevTitle = window.allNavItems[navIdx - 1].title;
+      prevUrl = window.allNavItems[navIdx - 1].url;
     }
-    // Home (idx 0) has no prev — left arrow is disabled.
-
     if (navIdx >= 0 && navIdx < window.allNavItems.length - 1) {
-      nextUrl   = window.allNavItems[navIdx + 1].url;
-      nextTitle = window.allNavItems[navIdx + 1].title;
+      nextUrl = window.allNavItems[navIdx + 1].url;
     } else if (navIdx === window.allNavItems.length - 1) {
-      // Last item → cycle back to Home
-      nextUrl   = window.allNavItems[0].url;
-      nextTitle = window.allNavItems[0].title;
+      nextUrl = window.allNavItems[0].url;
     }
   }
 
   // ── 4. Wire up footer buttons ──────────────────────────────────────
-  var prevEl        = document.getElementById('scrolly-footer-prev');
-  var nextEl        = document.getElementById('scrolly-footer-next');
-  var prevLabelEl   = document.getElementById('scrolly-footer-prev-label');
-  var nextLabelEl   = document.getElementById('scrolly-footer-next-label');
+  var prevEl = document.getElementById('scrolly-footer-prev');
+  var nextEl = document.getElementById('scrolly-footer-next');
 
-  function applyNav(el, labelEl, url, title) {
+  function applyNav(el, url) {
     if (!el) return;
     if (url) {
       el.href = url;
       el.removeAttribute('disabled');
       el.style.opacity       = '';
       el.style.pointerEvents = '';
-      if (labelEl) labelEl.textContent = title || '';
     } else {
       el.setAttribute('disabled', 'disabled');
       el.style.opacity       = '0.25';
       el.style.pointerEvents = 'none';
-      if (labelEl) labelEl.textContent = '';
     }
   }
 
-  applyNav(prevEl, prevLabelEl, prevUrl, prevTitle);
-  applyNav(nextEl, nextLabelEl, nextUrl, nextTitle);
+  applyNav(prevEl, prevUrl);
+  applyNav(nextEl, nextUrl);
 
   // ── 5. Keyboard navigation ─────────────────────────────────────────
-  // Exposed so the scrollytelling JS handler can check if the footer
-  // is managing keyboard events and skip its own listener.
   window.scrollyFooterOwnsKeyboard = true;
 
   document.addEventListener('keydown', function (e) {
@@ -306,8 +264,6 @@ body.light-mode .scrolly-mobile-view-link { color: #737373; }   /* inverse of #8
 
   // ── 6. Light-mode sync ─────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {
-    // updateTheme() in the handler also handles the footer background via
-    // CSS variables; this covers the case where theme is toggled live.
     new MutationObserver(function () {
       var footer = document.getElementById('scrolly-footer');
       if (footer) footer.classList.toggle('light-mode', document.body.classList.contains('light-mode'));
