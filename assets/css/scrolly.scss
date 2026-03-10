@@ -320,8 +320,7 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   box-sizing:  border-box;
 
   .citation-view-link {
-    display:    inline-block;
-    margin-top: 0.2rem;
+    display:    inline;
     font-size:  0.9em;
     color:      #8C8C8C;   /* muted — below base, it's a secondary action */
     text-decoration: underline;
