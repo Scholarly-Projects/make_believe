@@ -123,7 +123,6 @@ body.light-mode .scrolly-text-content hr,
 }
 
 .scrolly-citation-display {
-  // ... existing styles ...
 
   a {
     color: inherit;
@@ -177,54 +176,80 @@ body.light-mode .scrolly-toc-sidebar {
   &::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.15); }
 }
 
+/* ── TOC Heading ─────────────────────────────────────────────────────────
+   Matches .home-toc-heading in size (0.805rem), weight (700), tracking
+   (0.18em), case, and font. Color follows dark/light composition:
+     dark default  : rgba(255,255,255,0.4) — mirror of home's rgba(0,0,0,0.4)
+     light override: rgba(0,0,0,0.4)       — identical to home page
+   ──────────────────────────────────────────────────────────────────────── */
 .scrolly-toc-heading {
-  font-size:      1em;
-  font-weight:    800;
-  letter-spacing: 0.15em;
+  font-size:      0.805rem;
+  font-weight:    700;
+  font-style:     normal;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color:          #FFFFF;;   
-  margin: 0 0 0.85rem 0;
+  font-family:    "Times New Roman", Times, serif;
+  color:          rgba(255, 255, 255, 0.4);
+  margin: 0 0 1.5rem 0;
   padding: 0;
-  font-family: "Times New Roman", Times, serif;
+  text-align: left;
 }
-body.light-mode .scrolly-toc-heading { color: #000000; } 
+body.light-mode .scrolly-toc-heading { color: rgba(0, 0, 0, 0.4); }
 
 /* ── Lists ───────────────────────────────────────────────────────────────── */
 .scrolly-toc-list {
   list-style: none;
   margin:  0;
   padding: 0;
-  li { margin: 0; padding: 0; }
+  li { margin: 0 0 0.1rem 0; padding: 0; }
 }
 
+/* ── TOC Links ───────────────────────────────────────────────────────────
+   Matches .home-toc-link in size (1.058rem), padding (0.45rem 0.6rem),
+   weight (400), radius (3px), and transition (0.15s). Left-aligned in
+   the sidebar vs. center-aligned on the home page.
+   Color follows dark/light composition:
+     dark default  : rgba(255,255,255,0.78) → rgba(255,255,255,0.95) hover
+     light override: rgba(0,0,0,0.78) → #111111 hover — identical to home
+   ──────────────────────────────────────────────────────────────────────── */
 .scrolly-toc-link {
-  display:    block;
-  padding:    0.32rem 0.4rem;
-  font-size:  0.98em;
+  display:     block;
+  padding:     0.45rem 0.6rem;
+  font-size:   1.058rem;
   font-family: "Times New Roman", Times, serif;
-  color:      #CACACA;   /* base scale */
+  font-weight: 400;
+  font-style:  normal;
+  color:       rgba(255, 255, 255, 0.78);
   text-decoration: none;
   border-radius: 3px;
-  line-height: 1.5;
-  transition: color 0.18s ease, background-color 0.18s ease;
+  line-height: 1.4;
+  text-align:  left;
+  transition: color 0.15s ease, background-color 0.15s ease;
 
-  &:hover      { color: #E4E4E4; background-color: rgba(255, 255, 255, 0.06); }  /* mid scale */
-  &.toc-active { color: #FFFFFF; font-weight: 600; }                              /* focus */
+  &:hover      { color: rgba(255, 255, 255, 0.95); background-color: rgba(255, 255, 255, 0.05); }
+  &.toc-active { color: #FFFFFF; font-weight: 600; }
 }
-body.light-mode .scrolly-toc-link            { color: #353535; }          /* inverse of #CACACA */
-body.light-mode .scrolly-toc-link:hover      { color: #1B1B1B; background-color: rgba(0,0,0,0.05); } /* inverse of #E4E4E4 */
-body.light-mode .scrolly-toc-link.toc-active { color: #000000; }          /* inverse of #FFFFFF */
+body.light-mode .scrolly-toc-link            { color: rgba(0, 0, 0, 0.78); }
+body.light-mode .scrolly-toc-link:hover      { color: #111111; background-color: rgba(0, 0, 0, 0.05); }
+body.light-mode .scrolly-toc-link.toc-active { color: #000000; }
 
+/* ── Chapter (essay) sub-entries ─────────────────────────────────────────
+   Matches .home-toc-item.is-essay .home-toc-link in size (1.012rem) and
+   indent (padding-left: 1.4rem). Color follows dark/light composition:
+     dark default  : rgba(255,255,255,0.65) → rgba(255,255,255,0.95) hover
+     light override: rgba(0,0,0,0.65) → rgba(0,0,0,0.95) hover — identical to home
+   ──────────────────────────────────────────────────────────────────────── */
 .toc-chapter-entry > .scrolly-toc-link {
-  padding-left: 1.1rem;
-  font-size:    0.95em;
-  color:        #CACACA;   /* base scale — same tier as top-level but slightly smaller */
+  padding-left: 1.4rem;
+  font-size:    1.012rem;
+  font-style:   normal;
+  color:        rgba(255, 255, 255, 0.65);
 
-  &:hover      { color: #E4E4E4; }   /* mid scale */
-  &.toc-active { color: #FFFFFF; font-weight: 600; }  /* focus */
+  &:hover      { color: rgba(255, 255, 255, 0.95); }
+  &.toc-active { color: #FFFFFF; font-weight: 600; }
 }
-body.light-mode .toc-chapter-entry > .scrolly-toc-link            { color: #353535; }
-body.light-mode .toc-chapter-entry > .scrolly-toc-link:hover      { color: #1B1B1B; }
+body.light-mode .toc-chapter-entry > .scrolly-toc-link            { color: rgba(0, 0, 0, 0.65); }
+body.light-mode .toc-chapter-entry > .scrolly-toc-link:hover      { color: rgba(0, 0, 0, 0.95); }
 body.light-mode .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
 
 .toc-section-list {

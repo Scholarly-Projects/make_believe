@@ -89,13 +89,22 @@ body {
   border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+/* ── TOC Heading ─────────────────────────────────────────────────────────
+   Matches .scrolly-toc-heading exactly in size, weight, tracking, and font.
+   Home page is always light-background, so uses rgba(0,0,0,0.4) —
+   the light-mode value from scrolly.scss. Left-aligned to match the sidebar.
+   ──────────────────────────────────────────────────────────────────────── */
 .home-toc-heading {
   font-size: 0.805rem;
   font-weight: 700;
+  font-style: normal;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  font-family: "Times New Roman", Times, serif;
   color: rgba(0, 0, 0, 0.4);
   margin: 0 0 1.5rem 0;
+  padding: 0;
+  text-align: left;
 }
 
 .home-toc-list {
@@ -108,15 +117,23 @@ body {
   margin-bottom: 0.1rem;
 }
 
+/* ── TOC Links ───────────────────────────────────────────────────────────
+   Matches .scrolly-toc-link exactly in size, padding, weight, radius,
+   and font. Home page is always light-background, so uses the light-mode
+   color values from scrolly.scss. Left-aligned to match the sidebar.
+   ──────────────────────────────────────────────────────────────────────── */
 .home-toc-link {
   display: block;
   padding: 0.45rem 0.6rem;
   color: rgba(0, 0, 0, 0.78);
   text-decoration: none;
   font-size: 1.058rem;
+  font-family: "Times New Roman", Times, serif;
   font-weight: 400;
+  font-style: normal;
   line-height: 1.4;
   border-radius: 3px;
+  text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
@@ -125,6 +142,11 @@ body {
   color: #111111;
 }
 
+/* ── Essay (chapter) sub-entries ─────────────────────────────────────────
+   Matches .toc-chapter-entry > .scrolly-toc-link in size (1.012rem) and
+   indent (padding-left: 1.4rem). Center-aligned on home; the indent is
+   preserved so items read as visually subordinate even when centered.
+   ──────────────────────────────────────────────────────────────────────── */
 .home-toc-item.is-essay .home-toc-link {
   padding-left: 1.4rem;
   font-size: 1.012rem;
