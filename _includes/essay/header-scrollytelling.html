@@ -280,49 +280,107 @@ body.light-mode .offcanvas-menu {
 }
 body.light-mode .offcanvas-close { color: #353535; }   /* inverse of #CACACA */
 
+/* ── Off-canvas TOC heading ──────────────────────────────────────────
+   Matches .scrolly-toc-heading / .home-toc-heading exactly:
+   0.805rem, 700, 0.18em tracking, uppercase, normal (not italic),
+   Times New Roman. Dark panel uses rgba(255,255,255,0.4);
+   light override uses rgba(0,0,0,0.4) — identical to sidebar.
+   ──────────────────────────────────────────────────────────────────── */
 .offcanvas-toc-heading {
-  font-size:      0.7em;
+  font-size:      0.805rem;
   font-weight:    700;
-  letter-spacing: 0.13em;
+  font-style:     normal;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color:          #8C8C8C;    /* muted label — matches desktop TOC heading */
-  margin:         0 0 0.85rem 0;
   font-family:    "Times New Roman", Times, serif;
+  color:          rgba(255, 255, 255, 0.4);
+  margin:         0 0 1.5rem 0;
+  padding:        0;
 }
-body.light-mode .offcanvas-toc-heading { color: #737373; }   /* inverse of #8C8C8C */
+body.light-mode .offcanvas-toc-heading { color: rgba(0, 0, 0, 0.4); }
 
-/* ── Offcanvas link colours — beats Bootstrap blue on non-essay pages ── */
+/* ── Off-canvas TOC links ────────────────────────────────────────────
+   Matches .scrolly-toc-link exactly: Times New Roman, normal, 1.058rem,
+   weight 400, padding 0.45rem 0.6rem, border-radius 3px, 0.15s transition.
+   Top-level: rgba(255,255,255,0.65) dark / rgba(0,0,0,0.65) light.
+   Hover/active always win to full opacity.
+   ──────────────────────────────────────────────────────────────────── */
 .offcanvas-menu a,
 .offcanvas-menu .scrolly-toc-link {
-  color: #CACACA !important;   /* base scale */
+  display:         block !important;
+  padding:         0.45rem 0.6rem !important;
+  font-size:       1.058rem !important;
+  font-family:     "Times New Roman", Times, serif !important;
+  font-weight:     400 !important;
+  font-style:      normal !important;
+  line-height:     1.4 !important;
+  border-radius:   3px !important;
   text-decoration: none !important;
+  transition:      color 0.15s ease, background-color 0.15s ease !important;
+  color:           rgba(255, 255, 255, 0.65) !important;
 }
 .offcanvas-menu a:hover,
 .offcanvas-menu .scrolly-toc-link:hover {
-  color: #FFFFFF !important;   /* focus */
-  background-color: rgba(255, 255, 255, 0.06);
-  border-radius: 3px;
+  color:            rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 .offcanvas-menu .scrolly-toc-link.toc-active {
-  color: #FFFFFF !important;   /* focus */
-  font-weight: 600;
+  color:       #FFFFFF !important;
+  font-weight: 600 !important;
+  font-style:  normal !important;
 }
+
+/* ── Off-canvas chapter (essay) sub-entries ──────────────────────────
+   Matches .toc-chapter-entry > .scrolly-toc-link: 1.012rem, 1.4rem
+   indent, rgba(255,255,255,0.5) dark / rgba(0,0,0,0.5) light.
+   ──────────────────────────────────────────────────────────────────── */
+.offcanvas-menu .toc-chapter-entry > a,
+.offcanvas-menu .toc-chapter-entry > .scrolly-toc-link {
+  padding-left: 1.4rem !important;
+  font-size:    1.012rem !important;
+  font-style:   normal !important;
+  color:        rgba(255, 255, 255, 0.5) !important;
+}
+.offcanvas-menu .toc-chapter-entry > a:hover,
+.offcanvas-menu .toc-chapter-entry > .scrolly-toc-link:hover {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+.offcanvas-menu .toc-chapter-entry > .scrolly-toc-link.toc-active {
+  color: #FFFFFF !important;
+}
+
 .offcanvas-menu .toc-divider {
+  border:     none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin: 0.7rem 0;
+  margin:     0.7rem 0;
 }
+
+/* ── Light-mode overrides for off-canvas links ───────────────────── */
 body.light-mode .offcanvas-menu a,
 body.light-mode .offcanvas-menu .scrolly-toc-link {
-  color: #353535 !important;   /* inverse of #CACACA */
+  color: rgba(0, 0, 0, 0.65) !important;
 }
 body.light-mode .offcanvas-menu a:hover,
 body.light-mode .offcanvas-menu .scrolly-toc-link:hover {
-  color: #000000 !important;   /* inverse of #FFFFFF */
-  background-color: rgba(0, 0, 0, 0.05);
+  color:            #111111 !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 body.light-mode .offcanvas-menu .scrolly-toc-link.toc-active {
-  color: #000000 !important;   /* inverse of #FFFFFF */
+  color: #000000 !important;
 }
+
+body.light-mode .offcanvas-menu .toc-chapter-entry > a,
+body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+body.light-mode .offcanvas-menu .toc-chapter-entry > a:hover,
+body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link:hover {
+  color: rgba(0, 0, 0, 0.95) !important;
+}
+body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link.toc-active {
+  color: #000000 !important;
+}
+
 body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0.1); }
 
 .offcanvas-backdrop {
