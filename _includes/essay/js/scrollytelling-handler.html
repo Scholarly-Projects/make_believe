@@ -458,6 +458,11 @@ class ScrollyTelling {
     this.updateFooterImageCitation(newId);
   }
 
+  _figureLabel(objectid) {
+  const match = objectid ? /(\d+)$/.exec(objectid) : null;
+  return match ? `<i>Figure ${parseInt(match[1], 10)}:</i> ` : '';
+}
+
   updateFooterImageCitation(objectid) {
     const desktopContent = document.getElementById('scrolly-image-citation-content');
     const desktopWrapper = document.getElementById('scrolly-image-citation-footer');
@@ -471,9 +476,9 @@ class ScrollyTelling {
       const itemUrl = `{{ site.baseurl }}/items/${objectid}.html`;
       
       if (desktopContent) {
-        desktopContent.innerHTML = meta.image_citation
+        desktopContent.innerHTML = this._figureLabel(objectid) + (meta.image_citation
           ? this.formatCitation(meta.image_citation)
-          : (meta.title || 'Image citation unavailable');
+          : (meta.title || 'Image citation unavailable'));
       }
       if (desktopLink)    { desktopLink.href = itemUrl; desktopLink.style.display = 'inline'; }
       if (desktopWrapper) desktopWrapper.classList.add('visible');
