@@ -3,13 +3,17 @@
    SCROLLYTELLING HEADER
    Desktop: [identity] … [chapter-center] … [toggle]
    Mobile:  [hamburger] [stacked title/chapter]        [toggle]
+
+   THEMING STRATEGY
+   ────────────────
+   Every body.light-mode rule is paired with an html.light-mode rule.
+   The pre-paint script sets html.light-mode synchronously (before the
+   first paint) so non-essay pages render light immediately with zero
+   flash.  At DOMContentLoaded the class migrates from <html> to
+   <body> and the html.* rule becomes inert — body.* takes over for
+   the remainder of the session (toggle, etc.).
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── Suppress the default CollectionBuilder / Bootstrap navbar ──────
-   Any page that includes this header include also gets the CB default
-   layout navbar (because they use layout: default as a base).
-   Hide it unconditionally — the scrolly header replaces it entirely.
-   Using !important ensures it wins over Bootstrap's own display rules. */
 nav.navbar,
 #navbar,
 .navbar:not(.offcanvas-menu .navbar) {
@@ -32,7 +36,7 @@ nav.navbar,
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   isolation: isolate;
 }
-
+html.light-mode .scrolly-header,
 body.light-mode .scrolly-header {
   background-color: rgba(255, 255, 255, 0.96);
   border-bottom-color: rgba(0, 0, 0, 0.12);
@@ -58,12 +62,12 @@ body.light-mode .scrolly-header {
   border-radius: 2px;
   transition: background-color 0.2s ease;
 }
+html.light-mode .scrolly-hamburger .hamburger-line,
 body.light-mode .scrolly-hamburger .hamburger-line {
   background-color: #1B1B1B;
 }
-.scrolly-hamburger:hover .hamburger-line {
-  background-color: #FFFFFF;
-}
+.scrolly-hamburger:hover .hamburger-line { background-color: #FFFFFF; }
+html.light-mode .scrolly-hamburger:hover .hamburger-line,
 body.light-mode .scrolly-hamburger:hover .hamburger-line {
   background-color: #000000;
 }
@@ -79,6 +83,25 @@ body.light-mode .scrolly-hamburger:hover .hamburger-line {
   gap: 0.08rem;
   position: relative;
   z-index:  1;
+  padding-left: 1.4rem;
+}
+
+/* Decorative pipe — light default */
+.scrolly-header-identity::before {
+  content:          '';
+  position:         absolute;
+  left:             0;
+  top:              10%;
+  bottom:           10%;
+  width:            1.5px;
+  background-color: #E4E4E4;
+  border-radius:    1px;
+  transition:       background-color 0.3s ease;
+}
+/* Essay pages (no light-mode class) get white pipe */
+body:not(.light-mode) .scrolly-header-identity::before,
+html:not(.light-mode) .scrolly-header-identity::before {
+  background-color: #E4E4E4;
 }
 
 .scrolly-site-title {
@@ -91,9 +114,11 @@ body.light-mode .scrolly-hamburger:hover .hamburger-line {
   white-space: nowrap;
   transition:  color 0.2s ease;
 }
-body.light-mode .scrolly-site-title       { color: #1B1B1B; }
-.scrolly-site-title:hover                 { color: #FFFFFF; }
-body.light-mode .scrolly-site-title:hover { color: #000000; }
+html.light-mode .scrolly-site-title,
+body.light-mode .scrolly-site-title        { color: #1B1B1B; }
+.scrolly-site-title:hover                  { color: #FFFFFF; }
+html.light-mode .scrolly-site-title:hover,
+body.light-mode .scrolly-site-title:hover  { color: #000000; }
 
 .scrolly-site-subtitle {
   font-size:   0.78em;
@@ -103,6 +128,7 @@ body.light-mode .scrolly-site-title:hover { color: #000000; }
   line-height: 1.3;
   white-space: normal;
 }
+html.light-mode .scrolly-site-subtitle,
 body.light-mode .scrolly-site-subtitle { color: #353535; }
 
 .scrolly-site-author {
@@ -113,6 +139,7 @@ body.light-mode .scrolly-site-subtitle { color: #353535; }
   line-height: 1.25;
   white-space: nowrap;
 }
+html.light-mode .scrolly-site-author,
 body.light-mode .scrolly-site-author { color: #737373; }
 
 /* ── CENTER: chapter title ───────────────────────────────────────── */
@@ -140,6 +167,7 @@ body.light-mode .scrolly-site-author { color: #737373; }
   max-width:     100%;
   transition:    opacity 0.3s ease;
 }
+html.light-mode .scrolly-chapter-title-display,
 body.light-mode .scrolly-chapter-title-display { color: #1B1B1B; }
 
 /* ── RIGHT: theme controls ───────────────────────────────────────── */
@@ -152,10 +180,6 @@ body.light-mode .scrolly-chapter-title-display { color: #1B1B1B; }
   position:    relative;
   z-index:     1;
 }
-
-/* ── Toggle hidden on non-essay pages ───────────────────────────────
-   .no-essay-toggle hides the sun icon and the button itself while
-   still reserving the right-side flex slot so layout doesn't shift.  */
 .scrolly-header-controls.no-essay-toggle .sun-icon,
 .scrolly-header-controls.no-essay-toggle .theme-toggle {
   display: none !important;
@@ -171,6 +195,7 @@ body.light-mode .scrolly-chapter-title-display { color: #1B1B1B; }
   opacity: 0.7;
   transition: stroke 0.25s ease, opacity 0.25s ease;
 }
+html.light-mode .sun-icon,
 body.light-mode .sun-icon { stroke: #737373; }
 
 .theme-toggle {
@@ -185,7 +210,7 @@ body.light-mode .sun-icon { stroke: #737373; }
   opacity: 0.65;
   transition: background-color 0.25s ease, opacity 0.25s ease;
 }
-.theme-toggle:hover  { opacity: 1; }
+.theme-toggle:hover { opacity: 1; }
 .theme-toggle::after {
   content: '';
   position: absolute;
@@ -195,8 +220,11 @@ body.light-mode .sun-icon { stroke: #737373; }
   border-radius: 50%;
   transition: transform 0.25s ease;
 }
+html.light-mode .theme-toggle,
 body.light-mode .theme-toggle             { background-color: rgba(0,0,0,0.2); opacity: 0.7; }
+html.light-mode .theme-toggle:hover,
 body.light-mode .theme-toggle:hover       { opacity: 1; }
+html.light-mode .theme-toggle::after,
 body.light-mode .theme-toggle::after      { background-color: #ffffff; transform: translateX(16px); }
 
 /* ── Mobile: compact stacked identity + chapter ──────────────────── */
@@ -217,6 +245,7 @@ body.light-mode .theme-toggle::after      { background-color: #ffffff; transform
   cursor:      pointer;
   white-space: nowrap;
 }
+html.light-mode .scrolly-mobile-title,
 body.light-mode .scrolly-mobile-title { color: #000000; }
 
 .scrolly-mobile-meta {
@@ -225,6 +254,7 @@ body.light-mode .scrolly-mobile-title { color: #000000; }
   line-height: 1.3;
   text-align:  center;
 }
+html.light-mode .scrolly-mobile-meta,
 body.light-mode .scrolly-mobile-meta { color: #1B1B1B; }
 
 .scrolly-mobile-chapter {
@@ -238,6 +268,7 @@ body.light-mode .scrolly-mobile-meta { color: #1B1B1B; }
   max-width:   100%;
   transition:  opacity 0.3s ease;
 }
+html.light-mode .scrolly-mobile-chapter,
 body.light-mode .scrolly-mobile-chapter { color: #353535; }
 
 /* ── Off-canvas TOC ──────────────────────────────────────────────── */
@@ -259,6 +290,7 @@ body.light-mode .scrolly-mobile-chapter { color: #353535; }
   scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 .offcanvas-menu.active { display: block; transform: translateX(0); }
+html.light-mode .offcanvas-menu,
 body.light-mode .offcanvas-menu {
   background-color: rgba(248, 248, 248, 0.98);
   border-right-color: rgba(0, 0, 0, 0.1);
@@ -274,6 +306,7 @@ body.light-mode .offcanvas-menu {
   z-index: 1003;
   line-height: 1;
 }
+html.light-mode .offcanvas-close,
 body.light-mode .offcanvas-close { color: #353535; }
 
 .offcanvas-toc-heading {
@@ -287,6 +320,7 @@ body.light-mode .offcanvas-close { color: #353535; }
   margin:         0 0 1.5rem 0;
   padding:        0;
 }
+html.light-mode .offcanvas-toc-heading,
 body.light-mode .offcanvas-toc-heading { color: rgba(0, 0, 0, 0.4); }
 
 .offcanvas-menu a,
@@ -313,7 +347,6 @@ body.light-mode .offcanvas-toc-heading { color: rgba(0, 0, 0, 0.4); }
   font-weight: 600 !important;
   font-style:  normal !important;
 }
-
 .offcanvas-menu .toc-chapter-entry > a,
 .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link {
   padding-left: 1.4rem !important;
@@ -328,38 +361,41 @@ body.light-mode .offcanvas-toc-heading { color: rgba(0, 0, 0, 0.4); }
 .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link.toc-active {
   color: #FFFFFF !important;
 }
-
 .offcanvas-menu .toc-divider {
   border:     none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin:     0.7rem 0;
 }
 
+html.light-mode .offcanvas-menu a,
+html.light-mode .offcanvas-menu .scrolly-toc-link,
 body.light-mode .offcanvas-menu a,
-body.light-mode .offcanvas-menu .scrolly-toc-link {
-  color: rgba(0, 0, 0, 0.65) !important;
-}
+body.light-mode .offcanvas-menu .scrolly-toc-link { color: rgba(0, 0, 0, 0.65) !important; }
+
+html.light-mode .offcanvas-menu a:hover,
+html.light-mode .offcanvas-menu .scrolly-toc-link:hover,
 body.light-mode .offcanvas-menu a:hover,
 body.light-mode .offcanvas-menu .scrolly-toc-link:hover {
-  color:            #111111 !important;
+  color: #111111 !important;
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
-body.light-mode .offcanvas-menu .scrolly-toc-link.toc-active {
-  color: #000000 !important;
-}
+html.light-mode .offcanvas-menu .scrolly-toc-link.toc-active,
+body.light-mode .offcanvas-menu .scrolly-toc-link.toc-active { color: #000000 !important; }
 
+html.light-mode .offcanvas-menu .toc-chapter-entry > a,
+html.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link,
 body.light-mode .offcanvas-menu .toc-chapter-entry > a,
-body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link {
-  color: rgba(0, 0, 0, 0.5) !important;
-}
-body.light-mode .offcanvas-menu .toc-chapter-entry > a:hover,
-body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link:hover {
-  color: rgba(0, 0, 0, 0.95) !important;
-}
-body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link.toc-active {
-  color: #000000 !important;
-}
+body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link { color: rgba(0, 0, 0, 0.5) !important; }
 
+html.light-mode .offcanvas-menu .toc-chapter-entry > a:hover,
+html.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link:hover,
+body.light-mode .offcanvas-menu .toc-chapter-entry > a:hover,
+body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link:hover { color: rgba(0, 0, 0, 0.95) !important; }
+
+html.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link.toc-active,
+body.light-mode .offcanvas-menu .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000 !important; }
+
+html.light-mode .offcanvas-menu .toc-divider,
 body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0.1); }
 
 .offcanvas-backdrop {
@@ -378,34 +414,55 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
     padding: calc(0.42rem + env(safe-area-inset-top, 0px)) 0.85rem 0.42rem;
     gap: 0.5rem;
   }
-
   .scrolly-hamburger { display: flex; }
-
   .scrolly-header-identity,
-  .scrolly-header-chapter-wrap {
-    display: none !important;
-  }
-
+  .scrolly-header-chapter-wrap { display: none !important; }
   .scrolly-header-mobile-center { display: flex; }
-
   .theme-toggle { width: 30px; height: 16px; }
   .theme-toggle::after { width: 10px; height: 10px; }
+  html.light-mode .theme-toggle::after,
   body.light-mode .theme-toggle::after { transform: translateX(14px); }
   .sun-icon { width: 11px; height: 11px; }
 }
 </style>
 
-<!-- ══════════════════════════════════════════════════════════════════
-     Detect essay context once in Liquid so JS and markup can branch.
-     Pages in the _essay collection have page.collection == 'essay'.
-     ══════════════════════════════════════════════════════════════════ -->
 {% assign is_essay_page = false %}
 {% if page.collection == 'essay' %}
   {% assign is_essay_page = true %}
 {% endif %}
 
 <!-- ══════════════════════════════════════════════════════════════════
-     OFF-CANVAS TOC (slides in from LEFT — mobile only)
+     PRE-PAINT THEME SCRIPT
+     Must run before any content renders.  Sets html.light-mode
+     synchronously so the CSS above produces the correct colours on
+     the very first paint — no flash.
+
+     Non-essay : always light  (html.light-mode added immediately)
+     Essay      : dark by default; light only if saved in localStorage
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  var IS_ESSAY = {{ is_essay_page | json }};
+
+  if (IS_ESSAY) {
+    var saved;
+    try { saved = localStorage.getItem('scrolly-theme'); } catch (e) {}
+    if (saved === 'light') {
+      document.documentElement.classList.add('light-mode');
+    } else {
+      /* Canonicalise dark in storage so refreshes are consistent */
+      try { localStorage.setItem('scrolly-theme', 'dark'); } catch (e) {}
+      document.documentElement.classList.remove('light-mode');
+    }
+  } else {
+    /* Non-essay — always light, never touch localStorage */
+    document.documentElement.classList.add('light-mode');
+  }
+}());
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     OFF-CANVAS TOC
      ══════════════════════════════════════════════════════════════════ -->
 <div class="offcanvas-menu" id="offcanvas-site" role="dialog" aria-modal="true" aria-label="Table of Contents">
   <button class="offcanvas-close" id="close-site" aria-label="Close navigation">&times;</button>
@@ -452,7 +509,6 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
      ══════════════════════════════════════════════════════════════════ -->
 <header class="scrolly-header" id="scrolly-header">
 
-  <!-- Hamburger — LEFT, mobile only ───────────────────────────────── -->
   <button class="scrolly-hamburger"
           id="hamburger-site"
           aria-label="Open table of contents"
@@ -463,7 +519,6 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
     <div class="hamburger-line"></div>
   </button>
 
-  <!-- Desktop: full site identity ─────────────────────────────────── -->
   <div class="scrolly-header-identity">
     <div class="scrolly-site-title" id="scrolly-site-title">{{ site.title }}</div>
     {% if site.tagline %}
@@ -474,7 +529,6 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
     {% endif %}
   </div>
 
-  <!-- Desktop: chapter title absolutely centered ───────────────────── -->
   <div class="scrolly-header-chapter-wrap">
     <div class="scrolly-chapter-title-display" id="scrolly-chapter-display">
       {% if page.chapter %}Chapter {{ page.order }}: {{ page.chapter }}
@@ -482,7 +536,6 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
     </div>
   </div>
 
-  <!-- Mobile: compact stacked identity + chapter ───────────────────── -->
   <div class="scrolly-header-mobile-center">
     <div class="scrolly-mobile-title" id="scrolly-site-title-mobile">{{ site.title }}</div>
     {% if site.tagline or site.author %}
@@ -496,10 +549,6 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
     </div>
   </div>
 
-  <!-- RIGHT: theme toggle (essay pages only) ──────────────────────── -->
-  <!-- On non-essay pages the controls div is still rendered for flex
-       layout consistency, but the sun icon and toggle button are hidden
-       via the .no-essay-toggle modifier class.                        -->
   <div class="scrolly-header-controls{% unless is_essay_page %} no-essay-toggle{% endunless %}">
     <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="4"/>
@@ -523,90 +572,51 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
 </header>
 
 <script>
-/* ── 1. Theme enforcement — runs before first paint ───────────────── *
+/* ── DOMContentLoaded: migrate class from <html> to <body> ────────── *
  *                                                                      *
- *  Essay pages  : dark by default; honour any saved localStorage pref *
- *  All other pages : always light; localStorage essay pref is ignored  *
- *  The Liquid variable is baked in at build time.                      *
+ *  The pre-paint script put light-mode on <html> so the CSS could     *
+ *  respond before body exists.  Now that the DOM is ready we move it  *
+ *  to <body> (the canonical home) and strip it from <html>.           *
+ *  This is a zero-visual-change swap — both selectors are in the CSS. *
  * ──────────────────────────────────────────────────────────────────── */
-(function () {
-  var IS_ESSAY_PAGE = {{ is_essay_page | json }};
-
-  if (IS_ESSAY_PAGE) {
-    /* Essay context ─ respect saved preference, default = dark */
-    var savedTheme;
-    try { savedTheme = localStorage.getItem('scrolly-theme'); } catch (e) {}
-    if (savedTheme !== 'light') {
-      /* Ensure dark is stored so refreshes are consistent */
-      try { localStorage.setItem('scrolly-theme', 'dark'); } catch (e) {}
-      document.documentElement.classList.remove('light-mode');
-    } else {
-      document.documentElement.classList.add('light-mode');
-    }
-  } else {
-    /* Non-essay context ─ always light, do not touch localStorage */
-    document.documentElement.classList.add('light-mode');
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    var IS_ESSAY = {{ is_essay_page | json }};
-
-    if (IS_ESSAY) {
-      var savedTheme;
-      try { savedTheme = localStorage.getItem('scrolly-theme'); } catch (e) {}
-      if (savedTheme === 'light') {
-        document.body.classList.add('light-mode');
-      } else {
-        document.body.classList.remove('light-mode');
-      }
-    } else {
-      /* Force light on body for all non-essay pages */
-      document.body.classList.add('light-mode');
-    }
-    /* Always strip from <html>; body carries the canonical class */
-    document.documentElement.classList.remove('light-mode');
-  }, { once: true });
-}());
-
-/* ── 2. Header interactions ───────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
   'use strict';
 
   var IS_ESSAY_PAGE = {{ is_essay_page | json }};
 
-  var siteMenu    = document.getElementById('offcanvas-site');
-  var backdrop    = document.getElementById('offcanvas-backdrop');
-  var hamburger   = document.getElementById('hamburger-site');
-  var closeSite   = document.getElementById('close-site');
-  var siteTitle   = document.getElementById('scrolly-site-title');
-  var siteTitleM  = document.getElementById('scrolly-site-title-mobile');
-  var toggle      = document.getElementById('theme-toggle');
+  /* ── 1. Migrate theme class html → body ── */
+  if (document.documentElement.classList.contains('light-mode')) {
+    document.body.classList.add('light-mode');
+  } else {
+    document.body.classList.remove('light-mode');
+  }
+  document.documentElement.classList.remove('light-mode');
 
-  closeAllMenus();
-
-  /* Sync toggle aria-checked state to current body class */
+  /* ── 2. Sync toggle aria state ── */
+  var toggle = document.getElementById('theme-toggle');
   if (toggle) {
     toggle.setAttribute('aria-checked',
       document.body.classList.contains('light-mode') ? 'true' : 'false');
   }
 
-  /* Hamburger */
+  /* ── 3. Off-canvas wiring ── */
+  var siteMenu   = document.getElementById('offcanvas-site');
+  var backdrop   = document.getElementById('offcanvas-backdrop');
+  var hamburger  = document.getElementById('hamburger-site');
+  var closeSite  = document.getElementById('close-site');
+  var siteTitle  = document.getElementById('scrolly-site-title');
+  var siteTitleM = document.getElementById('scrolly-site-title-mobile');
+
+  closeAllMenus();
+
   if (hamburger) {
-    hamburger.addEventListener('click', function (e) {
-      e.stopPropagation();
-      openSiteMenu();
-    });
+    hamburger.addEventListener('click', function (e) { e.stopPropagation(); openSiteMenu(); });
     hamburger.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openSiteMenu();
-      }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSiteMenu(); }
     });
   }
-
-  /* Close buttons / backdrop */
-  if (closeSite)  closeSite.addEventListener('click', function (e) { e.stopPropagation(); closeAllMenus(); });
-  if (backdrop)   backdrop.addEventListener('click', closeAllMenus);
+  if (closeSite) closeSite.addEventListener('click', function (e) { e.stopPropagation(); closeAllMenus(); });
+  if (backdrop)  backdrop.addEventListener('click', closeAllMenus);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllMenus(); });
   document.addEventListener('click', function (e) {
     if (siteMenu && siteMenu.classList.contains('active') &&
@@ -616,15 +626,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  /* Site title → home */
   [siteTitle, siteTitleM].forEach(function (el) {
     if (el) el.addEventListener('click', function () {
       window.location.href = '{{ "/" | relative_url }}';
     });
   });
 
-  /* Theme toggle — only functional on essay pages;
-     the button is hidden on other pages via CSS, but guard here too. */
+  /* ── 4. Theme toggle (essay only) ── */
   if (toggle && IS_ESSAY_PAGE) {
     toggle.addEventListener('click', function () {
       var isLight = document.body.classList.toggle('light-mode');
@@ -639,21 +647,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function openSiteMenu() {
     closeAllMenus();
-    if (siteMenu)   siteMenu.classList.add('active');
-    if (backdrop)   backdrop.classList.add('active');
-    if (hamburger)  hamburger.setAttribute('aria-expanded', 'true');
+    if (siteMenu)  siteMenu.classList.add('active');
+    if (backdrop)  backdrop.classList.add('active');
+    if (hamburger) hamburger.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
   }
-
   function closeAllMenus() {
-    if (siteMenu)   siteMenu.classList.remove('active');
-    if (backdrop)   backdrop.classList.remove('active');
-    if (hamburger)  hamburger.setAttribute('aria-expanded', 'false');
+    if (siteMenu)  siteMenu.classList.remove('active');
+    if (backdrop)  backdrop.classList.remove('active');
+    if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
   }
 });
 
-/* ── 3. Chapter display (called by scrollytelling-handler.js) ─────── */
+/* ── Chapter display (called by scrollytelling-handler.js) ─────────── */
 window.updateChapterDisplay = function (data) {
   if (!data) return;
   var label = (data.chapter && data.chapter.trim()) ? data.chapter.trim() : (data.title || '');
@@ -664,21 +671,17 @@ window.updateChapterDisplay = function (data) {
     if (!el || el.textContent === text) return;
     el.style.transition = 'opacity 0.2s ease';
     el.style.opacity    = '0';
-    setTimeout(function () {
-      el.textContent  = text;
-      el.style.opacity = '1';
-    }, 200);
+    setTimeout(function () { el.textContent = text; el.style.opacity = '1'; }, 200);
   });
 };
 
-/* ── 4. Expose header height as CSS variable ─────────────────────── */
+/* ── Header height CSS variable ─────────────────────────────────────── */
 (function () {
   function setH() {
     var h = document.getElementById('scrolly-header');
     if (!h) return;
     document.documentElement.style.setProperty(
-      '--scrolly-header-h',
-      h.getBoundingClientRect().height + 'px'
+      '--scrolly-header-h', h.getBoundingClientRect().height + 'px'
     );
   }
   document.addEventListener('DOMContentLoaded', setH);
