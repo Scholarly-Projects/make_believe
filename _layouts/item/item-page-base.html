@@ -9,26 +9,63 @@ item-meta: true
 hide-default-footer: true
 ---
 {% include essay/header-scrollytelling.html %}
+
+<link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
+
 <style>
-  /* ── Clear the fixed scrollytelling header at the top ───────────────── */
+  /* ── Light-mode overrides for the scrolly TOC sidebar ── */
+  #bib-toc-sidebar.scrolly-toc-sidebar {
+    background-color: #ffffff;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  }
+  #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+  #bib-toc-sidebar .scrolly-toc-heading {
+    color: #000000;
+  }
+  #bib-toc-sidebar .scrolly-toc-link {
+    color: #353535;
+  }
+  #bib-toc-sidebar .scrolly-toc-link:hover {
+    color: #1B1B1B;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  #bib-toc-sidebar .scrolly-toc-link.toc-active {
+    color: #000000;
+    font-weight: 600;
+  }
+  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link {
+    color: #353535;
+  }
+  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover {
+    color: #1B1B1B;
+  }
+  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active {
+    color: #000000;
+  }
+  #bib-toc-sidebar .toc-section-rule {
+    background-color: rgba(0, 0, 0, 0.22);
+  }
+  #bib-toc-sidebar .toc-section-rule:hover {
+    background-color: rgba(0, 0, 0, 0.55);
+  }
+  #bib-toc-sidebar .toc-section-rule.toc-section-active {
+    background-color: rgba(0, 0, 0, 0.48);
+  }
+
+  /* ── Clear the fixed scrollytelling header ── */
   #item-page-top {
+    margin-left: 14%;
     padding-top: 120px;
   }
-  @media screen and (max-width: 768px) {
-    #item-page-top {
-      padding-top: 100px;
-    }
-  }
-  /* ── Clear the fixed scrollytelling footer at the bottom ────────────── */
+
+  /* ── Clear the fixed scrollytelling footer ── */
   #item-page-bottom-spacer {
     height: 6rem;
   }
-  @media screen and (max-width: 768px) {
-    #item-page-bottom-spacer {
-      height: 5rem;
-    }
-  }
-  /* ── Back button — identical style to bibliography bib-back-btn ─────── */
+
+  /* ── Back button — identical style to bibliography bib-back-btn ── */
   .item-back-btn {
     color: #2563eb !important;
     border-color: #2563eb !important;
@@ -40,42 +77,99 @@ hide-default-footer: true
     border-color: #2563eb !important;
     text-decoration: none;
   }
+
+  @media screen and (max-width: 992px) {
+    #bib-toc-sidebar {
+      display: none !important;
+    }
+    #item-page-top {
+      margin-left: 0 !important;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    #item-page-top {
+      padding-top: 100px;
+    }
+    #item-page-bottom-spacer {
+      height: 5rem;
+    }
+  }
 </style>
+
+<!-- ── TOC SIDEBAR ───────────────────────────────────────────────────────── -->
+<aside class="scrolly-toc-sidebar" id="bib-toc-sidebar" aria-label="Table of contents">
+  <p class="scrolly-toc-heading">Contents</p>
+  <ul class="scrolly-toc-list" id="scrolly-toc-list">
+
+    <li>
+      <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
+    </li>
+
+    {% assign toc_essays = site.essay | sort: 'order' %}
+    {% for essay in toc_essays %}
+    <li class="toc-chapter-entry">
+      <a href="{{ essay.url | prepend: site.baseurl }}"
+         class="scrolly-toc-link"
+         data-toc-chapter="{{ essay.order }}">
+        {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+      </a>
+    </li>
+    {% endfor %}
+
+    <hr class="toc-divider">
+
+    {% for nav in site.data.config-nav %}
+      {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+    <li>
+      <a href="{{ nav.stub | relative_url }}"
+         class="scrolly-toc-link {% if nav.stub == page.url %}toc-active{% endif %}">
+        {{ nav.display_name }}
+      </a>
+    </li>
+      {% endunless %}
+    {% endfor %}
+
+  </ul>
+</aside>
+
+<!-- ── MAIN CONTENT ──────────────────────────────────────────────────────── -->
 <div id="item-page-top">
   <div class="container py-3">
-      {% include item/breadcrumbs.html %}
-      <div class="my-0 h5 small">{{ page.display_template | replace: "_", " " | upcase }} {% if page.display_template == "compound_object" or page.display_template == "multiple" %}{% assign children = site.data[site.metadata] | where_exp: 'item','item.parentid == page.objectid' %} ({{ children | size }} Items){% endif %}</div>
-      <div class="d-flex justify-content-between align-items-start mb-3">
-        <h2 class="mb-0">{{ page.title }}</h2>
-        <div class="d-flex align-items-center gap-2 ms-3 flex-shrink-0">
-          <a href="#" class="btn btn-sm item-back-btn" onclick="event.preventDefault(); history.back();" aria-label="Return to previous page">↩ back</a>
-          {% unless page.display_template == 'record' %}<a href="#metadata" class="btn btn-sm btn-outline-dark small">Item Info
-              <svg class="bi icon-sprite" role="img" aria-label="Jump to Item Info">
-                  <use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#arrow-down"/>
-              </svg>
-          </a>{% endunless %}
-        </div>
+    {% include item/breadcrumbs.html %}
+    <div class="my-0 h5 small">{{ page.display_template | replace: "_", " " | upcase }} {% if page.display_template == "compound_object" or page.display_template == "multiple" %}{% assign children = site.data[site.metadata] | where_exp: 'item','item.parentid == page.objectid' %} ({{ children | size }} Items){% endif %}</div>
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <h2 class="mb-0">{{ page.title }}</h2>
+      <div class="d-flex align-items-center gap-2 ms-3 flex-shrink-0">
+        <a href="#" class="btn btn-sm item-back-btn" onclick="event.preventDefault(); history.back();" aria-label="Return to previous page">↩ back</a>
+        {% unless page.display_template == 'record' %}<a href="#metadata" class="btn btn-sm btn-outline-dark small">Item Info
+          <svg class="bi icon-sprite" role="img" aria-label="Jump to Item Info">
+            <use xlink:href="{{ '/assets/lib/cb-icons.svg' | relative_url }}#arrow-down"/>
+          </svg>
+        </a>{% endunless %}
       </div>
-      <div class="row justify-content-center">
-          <div class="col-12 col-md-10">
-          {{ content }}
-          </div>
-          <div class="col-12 col-md-10" id="metadata">
-              {% include item/metadata.html %}
-          </div>
-          <div class="col-md-5 py-4">
-              {% include item/citation-box.html %}
-          </div>
-          {% if page.rights or page.rightsstatement %}
-          <div class="col-md-5 py-4">
-              {% include item/rights-box.html %}
-          </div>
-          {% endif %}
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10">
+        {{ content }}
       </div>
-      {%- if site.data.theme.browse-buttons == true -%}
-          {% include item/browse-buttons.html %}
-      {%- endif -%}
+      <div class="col-12 col-md-10" id="metadata">
+        {% include item/metadata.html %}
+      </div>
+      <div class="col-md-5 py-4">
+        {% include item/citation-box.html %}
+      </div>
+      {% if page.rights or page.rightsstatement %}
+      <div class="col-md-5 py-4">
+        {% include item/rights-box.html %}
+      </div>
+      {% endif %}
+    </div>
+    {%- if site.data.theme.browse-buttons == true -%}
+      {% include item/browse-buttons.html %}
+    {%- endif -%}
   </div>
   <div id="item-page-bottom-spacer"></div>
 </div>
+
 {% include essay/footer-scrollytelling.html %}
