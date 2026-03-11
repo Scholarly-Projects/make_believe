@@ -9,66 +9,13 @@ layout: default
 <link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
 
 <style>
-  /* ── Light-mode overrides for the scrolly TOC sidebar ── */
-  #bib-toc-sidebar.scrolly-toc-sidebar {
-    background-color: #ffffff;
-    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  /* ── CSS variables: always light on this page ────────────────────── */
+  body {
+    --scrolly-bg-color:       #ffffff;
+    --scrolly-text-color:     #1B1B1B;
+    --scrolly-border-color:   transparent;
+    --scrolly-citation-color: #353535;
   }
-  #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.15);
-  }
-  #bib-toc-sidebar .scrolly-toc-heading {
-    color: #1C1C1D;
-  }
-  #bib-toc-sidebar .scrolly-toc-link {
-    color: #353535;
-  }
-  #bib-toc-sidebar .scrolly-toc-link:hover {
-    color: #1B1B1B;
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  #bib-toc-sidebar .scrolly-toc-link.toc-active {
-    color: #000000;
-    font-weight: 600;
-  }
-  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link {
-    color: #353535;
-  }
-  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover {
-    color: #1B1B1B;
-  }
-  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active {
-    color: #000000;
-  }
-  #bib-toc-sidebar .toc-section-rule {
-    background-color: rgba(0, 0, 0, 0.22);
-  }
-  #bib-toc-sidebar .toc-section-rule:hover {
-    background-color: rgba(0, 0, 0, 0.55);
-  }
-  #bib-toc-sidebar .toc-section-rule.toc-section-active {
-    background-color: rgba(0, 0, 0, 0.48);
-  }
-
-  /* Light-mode inversion: cloud page is dark-background when body.light-mode,
-     so the sidebar should flip to match the dark scrolly default.             */
-  body.light-mode #bib-toc-sidebar.scrolly-toc-sidebar {
-    background-color: #1C1C1D;
-    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-  }
-  body.light-mode #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15);
-  }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-heading { color: #FFFFFF; }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-link             { color: #CACACA; }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-link:hover       { color: #E4E4E4; background-color: rgba(255, 255, 255, 0.06); }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-link.toc-active  { color: #FFFFFF; font-weight: 600; }
-  body.light-mode #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link            { color: #CACACA; }
-  body.light-mode #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover      { color: #E4E4E4; }
-  body.light-mode #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #FFFFFF; }
-  body.light-mode #bib-toc-sidebar .toc-section-rule                    { background-color: rgba(255, 255, 255, 0.28); }
-  body.light-mode #bib-toc-sidebar .toc-section-rule:hover              { background-color: rgba(255, 255, 255, 0.65); }
-  body.light-mode #bib-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(255, 255, 255, 0.58); }
 
   /* ── Suppress CB default layout padding ──────────────────────────── */
   #maincontent,
@@ -81,29 +28,37 @@ layout: default
   }
 
   /* ── Cloud wrapper: fills the viewport between fixed header and footer.
-     left: 14% clears the fixed TOC sidebar (margin-left has no effect on
-     position:fixed elements).                                            */
+     left: 14% clears the fixed TOC sidebar.                            */
   #cloud-wrapper {
-    position: fixed;
-    top:    var(--scrolly-header-h, 52px);
-    left:   14%;             /* clears the TOC sidebar */
-    right:  0;
-    bottom: 2.8rem;          /* matches .scrolly-footer height */
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+    position:   fixed;
+    top:        var(--scrolly-header-h, 52px);
+    left:       14%;
+    right:      0;
+    bottom:     2.8rem;
+    margin:     0;
+    padding:    0;
+    overflow:   hidden;
     background: #ffffff;
   }
 
   /* ── Scrollable inner container ───────────────────────────────────── */
   #cloud-inner {
-    width: 100%;
-    height: 100%;
+    width:      100%;
+    height:     100%;
     overflow-y: auto;
-    padding: 1.5rem 1.25rem 2rem;
+    padding:    1.5rem 1.25rem 2rem;
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    color:      #1C1C1D;
+  }
+
+  #cloud-inner p,
+  #cloud-inner h1,
+  #cloud-inner h2,
+  #cloud-inner h3,
+  #cloud-inner h4 {
+    color: #1C1C1D;
   }
 
   /* ── Cloud term boxes ─────────────────────────────────────────────── */
@@ -128,60 +83,10 @@ layout: default
     color:            #ffffff !important;
   }
 
-  #cloud-inner,
-  #cloud-inner p,
-  #cloud-inner h1,
-  #cloud-inner h2,
-  #cloud-inner h3,
-  #cloud-inner h4 {
-    color: #1C1C1D;
-  }
-
-  /* ── Light-mode overrides: dark background, light text/borders ────── */
-  body.light-mode #cloud-wrapper {
-    background: #1C1C1D;
-  }
-
-  body.light-mode #cloud-inner {
-    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-  }
-
-  body.light-mode #cloud-inner .btn,
-  body.light-mode #cloud-inner a.badge,
-  body.light-mode #cloud-inner a[class*="badge"],
-  body.light-mode #cloud-inner [id^="cloud-div-"] a,
-  body.light-mode #cloud-inner [id^="cloud-div-"] .btn {
-    background-color: #1C1C1D !important;
-    border-color:     #E4E4E4 !important;
-    color:            #E4E4E4 !important;
-  }
-
-  body.light-mode #cloud-inner .btn:hover,
-  body.light-mode #cloud-inner a.badge:hover,
-  body.light-mode #cloud-inner a[class*="badge"]:hover,
-  body.light-mode #cloud-inner [id^="cloud-div-"] a:hover,
-  body.light-mode #cloud-inner [id^="cloud-div-"] .btn:hover {
-    background-color: #E4E4E4 !important;
-    border-color:     #E4E4E4 !important;
-    color:            #1C1C1D !important;
-  }
-
-  body.light-mode #cloud-inner,
-  body.light-mode #cloud-inner p,
-  body.light-mode #cloud-inner h1,
-  body.light-mode #cloud-inner h2,
-  body.light-mode #cloud-inner h3,
-  body.light-mode #cloud-inner h4 {
-    color: #E4E4E4;
-  }
-
   /* ── Mobile ───────────────────────────────────────────────────────── */
   @media (max-width: 992px) {
-    #bib-toc-sidebar {
-      display: none !important;
-    }
     #cloud-wrapper {
-      left: 0;               /* full width when sidebar is hidden */
+      left: 0;
       top:  var(--scrolly-header-h, 52px);
     }
   }
@@ -234,8 +139,8 @@ layout: default
   <div id="cloud-inner">
     {{ content }}
     {%- comment -%}
-        Figure out default "Subjects" and "Locations" page cloud values as configured in "theme.yml",
-        and set default values for cloud include.
+        Figure out default "Subjects" and "Locations" page cloud values as
+        configured in "theme.yml", and set default values for cloud include.
     {%- endcomment -%}
     {%- if page.cloud-fields == "site.data.theme.subjects-fields" -%}
         {% assign fields = site.data.theme.subjects-fields %}
@@ -263,10 +168,9 @@ layout: default
    reader can scroll the cloud without touching the scrollbar.          */
 (function () {
   'use strict';
-  var SCROLL_STEP = 120; /* pixels per keypress */
+  var SCROLL_STEP = 120;
 
   document.addEventListener('keydown', function (e) {
-    /* Skip if focus is inside a text input */
     var tag = document.activeElement ? document.activeElement.tagName : '';
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     if (document.activeElement && document.activeElement.isContentEditable) return;

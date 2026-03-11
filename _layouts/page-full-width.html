@@ -7,65 +7,13 @@ layout: default
 <link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
 
 <style>
-  /* ── Light-mode overrides for the scrolly TOC sidebar ── */
-  #bib-toc-sidebar.scrolly-toc-sidebar {
-    background-color: #ffffff;
-    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+  /* ── CSS variables: unconditionally light — no toggle on this page ── */
+  body {
+    --scrolly-bg-color:       #ffffff;
+    --scrolly-text-color:     #1B1B1B;
+    --scrolly-border-color:   transparent;
+    --scrolly-citation-color: #353535;
   }
-  #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.15);
-  }
-  #bib-toc-sidebar .scrolly-toc-heading {
-    color: #000000;
-  }
-  #bib-toc-sidebar .scrolly-toc-link {
-    color: #353535;
-  }
-  #bib-toc-sidebar .scrolly-toc-link:hover {
-    color: #1B1B1B;
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  #bib-toc-sidebar .scrolly-toc-link.toc-active {
-    color: #000000;
-    font-weight: 600;
-  }
-  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link {
-    color: #353535;
-  }
-  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover {
-    color: #1B1B1B;
-  }
-  #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active {
-    color: #000000;
-  }
-  #bib-toc-sidebar .toc-section-rule {
-    background-color: rgba(0, 0, 0, 0.22);
-  }
-  #bib-toc-sidebar .toc-section-rule:hover {
-    background-color: rgba(0, 0, 0, 0.55);
-  }
-  #bib-toc-sidebar .toc-section-rule.toc-section-active {
-    background-color: rgba(0, 0, 0, 0.48);
-  }
-
-  /* body.light-mode flips the page dark, so the sidebar must flip too */
-  body.light-mode #bib-toc-sidebar.scrolly-toc-sidebar {
-    background-color: #1C1C1D;
-    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-  }
-  body.light-mode #bib-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.15);
-  }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-heading { color: #FFFFFF; }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-link             { color: #CACACA; }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-link:hover       { color: #E4E4E4; background-color: rgba(255, 255, 255, 0.06); }
-  body.light-mode #bib-toc-sidebar .scrolly-toc-link.toc-active  { color: #FFFFFF; font-weight: 600; }
-  body.light-mode #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link            { color: #CACACA; }
-  body.light-mode #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover      { color: #E4E4E4; }
-  body.light-mode #bib-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #FFFFFF; }
-  body.light-mode #bib-toc-sidebar .toc-section-rule                    { background-color: rgba(255, 255, 255, 0.28); }
-  body.light-mode #bib-toc-sidebar .toc-section-rule:hover              { background-color: rgba(255, 255, 255, 0.65); }
-  body.light-mode #bib-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(255, 255, 255, 0.58); }
 
   /* ── Suppress CB default layout padding ──────────────────────────── */
   #maincontent,
@@ -78,50 +26,31 @@ layout: default
   }
 
   /* ── Page wrapper: fills the viewport between fixed header and footer.
-     left: 14% clears the fixed TOC sidebar (margin-left has no effect on
-     position:fixed elements).                                            */
+     left: 14% clears the fixed TOC sidebar.                            */
   #page-full-wrapper {
-    position: fixed;
-    top:    var(--scrolly-header-h, 52px);
-    left:   14%;             /* clears the TOC sidebar */
-    right:  0;
-    bottom: 2.8rem;          /* matches .scrolly-footer height */
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+    position:   fixed;
+    top:        var(--scrolly-header-h, 52px);
+    left:       14%;
+    right:      0;
+    bottom:     2.8rem;
+    margin:     0;
+    padding:    0;
+    overflow:   hidden;
     background: #ffffff;
-    transition: background-color 0.3s ease;
-  }
-
-  body.light-mode #page-full-wrapper {
-    background: #1C1C1D;
   }
 
   /* ── Scrollable inner container ───────────────────────────────────── */
   #page-full-inner {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;        /* Changed from auto - timeline handles scrolling */
+    width:      100%;
+    height:     100%;
+    overflow:   hidden;
     overflow-x: hidden;
-    padding: 0;              /* Zero padding for timeline pages */
+    padding:    0;
     box-sizing: border-box;
-    max-width: 100%;
+    max-width:  100%;
+    color:      #1C1C1D;
   }
 
-  /* ── Timeline-specific: full height embed ────────────────────────── */
-  #page-full-inner:has(#timeline-embed) {
-    padding:  0;
-    overflow: hidden;
-  }
-  
-  #page-full-inner:has(#timeline-embed) #timeline-embed {
-    width: 100% !important;
-    height: 100% !important;
-    min-height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
-  }
-
-  /* ── Typography ───────────────────────────────────────────────────── */
-  #page-full-inner,
   #page-full-inner p,
   #page-full-inner li,
   #page-full-inner h1,
@@ -133,47 +62,27 @@ layout: default
     color: #1C1C1D;
   }
 
-  body.light-mode #page-full-inner,
-  body.light-mode #page-full-inner p,
-  body.light-mode #page-full-inner li,
-  body.light-mode #page-full-inner h1,
-  body.light-mode #page-full-inner h2,
-  body.light-mode #page-full-inner h3,
-  body.light-mode #page-full-inner h4,
-  body.light-mode #page-full-inner h5,
-  body.light-mode #page-full-inner h6 {
-    color: #E4E4E4;
-  }
-
   /* ── Links ────────────────────────────────────────────────────────── */
-  #page-full-inner a {
-    color: #2563eb;
-    transition: color 0.15s ease;
-  }
-  #page-full-inner a:hover {
-    color: #1d4ed8;
+  #page-full-inner a       { color: #2563eb; transition: color 0.15s ease; }
+  #page-full-inner a:hover { color: #1d4ed8; }
+
+  /* ── Timeline-specific: full height embed ────────────────────────── */
+  #page-full-inner:has(#timeline-embed) {
+    padding:  0;
+    overflow: hidden;
   }
 
-  body.light-mode #page-full-inner a {
-    color: #6ea8fe;
-  }
-  body.light-mode #page-full-inner a:hover {
-    color: #93bbff;
+  #page-full-inner:has(#timeline-embed) #timeline-embed {
+    width:      100% !important;
+    height:     100% !important;
+    min-height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
   }
 
   /* ── Mobile ───────────────────────────────────────────────────────── */
   @media (max-width: 992px) {
-    #bib-toc-sidebar {
-      display: none !important;
-    }
-    #page-full-wrapper {
-      left: 0;               /* full width when sidebar is hidden */
-    }
+    #page-full-wrapper { left: 0; }
   }
   @media (max-width: 768px) {
-    #page-full-wrapper {
-      top: var(--scrolly-header-h, 52px);
-    }
     #page-full-inner:has(#timeline-embed) #timeline-embed {
       min-height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
     }
@@ -226,7 +135,7 @@ layout: default
 <script>
 /* ── Timeline keyboard navigation ────────────────────────────────────
    ArrowLeft / ArrowRight move through timeline slides.
-   ArrowUp / ArrowDown scroll is disabled for timeline pages.          */
+   ArrowUp / ArrowDown is left to TimelineJS itself.                   */
 
 window.scrollyFooterOwnsKeyboard = false;
 
@@ -272,13 +181,6 @@ window.scrollyFooterOwnsKeyboard = false;
 
     var key = e.key;
 
-    /* ── Up / Down: disabled for timeline pages ────────────────────── */
-    if (key === 'ArrowDown' || key === 'Down' || key === 'ArrowUp' || key === 'Up') {
-      /* TimelineJS handles its own vertical navigation */
-      return;
-    }
-
-    /* ── Left / Right: drive timeline prev / next ───────────────────── */
     if (key === 'ArrowLeft' || key === 'Left' || key === 'ArrowRight' || key === 'Right') {
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -292,7 +194,6 @@ window.scrollyFooterOwnsKeyboard = false;
         btns.next.click();
       }
     }
-
   }, true);
 
 }());
