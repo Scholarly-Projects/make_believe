@@ -13,6 +13,8 @@ gallery: true
   {% include essay/off-canvas-menu.html %}
 {%- endif -%}
 
+<link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
+
 <style>
 /* ── Reset & Base ─────────────────────────────────────────────────────── */
 body {
@@ -20,170 +22,140 @@ body {
   color: #111111;
 }
 
-/* ── Three-column home page ───────────────────────────────────────────── */
-#home-three-col {
+/* ── TOC Sidebar overrides (light page) ──────────────────────────────── */
+#home-toc-sidebar.scrolly-toc-sidebar {
+  background-color: #ffffff;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+#home-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+#home-toc-sidebar .scrolly-toc-heading  { color: #000000; }
+#home-toc-sidebar .scrolly-toc-link     { color: #353535; }
+#home-toc-sidebar .scrolly-toc-link:hover {
+  color: #1B1B1B;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+#home-toc-sidebar .scrolly-toc-link.toc-active { color: #000000; font-weight: 600; }
+#home-toc-sidebar .toc-chapter-entry > .scrolly-toc-link        { color: #353535; }
+#home-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover  { color: #1B1B1B; }
+#home-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
+#home-toc-sidebar .toc-section-rule        { background-color: rgba(0, 0, 0, 0.22); }
+#home-toc-sidebar .toc-section-rule:hover  { background-color: rgba(0, 0, 0, 0.55); }
+#home-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(0, 0, 0, 0.48); }
+
+/* ── Main grid ────────────────────────────────────────────────────────── *
+ *  TOC fixed at 14% via scrolly.css.                                      *
+ *  Remaining 86%: middle 56% of viewport → 65.1fr                        *
+ *                  right  30% of viewport → 34.9fr                        *
+ *  Row split: identity 35%, abstract 65%.                                 *
+ * ──────────────────────────────────────────────────────────────────────── */
+#home-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-areas: "left middle right";
-  /* Top edge matches the scrolly TOC sidebar's fixed top position exactly:
-     top: calc(var(--scrolly-header-h, 52px) + 1.5rem) in scrolly.scss     */
+  grid-template-columns: 65.1fr 34.9fr;
+  grid-template-rows: 35fr 65fr;
+  grid-template-areas:
+    "identity right"
+    "abstract right";
+  margin-left: 14%;
   margin-top: calc(var(--scrolly-header-h, 52px) + 1.5rem);
   min-height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem);
   background-color: #ffffff;
 }
 
-/* ── LEFT COLUMN ─────────────────────────────────────────────────────── */
-#home-col-left {
-  grid-area: left;
+/* ── Identity cell (top-left) ────────────────────────────────────────── */
+#home-col-identity {
+  grid-area: identity;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 3rem 2.5rem 3rem 3rem;
+  padding: 2.5rem 2.5rem 1.5rem 3rem;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #ffffff; /* invisible — structural only */
 }
 
+/* ── Abstract cell (bottom-left) ─────────────────────────────────────── */
+#home-col-abstract {
+  grid-area: abstract;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical centre within the cell */
+  align-items: flex-start;   /* paragraphs stay left-aligned    */
+  padding: 1.5rem 2.5rem 2.5rem 3rem;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+}
+
+.home-abstract-heading {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111111;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.home-abstract-text {
+  font-size: clamp(0.82rem, 1.0vw, 0.94rem);
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(17, 17, 17, 0.65);
+  margin: 0 0 0.7rem 0;
+  text-align: left;
+}
+.home-abstract-text:last-child { margin-bottom: 0; }
+
+/* ── Identity typography ─────────────────────────────────────────────── */
 .home-site-title {
-  font-size: clamp(3.22rem, 5.75vw, 5.18rem);
+  font-size: clamp(2.8rem, 5.0vw, 4.6rem);
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -0.02em;
   color: #111111;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.85rem 0;
 }
-
 .home-site-tagline {
-  font-size: clamp(1.15rem, 2.07vw, 1.55rem);
+  font-size: clamp(1.05rem, 1.85vw, 1.4rem);
   font-weight: 700;
   line-height: 1.3;
   color: rgba(17, 17, 17, 0.92);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.6rem 0;
 }
-
 .home-site-author {
-  font-size: clamp(1.035rem, 1.495vw, 1.265rem);
+  font-size: clamp(0.95rem, 1.35vw, 1.18rem);
   font-weight: 300;
   color: rgba(17, 17, 17, 0.75);
-  margin: 0 0 1.25rem 0;
+  margin: 0 0 1rem 0;
   letter-spacing: 0.01em;
 }
-
 .home-site-description {
-  font-size: clamp(0.92rem, 1.265vw, 1.09rem);
+  font-size: clamp(0.88rem, 1.15vw, 1.02rem);
   font-weight: 400;
   line-height: 1.6;
   color: rgba(17, 17, 17, 0.55);
   margin: 0;
 }
 
-/* ── MIDDLE COLUMN — Table of Contents ───────────────────────────────── */
-#home-col-middle {
-  grid-area: middle;
-  display: flex;
-  flex-direction: column;
-  /* flex-start so the TOC heading sits at the same vertical position as
-     .scrolly-toc-sidebar's top: calc(var(--scrolly-header-h, 52px) + 1.5rem).
-     The grid margin-top already places the column top at that offset, so
-     flex-start aligns the heading flush with it — matching the sidebar.    */
-  justify-content: flex-start;
-  padding: 3rem 2rem 3rem 2.5rem;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* ── TOC Heading ─────────────────────────────────────────────────────────
-   Matches .scrolly-toc-heading exactly in size, weight, tracking, and font.
-   Home page is always light-background, so uses rgba(0,0,0,0.4) —
-   the light-mode value from scrolly.scss. Left-aligned to match the sidebar.
-   ──────────────────────────────────────────────────────────────────────── */
-.home-toc-heading {
-  font-size: 0.805rem;
-  font-weight: 700;
-  font-style: normal;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-family: "Times New Roman", Times, serif;
-  color: rgba(0, 0, 0, 0.4);
-  margin: 0 0 1.5rem 0;
-  padding: 0;
-  text-align: left;
-}
-
-.home-toc-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.home-toc-item {
-  margin-bottom: 0.1rem;
-}
-
-/* ── TOC Links ───────────────────────────────────────────────────────────
-   Matches .scrolly-toc-link exactly in size, padding, weight, radius,
-   and font. Home page is always light-background, so uses the light-mode
-   color values from scrolly.scss. Left-aligned to match the sidebar.
-   ──────────────────────────────────────────────────────────────────────── */
-.home-toc-link {
-  display: block;
-  padding: 0.45rem 0.6rem;
-  color: rgba(0, 0, 0, 0.78);
-  text-decoration: none;
-  font-size: 1.058rem;
-  font-family: "Times New Roman", Times, serif;
-  font-weight: 400;
-  font-style: normal;
-  line-height: 1.4;
-  border-radius: 3px;
-  text-align: left;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.home-toc-link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: #111111;
-}
-
-/* ── Essay (chapter) sub-entries ─────────────────────────────────────────
-   Matches .toc-chapter-entry > .scrolly-toc-link in size (1.012rem) and
-   indent (padding-left: 1.4rem). Center-aligned on home; the indent is
-   preserved so items read as visually subordinate even when centered.
-   ──────────────────────────────────────────────────────────────────────── */
-.home-toc-item.is-essay .home-toc-link {
-  padding-left: 1.4rem;
-  font-size: 1.012rem;
-  color: rgba(0, 0, 0, 0.65);
-}
-
-.home-toc-item.is-essay .home-toc-link:hover {
-  color: rgba(0, 0, 0, 0.95);
-}
-
-/* ── RIGHT COLUMN — Image + CTA ──────────────────────────────────────── */
+/* ── Right cell — image + CTA (spans both row tracks) ───────────────── */
 #home-col-right {
   grid-area: right;
   display: flex;
   flex-direction: column;
   padding: 0 1.5rem 1rem 1rem;
-  /* Height uses the same CSS variable so the right column stays in sync
-     with both the grid top and the scrolly sidebar.                        */
   height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem - 55px);
   max-height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem - 55px);
   overflow: hidden;
 }
-
-/* Image area fills all remaining space above the CTA.
-   min-height: 0 is critical — without it a flex child refuses to shrink
-   below its content size, causing the image to push the button out of view. */
 .home-right-image-area {
-  flex: 1 1 0;          /* grow to fill, but start from 0 not content-size */
-  min-height: 0;        /* allow shrinking below natural image height      */
+  flex: 1 1 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding-top: 1.5rem;
-  overflow: hidden;     /* clip the image rather than overflow into CTA    */
+  overflow: hidden;
 }
-
 .home-right-image-area img {
   aspect-ratio: 1 / 1;
   max-width: 100%;
@@ -195,28 +167,22 @@ body {
   flex-shrink: 1;
   min-height: 0;
 }
-
-/* Credit sits directly below the image inside the image-area flex column */
 .home-featured-credit {
-  flex: 0 0 auto;       /* never grows — always exactly its text height    */
+  flex: 0 0 auto;
   font-size: 0.805rem;
   color: rgba(0, 0, 0, 0.35);
   line-height: 1.5;
   margin-top: 0.3rem;
   text-align: center;
 }
-
-/* CTA: fixed height at the bottom — never grows, never shrinks, never
-   overlaps the image or credit above it regardless of viewport height.    */
 .home-right-cta {
-  flex: 0 0 auto;       /* takes only its natural height; cannot be pushed */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 1.25rem;
   padding-bottom: 1rem;
 }
-
 .home-read-btn {
   display: inline-block;
   padding: 0.8rem 2.5rem;
@@ -231,36 +197,43 @@ body {
   transition: background-color 0.2s ease, border-color 0.2s ease;
   text-align: center;
 }
-
 .home-read-btn:hover {
   background-color: rgba(0, 0, 0, 0.05);
   border-color: rgba(0, 0, 0, 0.9);
   color: #111111;
 }
 
-/* ── MOBILE: stack left → right → middle ─────────────────────────────── */
+/* ── Collapse TOC sidebar below 992px ────────────────────────────────── */
+@media screen and (max-width: 992px) {
+  #home-toc-sidebar { display: none !important; }
+  #home-grid        { margin-left: 0 !important; }
+}
+
+/* ── MOBILE: identity → image → abstract; TOC via header hamburger ─── */
 @media (max-width: 768px) {
-  #home-three-col {
+  #home-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
-      "left"
+      "identity"
       "right"
-      "middle";
+      "abstract";
     margin-top: 160px;
+    margin-left: 0;
     min-height: unset;
   }
 
-  #home-col-left {
+  #home-col-identity {
     border-right: none;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     padding: 1.5rem 1.5rem 2rem;
     justify-content: flex-start;
   }
 
-  #home-col-middle {
+  #home-col-abstract {
     border-right: none;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 2rem 1.5rem 70px;   /* 70px clears the fixed mobile footer     */
+    padding: 2rem 1.5rem 70px;
     justify-content: flex-start;
   }
 
@@ -280,105 +253,100 @@ body {
     overflow: hidden;
   }
 
-  /* On mobile the CTA still locks to its natural height at the bottom */
   .home-right-cta {
     flex: 0 0 auto;
     padding-top: 0.85rem;
     padding-bottom: 0.75rem;
   }
 
-  /* ── Compact footer on home page ──────────────────────────────────── */
   .scrolly-footer {
     padding: 0.4rem 1.25rem !important;
     min-height: unset !important;
     flex-direction: row !important;
     align-items: center !important;
   }
-
-  .scrolly-footer .chapter-nav {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 1.25rem !important;
-  }
-
-  .scrolly-footer .scrolly-citation-wrapper {
-    display: none !important;
-  }
+  .scrolly-footer .chapter-nav              { width: 36px !important; height: 36px !important; font-size: 1.25rem !important; }
+  .scrolly-footer .scrolly-citation-wrapper { display: none !important; }
 }
 
-/* ── Single-essay content (preserved from original) ──────────────────── */
-#single-essay-content {
-  margin-top: 2rem;
-}
+/* ── Single-essay content (preserved) ───────────────────────────────── */
+#single-essay-content { margin-top: 2rem; }
 </style>
 
-{%- comment -%}
-Build the first-essay URL for the Read button.
-{%- endcomment -%}
 {%- assign sorted_essays = site.essay | sort: 'order' -%}
 {%- assign first_essay = sorted_essays | first -%}
 
-<div id="home-three-col">
+<!-- ── FIXED TOC SIDEBAR ───────────────────────────────────────────────── -->
+<aside class="scrolly-toc-sidebar" id="home-toc-sidebar" aria-label="Table of contents">
+  <p class="scrolly-toc-heading">Contents</p>
+  <ul class="scrolly-toc-list">
 
-  <!-- ── LEFT: Site identity ─────────────────────────────────────────── -->
-  <div id="home-col-left">
+    <!-- No toc-active on Home — keeps it unbolded to match other sidebar instances -->
+    <li>
+      <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
+    </li>
+
+    {% assign toc_essays = site.essay | sort: 'order' %}
+    {% for essay in toc_essays %}
+    <li class="toc-chapter-entry">
+      <a href="{{ essay.url | prepend: site.baseurl }}"
+         class="scrolly-toc-link"
+         data-toc-chapter="{{ essay.order }}">
+        {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+      </a>
+    </li>
+    {% endfor %}
+
+    <hr class="toc-divider">
+
+    {% for nav in site.data.config-nav %}
+      {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+    <li>
+      <a href="{{ nav.stub | relative_url }}" class="scrolly-toc-link">{{ nav.display_name }}</a>
+    </li>
+      {% endunless %}
+    {% endfor %}
+
+  </ul>
+</aside>
+
+<!-- ── MAIN GRID ───────────────────────────────────────────────────────── -->
+<div id="home-grid">
+
+  <!-- Identity (top-left, 35% of height) ──────────────────────────── -->
+  <div id="home-col-identity">
     <h1 class="home-site-title">{{ site.title }}</h1>
+    {% if site.tagline %}<p class="home-site-tagline">{{ site.tagline }}</p>{% endif %}
+    {% if site.author  %}<p class="home-site-author">{{ site.author }}</p>{% endif %}
+    {% if site.description %}<p class="home-site-description">{{ site.description }}</p>{% endif %}
+  </div>
 
-    {% if site.tagline %}
-    <p class="home-site-tagline">{{ site.tagline }}</p>
-    {% endif %}
+  <!-- Abstract (bottom-left, 65% of height) ───────────────────────── -->
+  <div id="home-col-abstract">
+    <h2 class="home-abstract-heading">Abstract</h2>
 
-    {% if site.author %}
-    <p class="home-site-author">{{ site.author }}</p>
-    {% endif %}
+    {% if site.abstract %}
+      {{ site.abstract }}
+    {% else %}
+    <p class="home-abstract-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Amet volutpat consequat mauris nunc congue nisi vitae suscipit tellus mauris a diam maecenas. Sed blandit libero volutpat sed cras ornare arcu. Duis ultricies lacus sed turpis tincidunt id aliquet risus feugiat. Egestas dui id ornare arcu odio ut sem nulla pharetra.</p>
 
-    {% if site.description %}
-    <p class="home-site-description">{{ site.description }}</p>
+    <p class="home-abstract-text">Nunc id cursus metus aliquam eleifend mi in nulla posuere. In nibh mauris cursus mattis molestie a iaculis at erat. Morbi non arcu risus quis varius quam quisque id diam. Fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate sapien nec sagittis aliquam. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.</p>
+
+    <p class="home-abstract-text">Amet volutpat consequat mauris nunc congue nisi vitae suscipit tellus mauris a diam maecenas. Sed blandit libero volutpat sed cras ornare arcu. Duis ultricies lacus sed turpis tincidunt id aliquet risus feugiat. Egestas dui id ornare arcu odio ut sem nulla pharetra. Nunc id cursus metus aliquam eleifend mi in nulla posuere. In nibh mauris cursus mattis molestie a iaculis at erat. Morbi non arcu risus quis varius quam quisque id diam. Fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate sapien nec sagittis aliquam. Nunc id cursus metus aliquam eleifend mi in nulla posuere.</p>
     {% endif %}
   </div>
 
-  <!-- ── MIDDLE: Table of contents ──────────────────────────────────── -->
-  <div id="home-col-middle">
-    <p class="home-toc-heading">Contents</p>
-    <ul class="home-toc-list">
-
-      <li class="home-toc-item">
-        <a href="{{ '/' | relative_url }}" class="home-toc-link">Home</a>
-      </li>
-
-      {% assign sorted_essays_toc = site.essay | sort: 'order' %}
-      {% for item in sorted_essays_toc %}
-      <li class="home-toc-item is-essay">
-        <a href="{{ item.url | relative_url }}" class="home-toc-link">
-          {% if item.order %}{{ item.order }}. {% endif %}{{ item.title }}
-        </a>
-      </li>
-      {% endfor %}
-
-      {% for nav in site.data.config-nav %}
-        {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
-      <li class="home-toc-item">
-        <a href="{{ nav.stub | relative_url }}" class="home-toc-link">{{ nav.display_name }}</a>
-      </li>
-        {% endunless %}
-      {% endfor %}
-
-    </ul>
-  </div>
-
-  <!-- ── RIGHT: Featured image + Read CTA ───────────────────────────── -->
+  <!-- Right: image + CTA ───────────────────────────────────────────── -->
   <div id="home-col-right">
     <div class="home-right-image-area">
       {% if site.data.theme.featured-image %}
       <img src="{{ site.data.theme.featured-image | relative_url }}"
            alt="{{ site.data.theme.featured-image-alt-text | default: site.title }}">
       {% endif %}
-
       {% if site.data.theme.featured-image-credit %}
       <p class="home-featured-credit">{{ site.data.theme.featured-image-credit }}</p>
       {% endif %}
     </div>
-
     <div class="home-right-cta">
       {%- if essay_count >= 1 and first_essay -%}
       <a class="home-read-btn" href="{{ first_essay.url | relative_url }}">Read &raquo;</a>
@@ -390,33 +358,22 @@ Build the first-essay URL for the Read button.
 
 </div>
 
-{%- comment -%}
-SINGLE ESSAY CONTENT
-If only one essay exists, render it inline below the landing grid.
-{%- endcomment -%}
 {%- if essay_count == 1 -%}
 {%- assign single_essay = actual_essays[0] -%}
-
 <div id="single-essay-content" class="container my-5">
   <div class="row">
     <div id="scrolly" class="container my-4">
       <article id="step0">
         <h1 class="display-4 essay-main" id="page-title">{{ single_essay.title }}</h1>
         <div class="row my-4 step visible-step">
-          <div class="essay-main">
-            {{ single_essay.content }}
-          </div>
+          <div class="essay-main">{{ single_essay.content }}</div>
         </div>
       </article>
     </div>
   </div>
 </div>
-
-{%- unless single_essay.scrollama == false -%}
-{% include essay/js/essay-scroll-js.html %}
-{%- endunless -%}
+{%- unless single_essay.scrollama == false -%}{% include essay/js/essay-scroll-js.html %}{%- endunless -%}
 {% include essay/js/spotlight-media-handler.html %}
-
 {%- endif -%}
 
 {% include essay/footer-scrollytelling.html %}
