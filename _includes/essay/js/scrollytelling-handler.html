@@ -51,6 +51,8 @@ class ScrollyTelling {
     this.separatorIcons = [];
     this.chapterEndFaded = false;
     this.activeFullLayoutImageId = null;
+    this.figureCounter = 0;
+    this.figureMap = {};
     
     // DOM Elements
     this.textColumn       = document.getElementById('scrolly-text');
@@ -459,9 +461,13 @@ class ScrollyTelling {
   }
 
   _figureLabel(objectid) {
-  const match = objectid ? /(\d+)$/.exec(objectid) : null;
-  return match ? `<i>Figure ${parseInt(match[1], 10)}:</i> ` : '';
-}
+    if (!objectid) return '';
+    if (!(objectid in this.figureMap)) {
+      this.figureCounter += 1;
+      this.figureMap[objectid] = this.figureCounter;
+    }
+    return `<i>Figure ${this.figureMap[objectid]}:</i> `;
+  }
 
   updateFooterImageCitation(objectid) {
     const desktopContent = document.getElementById('scrolly-image-citation-content');
