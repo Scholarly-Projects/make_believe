@@ -35,11 +35,11 @@ Within the image, on a box of Wheat Manna (“For Breakfast”), we can see a si
 
 {% trigger type: image id: make_believe_054 action: end zoom:  coordinates: %}
 
-{% trigger type: image id: make_believe_055 action: start zoom: 08 coordinates: %}
+{% trigger type: image id: make_believe_055 action: start zoom: coordinates: %}
 
 Other print mediums contained antebellum allusions. The 1890 map of Spokane’s Northwestern Industrial Exposition promoted the “vast resources and unlimited products” of the Inland Empire, showing a fully rebuilt downtown even though reconstruction after the 1889 fire was still underway. Near signs for coal, hops, and timber, the map highlighted an area for “tobacco plantations,” even though the region’s climate would have made tobacco cultivation impossible. 
 
-{% trigger type: image id: make_believe_055 action: end zoom: 20  coordinates: 900,550 %}
+{% trigger type: image id: make_believe_055 action: end zoom: 14  coordinates: 800,400 %}
 
 {% trigger type: image id: make_believe_056 action: start zoom:  coordinates: %}
 
@@ -47,7 +47,7 @@ The claim on the map’s reverse side that Spokane’s “tobacco plantations an
 
 {% trigger type: image id: make_believe_056 action: end zoom:  coordinates: %}
 
-{% trigger type: image id: make_believe_057 action: start zoom:  coordinates: %}
+{% trigger type: image id: make_believe_057 action: start zoom: coordinates: %}
 
 Spokane’s booster literature proudly reported eighty-seven fraternal lodges in the city with a combined membership of 15,300, nearly 20% of the population.^90 This included the Prince Hall lodges *Inland Empire No. 3* and *Crespus Attucks No. 2* for Black men, as well as women’s organizations like the *Woman’s Woodcraft* and the temperance-focused *International Order of Good Templars*.^91 In contrast to contemporary notions of “secret societies,” fraternalism was a cornerstone of civic identity in early 1900s Spokane. 
 
@@ -56,7 +56,7 @@ Spokane’s booster literature proudly reported eighty-seven fraternal lodges in
 {% trigger type: image id: make_believe_059 action: start zoom:  coordinates: %}
 
 
-Masonic emblems adorned Manito Park^92 and members marched in full regalia during public festivals. At the 1913 Pow Wow, “The March of the Mystic Men” staged a mobile evolutionary tableau that ranked fraternal orders as civilizational milestones—from “The Original Inhabitants” (notably, the all-White *Red Men*) and “The Discoverers” (the *Colombo Society*) to “The Pioneers,” “The Developers,” and finally “The Men of Today”: the *Commercial Travelers*.^93 The spectacle framed fraternity not as private ritual but as public theater of progress, curated and racially ordered. 
+Masonic emblems adorned Manito Park and members marched in full regalia during public festivals.^92 At the 1913 Pow Wow, “The March of the Mystic Men” staged a mobile evolutionary tableau that ranked fraternal orders as civilizational milestones—from “The Original Inhabitants” (notably, the all-White *Red Men*) and “The Discoverers” (the *Colombo Society*) to “The Pioneers,” “The Developers,” and finally “The Men of Today”: the *Commercial Travelers*.^93 The spectacle framed fraternity not as private ritual but as public theater of progress, curated and racially ordered. 
 
 {% trigger type: image id: make_believe_059 action: end zoom: 15 coordinates: %}
 
@@ -84,11 +84,11 @@ In an era before radio, television and major film studio formation, fraternal lo
 
 {% trigger type: image id: make_believe_064 action: start zoom: 09 coordinates: %}
 
-{% trigger type: image id: make_believe_065 action: start zoom: 08 coordinates: %}
+{% trigger type: image id: make_believe_065 action: start zoom: coordinates: %}
 
 The archive of the International Order of Odd Fellows in Cheney, Washington, sixteen miles outside of Spokane, contains a Henderson-Ames Co. catalog. Based in Kalamazoo, Michigan, the firm’s six-story factory spanned an entire city block and housed specialized departments for costumes, regalia, helmets, embroidery, magic lanterns, flags, as well as a sword shop.^99 Despite the scale of operations, Henderson-Ames was only one of a handful of other major fraternal regalia makers operating in the US at this moment.^100  
 
-{% trigger type: image id: make_believe_065 action: end zoom: 15 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_065 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_066 action: start zoom: coordinates: %}
 
@@ -104,15 +104,9 @@ National and ethnic costumes were the most popular category at 19%, followed by 
 
 {% trigger type: image id: make_believe_068 action: start zoom: coordinates: %}
 
-The inside cover of the Miller-Dervant catalogue features a circular illustration of costumed figures arranged around a band of musical notation. A Romani woman sings with a tambourine; a couple poses as French aristocrats; another woman holds a fan in a kimono. 
+The inside cover of the Miller-Dervant catalogue features a circular illustration of costumed figures arranged around a band of musical notation. A Romani woman sings with a tambourine; a couple poses as French aristocrats; another woman holds a fan in a kimono. The assemblage breaks into exotic fantasy with a woman dressed as King Tut and posing in a hieroglyphic fashion, followed by a woman in a lei and Pāʻū hula skirt with wild, bobbed hair. At the top of the circle, a Dutch girl is pictured curtsying in a bonnet and clogs.  
 
 {% trigger type: image id: make_believe_068 action: end zoom: 12 coordinates: 500,0 %}
-
-{% trigger type: image id: make_believe_069 action: start zoom: coordinates: %}
-
-The assemblage breaks into exotic fantasy with a woman dressed as King Tut and posing in a hieroglyphic fashion, followed by a woman in a lei and Pāʻū hula skirt with wild, bobbed hair. At the top of the circle, a Dutch girl is pictured curtsying in a bonnet and clogs.  
-
-{% trigger type: image id: make_believe_069 action: end zoom: coordinates:  %}
 
 ___
 
@@ -120,7 +114,7 @@ ___
 
 During the 1913 Spokane Pow Wow celebration, the Dutch were featured in two events. A photograph from "The Dance of the Dutch" shows hundreds of girls in Dutch bonnets, some more hastily folded than others, hoisting sticks above their heads. Many wore skirts with the red, white, and blue horizontal stripes evoking the Dutch flag. The photo was taken from the bleachers of Glover Field, then known as The Stadium, looking out onto the Monroe Bridge and the raging Spokane River.^103 
 
-{% trigger type: image id: make_believe_070 action: end zoom:15 coordinates: 250,900 %}
+{% trigger type: image id: make_believe_070 action: end zoom:14 coordinates: %}
 
 {% trigger type: image id: make_believe_071 action: start zoom:  coordinates:  %}
 
@@ -168,39 +162,39 @@ From 1890 to 1910, Spokane's "Oriental Alley," which ran from Howard to Bernard 
 
 {% trigger type: image id: make_believe_078 action: end zoom:  coordinates: %}
 
-{% trigger type: image id: make_believe_079 action: start zoom: 09 coordinates: %}
+{% trigger type: image id: make_believe_079 action: start zoom: coordinates: %}
 
 Like Van der Loeff’s childhood fascination with “Chineesch Spiritisme,” residents depicted exaggerated imitations of Asian culture in parades, where White participants dressed as “coolie” figures and carried paper lanterns.^112 This mimicry was also commercialized. The Miller-Dervant company sold “Chinese Wigs,” a bald cap with a long, dark ponytail, as well as a tutorial on applying their “No. 16 Chinese color grease paint” to complete the look.^113   
 
 {% trigger type: image id: make_believe_079 action: end zoom: 12 coordinates: %}
 
-{% trigger type: image id: make_believe_081 action: start zoom: 25 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_081 action: start zoom: coordinates: %}
 
 Spokane’s commercial industry was also engaging in a similar style of iconographic Asian impersonation. James J. Hill, the “The great railroad king”^114 actively cultivated Dutch investment to export Palouse wheat through the Dutch-owned Spokane Flour Mills via his Great Northern Railway and steamship lines to Asian markets under a series of exoticized brands.^115 In 1897, Hill reported to Dutch investors that the return on Palouse wheat had doubled in twenty years due to Asian exports.^116 
 
-{% trigger type: image id: make_believe_081 action: end zoom: 25 coordinates: 500,1000 %}
+{% trigger type: image id: make_believe_081 action: end zoom: coordinates:  %}
 
-{% trigger type: image id: make_believe_083 action: start zoom: 25 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_083 action: start zoom: coordinates: %}
 
 Reporting to Dutch readers in 1896, the editor of the *Spokesman Review* confirmed that the majority of the city's flour was exported to Asia.^117 As owners of the Spokane Flour Mill and the Phoenix Lumber Mill, Everwijn Lange Jr. and Dutch shareholders controlled the top two exports from the Palouse region to China and Japan during this period.^118   
 
-{% trigger type: image id: make_believe_083 action: end zoom: 25 coordinates: 500,1000 %}
+{% trigger type: image id: make_believe_083 action: end zoom: coordinates: %}
 
-{% trigger type: image id: make_believe_084 action: start zoom: 25 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_084 action: start zoom: coordinates: %}
 
 The designs for Spokane Flour Mills’ wholesale burlap sacks adopted a confused cultural tone, as a Dutch interpretation of how an American company would design a product for non-English speaking customers an additional 5,000 miles away. For the Philippine market, they partnered with the Genato Commercial Corporation, “exclusive representative in the Philippine islands,” and rebranded as “Suretidos Flour” and “Pato Flour,” with an image of a duck floating on the water, holding four sprigs of wheat tied with a banner in its beak, with the words “Purity” and “Uniformity” written on it. For Mexico, the company became *Gallo de Pelea*, or Fighting Cock Flour, with an image of a red and green Bantam Rooster with spikes attached to its legs.
 
-{% trigger type: image id: make_believe_084 action: end zoom: 25 coordinates: 500,1000 %}
+{% trigger type: image id: make_believe_084 action: end zoom: coordinates: %}
 
-{% trigger type: image id: make_believe_086 action: start zoom: 25 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_086 action: start zoom: coordinates:  %}
 
 For the Chinese market, Spokane Mills dressed up as the “Temple of Heaven Brand,” “Lantern Brand,” produced by “Siu Tai Cheong,” “Horse Brand” produced by the “Tai Chi Company.” This multilingual telephone game appears to have broken down in the “Orchard Brand,” where two loping orchids are depicted behind a rock and hanzi writing on either side extolls the virtues of “Superior Flour, Orchid Brand Trademark.”   
 
-{% trigger type: image id: make_believe_086 action: end zoom: 25 coordinates: 500,1000 %}
+{% trigger type: image id: make_believe_086 action: end zoom: coordinates: %}
 
 ---
 
-{% trigger type: image id: make_believe_087 action: start zoom:  coordinates:  %}
+{% trigger type: image id: make_believe_087 action: start zoom: 14 coordinates:  %}
 
 In 1907, Louis W. Hill, who had taken over management of the Great Northern Railway from his father, was the keynote speaker for the Ninth Annual Convention of the Pacific Coast Advertising Men’s Association in Portland. In addition to representatives from San Diego to Vancouver, British Columbia, the article noted a particular group of “live wires” from Spokane “dressed as Native Americans,” led by Raymond E. Bigelow.^119 A former president of the National Retail Clothing and Furnisher’s Association and director of the Spokane Ad Club, Bigelow also credited himself as a key figure behind the creation of Father’s Day,^120 the creator of the 1912 municipal flag, the official city flower (aster) and the Miss Spokane contest, which had “brought much favorable publicity to the city.”^121    
 
@@ -212,11 +206,11 @@ First won by Marguerite Motie in 1912, the contest continues to this day. Bigelo
 
 {% trigger type: image id: make_believe_088 action: end zoom: 09 coordinates:  %}
 
-{% trigger type: image id: make_believe_089 action: start zoom: coordinates:  %}
+{% trigger type: image id: make_believe_089 action: start zoom: coordinates: %}
 
 Motie (pronounced Mo-chee) was heavily photographed, often with arms outstretched and a blissful smile on her face, where it would be reproduced in both photographic and illustrated images into booster literature, frequently towering above the region’s natural resources. In the words of Katherine G. Morrissey, Miss Spokane became “a traditional mythical embodiment of abundance… a silent presence who invites the viewers into the maps and images with her open-armed gesture.”^123 The European American as Indigenous figure drew the attention of the reader and invited them to imagine the region’s potential.   
 
-{% trigger type: image id: make_believe_089 action: end zoom: 14 coordinates: 0,500 %}
+{% trigger type: image id: make_believe_089 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_090 action: start zoom: 09 coordinates:  %}
 
@@ -224,17 +218,13 @@ In the 1913 Pow Wow program, Raymond E. Bigelow positioned himself prominently a
 
 {% trigger type: image id: make_believe_090 action: end zoom: 09 coordinates:  %}
 
-{% trigger type: image id: make_believe_092 action: start zoom: coordinates:  %}
+{% trigger type: image id: make_believe_092 action: start zoom: 14 coordinates:  %}
 
 A few actual Indigenous people attended the parade. While Miss Spokane and Bigelow performed in brown face makeup and regalia, twelve chiefs from the Blackfoot tribes of Glacier National Park performed “The Dance of the Festival” at the Coronational Ball. A photograph from a future event documents an Indigenous person on horseback in traditional dress, also participating in a homesteader's narrative, riding behind a White woman in a caravan.^125 The organization of the processions created a sequential narrative indicating the Inland Empire's future belonged to European Americans and romanticized Indigenous people as a thing of the past.
 
-{% trigger type: image id: make_believe_092 action: end zoom: 20 coordinates:  %}
-
-{% trigger type: image id: make_believe_094 action: start zoom: coordinates:  %}
-
 A similar treatment appears in the Spokane booster booklet, *The City Beautiful.* A caption for a photograph of a long row of tipis set against rolling Palouse hills reads “The Wanders, temporary Indian Village on the outskirts of Spokane,” insinuating both an ephemerality and physical distance.^126  
 
-{% trigger type: image id: make_believe_094 action: end zoom: coordinates:  %}
+{% trigger type: image id: make_believe_092 action: end zoom: 20 coordinates:  %}
 
 {% trigger type: image id: make_believe_095 action: start zoom: coordinates:  %}
 
@@ -254,17 +244,15 @@ As William Cronon noted, builders during this period “were reaching for a meta
 
 In January 1892, the *Spokane Spokesman* newspaper celebrated the new year with its first illustrated supplement and boasted that the work “may itself be viewed critically as a specimen of the finest bookwork yet attempted here.”^131 The only element not produced in Spokane was the illustration work, done by Fred C. Brisley, a St. Paul Press Club Member alongside Eugene Smalley, President of *Northwest Magazine*, the booster literature arm of Northern Pacific Railroad.^132 Brisley's cover depicted a woman in a toga and laurels with books and wheat at her feet. She held a feather pen to a sheaf of paper propped on her knee, while behind her, winged cherubs floated near dual pennants bearing the state seals of Idaho and Washington, framing an image of Spokane Falls.  
 
-{% trigger type: image id: make_believe_097 action: end zoom: coordinates:  %}
-
-{% trigger type: image id: make_believe_099 action: start zoom: 08 coordinates:  %}
-
 Allusions to classical Greek and Roman iconography were prevalent in Spokane's visual culture from 1890 to 1910, as people decorated their bodies and buildings to evoke a sense of permanence and destiny. As historian Hal Rothman theorized, “American elites need to define a cultural heritage for themselves apart from the European legacy that they had long revered and sought to emulate, yet to which they felt inferior.”^133 The frequent depiction of women in these scenes may also be tied to the concurrent rise of portrait and commercial photography studios in the 1890s.  
 
-{% trigger type: image id: make_believe_099 action: start zoom: 08 coordinates:  %}
+{% trigger type: image id: make_believe_097 action: end zoom: coordinates:  %}
+
+{% trigger type: image id: make_believe_099 action: start zoom: coordinates:  %}
 
 Prominent Spokane portrait photographers of the era included Charles “Chas” A. Libby, Samuel D. Owings, and the mononymous female photographers Laryea and Ihrig.^134 In a portrait from Owings studio on Riverside Avenue, a woman in a white gown holds a guitar, seated on and beside Greek-style statuary adorned with lion faces and cherubs. Set in front of a matte painting evoking a forested countryside, loose mats of horsehair simulated tufts of grass.  
 
-{% trigger type: image id: make_believe_099 action: end zoom: 30 coordinates: 500,800 %}
+{% trigger type: image id: make_believe_099 action: end zoom: 12 coordinates: 500,800 %}
 
 {% trigger type: image id: make_believe_102 action: start zoom: coordinates:  %}
 

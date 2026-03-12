@@ -35,25 +35,21 @@ Another, “more or less Dutch-owned” line expanding at this time was the Grea
 
 {% trigger type: image id: make_believe_018 action: end zoom: coordinates: %}
 
-{% trigger type: image id: make_believe_019 action: start zoom: 18 coordinates: 900,250 %}
+{% trigger type: image id: make_believe_019 action: start zoom: 14 coordinates: 900,500 %}
 
 The Great Northern and its rival Northern Pacific Railroad, both based in St. Paul, operated in tandem to recruit Dutch settlers. Each maintained dedicated immigration departments that advertised in Dutch newspapers and promised prospective migrants: “explanatory documents to prospective settlers and offer assistance in every possible way to assist those seeking a place to live in finding a suitable opportunity. An agricultural expert is at the disposal of the railroad company, thoroughly familiar with the conditions under which these lands can be most profitably exploited, and will also gladly assist settlers who so desire.”^23  
 
-{% trigger type: image id: make_believe_019 action: end zoom: 18 coordinates: 250,200 %}
-
 ---
-
-{% trigger type: image id: make_believe_020 action: start zoom: 09 coordinates: %}
 
 This work differentiates between *financial ventures*, like those in Spokane, and *settlements,* which the Great Northern and Northern Pacific Railway immigration departments actively developed. These settlements, sometimes referred to as “workingman’s colonies” are defined as a majority foreign population who form a cooperative of wholesale, retail and agricultural businesses within the United States.^24 Examples of sustained Dutch settlements have included Holland, Michigan; Friesland, Minnesota and Chinook, Montana.^25   
 
-{% trigger type: image id: make_believe_020 action: end zoom: 09 coordinates: %}
+{% trigger type: image id: make_believe_019 action: end zoom: 14 coordinates: 600,500 %}
 
-{% trigger type: image id: make_believe_021 action: start zoom: 12 coordinates: 400,400 %}
+{% trigger type: image id: make_believe_020 action: start zoom: 09 coordinates: %}
 
 Another defining characteristic was that the majority were discussed openly and positively in both American and Dutch newspapers. For instance, when Reinder Edward Werkman established a new settlement on Whidbey Island in Washington State, a reporter for *The Oregonian* glowingly noted how Werkman “speaks the English language without a trace of a foreign accent” and how the “Dutch are a wonderfully thrifty people” who “are liberal in their expenditures and generous in their customs.”^26 Many of these settlements still continue to celebrate this element of their origin story explicitly, as Holland, Michigan does in their Annual Dutch Winterfest, incorporating “Sinterklaas festivities.”^27   
 
-{% trigger type: image id: make_believe_021 action: end zoom: 13 coordinates: 300,300 %}
+{% trigger type: image id: make_believe_020 action: end zoom: 09 coordinates: %}
 
 {% trigger type: image id: make_believe_022 action: start zoom: coordinates: %}
 
@@ -69,11 +65,11 @@ In addition to driving Dutch settlements through their immigration departments, 
 
 {% trigger type: image id: make_believe_023 action: end zoom: 11 coordinates: 500,250 %}
 
-{% trigger type: image id: make_believe_024 action: start zoom: 18 coordinates: 350,0 %}
+{% trigger type: image id: make_believe_024 action: start zoom: 14 coordinates: 350,0 %}
 
 This model gave rise to “promotion projects”^32 like *Northwest Magazine*, launched by editor Eugene Smalley to develop Northern Pacific interests. In 1890, Smalley’s, “rustling representative” H.B. Greening and illustrator C.D. Windsor visited Spokane for their April profile of the city and “doing great work in advertising the resources of the country tributary to the Northern Pacific.”^33 Recounting the devastating 1889 fire, the article hails “the rich men who came forward, and by their actions and liberal use of money inspired confidence… There are young men in the city now, who owe all they are worth today to the grand old triumvirate, Mr. James Glover, Mr. A.M. Cannon and Mr. J.J. Browne.”^34 Within five years of these words appearing in print, all three of these foundational figures would be bankrupt and in debt to the Pacific Northwest Hypotheek bank.^35   
 
-{% trigger type: image id: make_believe_024 action: end zoom: 15 coordinates: 400,900%}
+{% trigger type: image id: make_believe_024 action: end zoom: 14 coordinates: 400,900%}
 
 ---
 
@@ -81,4 +77,4 @@ This model gave rise to “promotion projects”^32 like *Northwest Magazine*, l
 
 Unlike the working-class Dutch settlements established across the United States in the late 1800s, the acquisition of land and property through foreign-owned mortgage banking was a concealed operation. After the 1889 fire, Dutch financiers engaged exclusively with Spokane’s business leaders; when much of that property later fell into receivership, the resulting monopoly went largely unchallenged in Washington newspapers, perhaps out of embarrassment. As one Dutch historian later observed of the Spokane venture, “due to the very nature of their business, mortgage banks are closely related to the real estate business, if not from the beginning, then surely as time goes on.”^36
 
-{% trigger type: image id: make_believe_004 action: end zoom: coordinates: %}
+{% trigger type: image id: make_believe_004 action: end zoom: 11 coordinates: %}

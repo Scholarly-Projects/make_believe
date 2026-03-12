@@ -13,7 +13,7 @@ In a full-page feature on January 31, 1931, Amsterdam’s *Algemeen Handelsblad*
 
 The article asked readers to “pronounce the name: Spokhin, not Spo-keen, as you learned in school,” suggesting that the paper’s Dutch readership would have a longstanding familiarity with the Washington city. The author goes on to reference a popular joke between blackface characters Rastus and Sam performed in European music halls.^1 “‘Where is Spokane located’ asks Rastus to Sam. The answer was: ‘Somewhere in Holland’. Loud applause, everyone understood the joke. Because enterprising banks from the Netherlands were godparents at the birth of the new town in the Northwest of America.”^2
 
-{% trigger type: image id: make_believe_001 action: end zoom: 14 coordinates: 1000,300 %}
+{% trigger type: image id: make_believe_001 action: end zoom: 12 coordinates: 800,500 %}
 
 ---
 
@@ -29,11 +29,11 @@ Not included in this narrative was the fact that a small syndicate of Dutch fina
 
 {% trigger type: image id: make_believe_003 action: end zoom: coordinates: %}
 
-{% trigger type: image id: make_believe_004 action: start zoom: 15 coordinates: 1000,750 %}
+{% trigger type: image id: make_believe_004 action: start zoom: coordinates:  %}
 
 Contrary to both local booster narratives and traditional understandings of the post-Monroe Doctrine era, this paper argues that Spokane development was not only a story of American enterprise but a complex case of overlapping colonialism. It contends that the settler colonial ambitions of American industrialists were supplanted by the predatory financial schemes and land acquisition of Dutch interests. This interest, originating with the new Dutch merchant class created by the 1870s Cape Era diamond boom, flowed into American railway bonds and ultimately established a foreign-controlled financial market in Spokane. Between the fire of 1889 and the liquidation of Dutch assets in 1923, Spokane’s aggressive public display of frontier iconography was less an expression of civic pride than a cultural assertion of an American identity designed to obscure its complicated, foreign financial relationships.  
 
-{% trigger type: image id: make_believe_004 action: end zoom: 15 coordinates: 0,750 %}
+{% trigger type: image id: make_believe_004 action: end zoom: coordinates: %}
 
 ---
 

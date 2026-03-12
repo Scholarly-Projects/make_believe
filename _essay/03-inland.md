@@ -17,11 +17,11 @@ From the incorporation of Dutch interests in 1885 to their liquidation in 1923, 
 
 {% trigger type: image id: make_believe_027 action: end zoom: coordinates: %}
 
-{% trigger type: image id: make_believe_028 action: start zoom: 20 coordinates: 1000,500 %}
+{% trigger type: image id: make_believe_028 action: start zoom: 16 coordinates: 1000,500 %}
 
 Aside from Lange’s failed attempt to launch a mining venture in the Spokane Mines Limited Co.,^43 Dutch capital in the region coalesced around three core enterprises, all steered by overlapping personnel. First, the Spokane Flour Mill (Spokane Meelmolens), incorporated to secure trade routes to Asia and the eastern US. Second, the Phoenix Sawmill on the Spokane riverfront which eventually controlled 75,000 acres across Spokane and Stevens Counties, effectively creating a company town in Springdale, Washington.^44 Third was the foundational mortgage bank, first managed by Herman Antonie Van Valkenburg.  
 
-{% trigger type: image id: make_believe_028 action: end zoom: 20 coordinates: 0,500 %}
+{% trigger type: image id: make_believe_028 action: end zoom: 16 coordinates: 0,500 %}
 
 {% trigger type: image id: make_believe_029 action: start zoom: 11 coordinates:  %}
 
@@ -101,7 +101,7 @@ It is crucial to note that both the defined *permanent settlements* and *tempora
 
 After a brief attempt to revive A. M. Cannon’s seized sawmill as the Northwest Milling and Power Company, both that company and the North West Hypotheek Bank collapsed into insolvency by the mid-1890s, triggering the most publicly contentious episode in Spokane’s history with Dutch financiers. In 1896, the assets of Everwijn Lange’s American National Trust Co., which had funded both failed ventures, were liquidated into the Dutch public limited company *Amsterdamsch Trustees Kantoor*.^61 The Hypotheek Bank’s holdings were absorbed by the newly formed Holland Bank,^62 while the Northwest Milling and Power Company emerged again as the Phoenix Sawmill, effectively shielding its backers from liability through corporate reorganization.^63  
 
-{% trigger type: image id: make_believe_040 action: end zoom: 15 coordinates: %}
+{% trigger type: image id: make_believe_040 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_041 action: start zoom: 09 coordinates: %}
 
