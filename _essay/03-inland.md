@@ -115,18 +115,18 @@ After ignoring a city order to “cease maintaining nuisances in the bed of the 
 
 {% trigger type: image id: make_believe_032 action: end zoom: 15 coordinates: 500,1000 %}
 
-{% trigger type: image id: make_believe_033 action: start zoom: 09 coordinates: %}
+{% trigger type: image id: make_believe_033 action: start zoom: coordinates: %}
 
 When the Phoenix Sawmill rose from the ruins of the failed Northwest Milling and Power Company in 1898, Everwijn Lange Jr. placed E. F. Cartier Van Dissel in charge as manager.^71 Cartier had arrived in Spokane in 1897 after helping orchestrate a scheme with the Rotterdam Company for Land Exploitation. Alongside future Spokane associate L. C. Lens, Cartier sold barren, alkaline acres south of Fresno to both Dutch and American farmers as orchard land.^72  
 
 Four years into Van Dissel’s management, Phoenix was the largest sawmill in the state of Washington with the help of L.C. Lens, who acquired The Inland Empire Milling Company and other nearby operations.^73 Meanwhile, Thomas G. Thomson rapidly acquired foreclosed agricultural land north of Spokane amounting to 69,000 acres near Springdale, forty miles north of Spokane, which came under the control of a new offshoot organization, the Phoenix Lumber Company.^74 Van Dissel appointed his brother Petrus M. Cartier Van Dissel as the manager,  who eventually also ran the *Springdale Reformer*, a newspaper which the neighboring *Colville Examiner* openly accused of being a propaganda tool for Phoenix’s labor interests.^75  
 
-{% trigger type: image id: make_believe_033 action: end zoom: 09 coordinates: %}
+{% trigger type: image id: make_believe_033 action: end zoom: coordinates: %}
 
-{% trigger type: image id: make_believe_034 action: start zoom: 09 coordinates: %}
+{% trigger type: image id: make_believe_034 action: start zoom: 16 coordinates: 250,500 %}
 
 In Dutch newspapers, Springdale was marketed as a “Dutch and Flemish Colony.” Advertisements in newspapers boasted of “two colossal sawmills” and declared the enterprise “a Dutch company,” with E. F. Cartier Van Dissel as president, R. Insinger (Manager of the Hypotheek Bank after Thomson) as secretary-treasurer, and E. J. Everwijn Lange Jr. as director. The advertisement states explicitly that farmland would be “offered at discount, preferably to Dutchmen” in hopes of developing “a wealthy Dutch colony.”^76  
 
 Springdale never became the “true Dutch settlement” Jacob van Hinte described in *Nederlanders in Amerika*, but instead devolved into a fractured, sometimes violent company town.^77 By the 1910s, Springdale was described as divided into Van Dissel’s “courthouse ring” of bribed judges and lawyers and the “Anti-Van-Dissel” laborers and community members.^78 This reality was in stark contrast to booster booklets like *Spokane, the Queen of the Inland Empire*, which portrayed E. F. Cartier Van Dissel as a model civic leader: “Mr. E. F. Cartier Van Dissel, the manager, has made a record here as a businessman that is so well known that it is unnecessary to dwell on it here, suffice to say that he is a kindly, agreeable gentleman who is always willing to do his part in promoting the best interests of Spokane.”^79
 
-{% trigger type: image id: make_believe_034 action: end zoom: 09 coordinates: %}
+{% trigger type: image id: make_believe_034 action: end zoom: 16 coordinates: 750,500 %}

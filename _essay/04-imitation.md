@@ -9,7 +9,7 @@ layout: essay-right
 
 Born in Groningen, Netherlands, in 1873, Abraham Rutgers van der Loeff trained in commercial art in Amsterdam, where he filled his early diaries with cartoonish marginalia, short stories and plays set in exoticized Persian palaces, Indian jungles, and Chinese temples. His tales, such as “The Pagoda of Tshi” and “The History of Selin the Tiger,” featured stereotyped illustrations of Chinese figures in Fu Manchu facial hair, demons, and dragons, repeatedly invoking the phrase “Chineesch Spiritisme” (Chinese Spiritualism).^80  
 
-{% trigger type: image id: make_believe_035 action: end zoom: 12 coordinates: %}
+{% trigger type: image id: make_believe_035 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_036 action: start zoom: coordinates: %}
 
@@ -110,7 +110,7 @@ ___
 
 During the 1913 Spokane Pow Wow celebration, the Dutch were featured in two events. A photograph from "The Dance of the Dutch" shows hundreds of girls in Dutch bonnets, some more hastily folded than others, hoisting sticks above their heads. Many wore skirts with the red, white, and blue horizontal stripes evoking the Dutch flag. The photo was taken from the bleachers of Glover Field, then known as The Stadium, looking out onto the Monroe Bridge and the raging Spokane River.^102 
 
-{% trigger type: image id: make_believe_051 action: end zoom:14 coordinates: %}
+{% trigger type: image id: make_believe_051 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_052 action: start zoom:  coordinates:  %}
 
@@ -134,11 +134,11 @@ While the most common display of Dutch iconography in Spokane’s theatrical and
 
 {% trigger type: image id: make_believe_054 action: end zoom:  coordinates:  %}
 
-{% trigger type: image id: make_believe_055 action: start zoom: 09 coordinates: %}
+{% trigger type: image id: make_believe_055 action: start zoom: coordinates: %}
 
 In the program for a Knight of Pythias event, a Knapp, Burrell & Co. advertisement featured a German caricature with a nearly inscrutable combination of iconography: a pot-bellied man wearing lederhosen pants and a mustachioed smirk held an ear of corn to the sky and extended a pair of angelic wings while standing on a log stump. The character provided an ethnically tinged advertisement for FLYER FLEXIBLE snow slides, declaring in a mock German accent, “Auf you vant a schled mit horses on, dey got some ghoot vones. Yah\!” \“If you want a sled with horses on it, they have some good ones. Yes\!”\  
 
-{% trigger type: image id: make_believe_055 action: end zoom: 14 coordinates: 500,0 %}
+{% trigger type: image id: make_believe_055 action: end zoom: coordinates: 500,0 %}
 
 ---
 
@@ -284,7 +284,7 @@ W.L. Benham, a former salesman for the Northwestern and Pacific Hypotheek Bank, 
 
 The largest was The Phoenix Lumber Company in Stevens County, where manager E.F. Cartier Van Dissel sold over 6000 acres of logged off land between 1911 and 1913.^143 The principal corporations involved in irrigating this agricultural land for hobbyist orchard owners were the Arcadia Irrigation Association and the Inland Empire Irrigation Suburban Tracts Company, led by E.F. Cartier Van Dissel and long-running Hypotheek Bank manager Robert Insinger.^144  
 
-{% trigger type: image id: make_believe_077 action: end zoom: 12 coordinates:  %}
+{% trigger type: image id: make_believe_077 action: end zoom: 11 coordinates:  %}
 
 {% trigger type: image id: make_believe_078 action: start zoom: coordinates:  %}
 

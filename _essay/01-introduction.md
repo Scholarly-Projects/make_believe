@@ -37,11 +37,11 @@ Contrary to both local booster narratives and traditional understandings of the 
 
 ---
 
-{% trigger type: image id: make_believe_005 action: start zoom:  coordinates:  %}
+{% trigger type: image id: make_believe_005 action: start zoom: coordinates: %}
 
 The foundational scholarship on Dutch investment in Spokane comes from Eastern Washington University professor John Fahey. While Fahey’s work meticulously documents *what* Dutch investors acquired and *where* they invested in Spokane, this project explores *why* they chose this specific region and *how* capital flowed from the Netherlands to the Inland Northwest through international financial and promotional networks. Context is utilized through scholarly work providing an overview on Dutch global ventures, the introduction of American railway bonds in Amsterdam, and the new class of Dutch workers whose sudden wealth fueled overseas speculation.^7 This work also draws on research documenting the emergence of immigration departments within major railroads to boost foreign settlements and how their booster publications helped market this business model to foreign and domestic audiences.^8   
 
-{% trigger type: image id: make_believe_005 action: end zoom:   coordinates:  %}
+{% trigger type: image id: make_believe_005 action: end zoom: coordinates: %}
 
 {% trigger type: image id: make_believe_006 action: start zoom: coordinates: %}
 
