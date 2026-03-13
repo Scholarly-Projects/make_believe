@@ -304,10 +304,6 @@ The agricultural exposition styled event featured ribbons and medals for model a
 
 Illustrator W. M. C. Morris created a series of single-panel cartoons to promote the Fourth Annual Apple Show in 1911, when Van Dissel served as president. The series depicts a large group of racialized and gendered apple caricatures: Ark Black, a banjo playing Black character; Mackintosh Red, a bagpipe wielding Scottsman; Coos River Red, an Indigenous character; Herr Spitzenburg, a pot-bellied smiling German; and Northern Spy, a curious, plaid wearing Canadian interloper frequently muttering at the edge of the crowd.   
 
-{% trigger type: image id: make_believe_080 action: end zoom: 12 coordinates: %}
-
-{% trigger type: image id: make_believe_081 action: start zoom: coordinates: %}
-
 The narrative eventually leads the group to the entryway of the Spokane State Armory where Van Dissel doffs his cap and greets “His Majesty King Pip IV” saying “Dee Pleashure iss all ours, ve assure you.”^150 Nearby, Herr Spitzenburg boasts to a companion, “Yaw, President Van Dissel und me iss fellow countrymens,” prompting the indifferent reply, “So?” Despite Morris failing to differentiate between his German caricature and Van Dissel’s Dutch origins, the implication is that even within this highly racialized parody, his European origins were not worthy of suspicion in the open field of commerce. 
 
-{% trigger type: image id: make_believe_081 action: end zoom: coordinates: %}
+{% trigger type: image id: make_believe_080 action: end zoom: 14 coordinates: %}
