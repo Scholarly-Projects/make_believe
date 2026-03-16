@@ -100,10 +100,10 @@ body {
   font-style: italic;
   line-height: 1.65;
   color: rgba(17, 17, 17, 0.65);
-  margin: 0 0 0.7rem 0;
+  margin: 0;
+  text-indent: 2em;
   text-align: left;
 }
-.home-abstract-text:last-child { margin-bottom: 0; }
 
 /* ── Identity typography ─────────────────────────────────────────────── */
 .home-site-title {
@@ -321,18 +321,17 @@ body {
     {% if site.description %}<p class="home-site-description">{{ site.description }}</p>{% endif %}
   </div>
 
-  <!-- Abstract (bottom-left, 65% of height) ───────────────────────── -->
   <div id="home-col-abstract">
     <h2 class="home-abstract-heading">Abstract</h2>
 
     {% if site.abstract %}
       {{ site.abstract }}
     {% else %}
-    <p class="home-abstract-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Amet volutpat consequat mauris nunc congue nisi vitae suscipit tellus mauris a diam maecenas. Sed blandit libero volutpat sed cras ornare arcu. Duis ultricies lacus sed turpis tincidunt id aliquet risus feugiat. Egestas dui id ornare arcu odio ut sem nulla pharetra.</p>
+    <p class="home-abstract-text">This paper argues that Spokane, Washington's origins represent overlapping colonialism, where settler ambitions were supplanted by predatory Dutch financial interests between 1889 and 1923. Capital originating from the Dutch merchant class, fueled by the 1870s Cape Era diamond boom, flowed into American railway bonds to establish a foreign-controlled financial market. Consequently, Spokane's aggressive display of frontier iconography functioned less as civic pride than as a cultural assertion of American identity designed to obscure its entanglement with foreign capital.</p>
 
-    <p class="home-abstract-text">Nunc id cursus metus aliquam eleifend mi in nulla posuere. In nibh mauris cursus mattis molestie a iaculis at erat. Morbi non arcu risus quis varius quam quisque id diam. Fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate sapien nec sagittis aliquam. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.</p>
+    <p class="home-abstract-text">While imitation of Native American and Asian cultures was common for European American settlers in the Pacific Northwest during this period, Spokane's booster-driven "Inland Empire" marketing strategies uniquely relied on a pervasive, public display of cultural imitation and affectation. The city's rapid, Dutch-financed reconstruction following the 1889 fire created an artificially-inflated metropolis amidst otherwise sparse agricultural hubs, generating dissonance between the built environment and pioneer identities, which was mediated by civic rituals and commercial pageantry.</p>
 
-    <p class="home-abstract-text">Amet volutpat consequat mauris nunc congue nisi vitae suscipit tellus mauris a diam maecenas. Sed blandit libero volutpat sed cras ornare arcu. Duis ultricies lacus sed turpis tincidunt id aliquet risus feugiat. Egestas dui id ornare arcu odio ut sem nulla pharetra. Nunc id cursus metus aliquam eleifend mi in nulla posuere. In nibh mauris cursus mattis molestie a iaculis at erat. Morbi non arcu risus quis varius quam quisque id diam. Fringilla phasellus faucibus scelerisque eleifend donec pretium vulputate sapien nec sagittis aliquam. Nunc id cursus metus aliquam eleifend mi in nulla posuere.</p>
+    <p class="home-abstract-text">Situating Spokane within evolving ideologies of U.S. expansion, this paper highlights the contradiction between America's professed aversion to foreign entanglement and its imperial practices. Drawing on contemporaneous Dutch-language media and direct interviews with the financiers of the Spokane project, this introduces an international vantage point largely absent from existing American historiography. The paper also utilizes a wide array of archival visual resources which document pioneer iconography and ethnic anxiety with a candor largely absent from written accounts. To support this visually driven approach, the thesis is presented as a custom digital exhibit, enabling readers to place the ephemera in direct dialogue with the historic media, correspondence and literature that constitute the paper's research.</p>
     {% endif %}
   </div>
 
