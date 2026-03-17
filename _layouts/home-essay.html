@@ -15,273 +15,13 @@ gallery: true
 
 <link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
 
-<style>
-/* ── Reset & Base ─────────────────────────────────────────────────────── */
-body {
-  background-color: #ffffff;
-  color: #111111;
-}
-
-/* ── TOC Sidebar overrides (light page) ──────────────────────────────── */
-#home-toc-sidebar.scrolly-toc-sidebar {
-  background-color: #ffffff;
-  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
-}
-#home-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.15);
-}
-#home-toc-sidebar .scrolly-toc-heading  { color: #000000; }
-#home-toc-sidebar .scrolly-toc-link     { color: #353535; }
-#home-toc-sidebar .scrolly-toc-link:hover {
-  color: #1B1B1B;
-  background-color: rgba(0, 0, 0, 0.05);
-}
-#home-toc-sidebar .scrolly-toc-link.toc-active { color: #000000; font-weight: 600; }
-#home-toc-sidebar .toc-chapter-entry > .scrolly-toc-link        { color: #353535; }
-#home-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover  { color: #1B1B1B; }
-#home-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
-#home-toc-sidebar .toc-section-rule        { background-color: rgba(0, 0, 0, 0.22); }
-#home-toc-sidebar .toc-section-rule:hover  { background-color: rgba(0, 0, 0, 0.55); }
-#home-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(0, 0, 0, 0.48); }
-
-/* ── Main grid ────────────────────────────────────────────────────────── *
- *  TOC fixed at 14% via scrolly.css.                                      *
- *  Remaining 86%: middle 56% of viewport → 65.1fr                        *
- *                  right  30% of viewport → 34.9fr                        *
- *  Row split: identity 35%, abstract 65%.                                 *
- * ──────────────────────────────────────────────────────────────────────── */
-#home-grid {
-  display: grid;
-  grid-template-columns: 65.1fr 34.9fr;
-  grid-template-rows: 35fr 65fr;
-  grid-template-areas:
-    "identity right"
-    "abstract right";
-  margin-left: 14%;
-  margin-top: calc(var(--scrolly-header-h, 52px) + 1.5rem);
-  min-height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem);
-  background-color: #ffffff;
-}
-
-/* ── Identity cell (top-left) ────────────────────────────────────────── */
-#home-col-identity {
-  grid-area: identity;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 2.5rem 2.5rem 1.5rem 3rem;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid #ffffff; /* invisible — structural only */
-}
-
-/* ── Abstract cell (bottom-left) ─────────────────────────────────────── */
-#home-col-abstract {
-  grid-area: abstract;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;   /* vertical centre within the cell */
-  align-items: flex-start;   /* paragraphs stay left-aligned    */
-  padding: 1.5rem 2.5rem 2.5rem 3rem;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  overflow-y: auto;
-}
-
-.home-abstract-heading {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #111111;
-  margin: 0 0 0.75rem 0;
-  line-height: 1.2;
-  text-align: left;
-}
-
-.home-abstract-text {
-  font-size: clamp(0.92rem, 1.15vw, 1.05rem);
-  font-style: italic;
-  line-height: 2;
-  color: rgba(17, 17, 17, 0.65);
-  margin: 0;
-  text-indent: 2em;
-  text-align: left;
-}
-
-/* ── Identity typography ─────────────────────────────────────────────── */
-.home-site-title {
-  font-size: clamp(2.8rem, 5.0vw, 4.6rem);
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: #111111;
-  margin: 0 0 0.85rem 0;
-}
-.home-site-tagline {
-  font-size: clamp(1.05rem, 1.85vw, 1.4rem);
-  font-weight: 700;
-  line-height: 1.3;
-  color: rgba(17, 17, 17, 0.92);
-  margin: 0 0 0.6rem 0;
-}
-.home-site-author {
-  font-size: clamp(0.95rem, 1.35vw, 1.18rem);
-  font-weight: 300;
-  color: rgba(17, 17, 17, 0.75);
-  margin: 0 0 1rem 0;
-  letter-spacing: 0.01em;
-}
-.home-site-description {
-  font-size: clamp(0.88rem, 1.15vw, 1.02rem);
-  font-weight: 400;
-  line-height: 1.6;
-  color: rgba(17, 17, 17, 0.55);
-  margin: 0;
-}
-
-/* ── Right cell — image + CTA (spans both row tracks) ───────────────── */
-#home-col-right {
-  grid-area: right;
-  display: flex;
-  flex-direction: column;
-  padding: 0 1.5rem 1rem 1rem;
-  height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem - 55px);
-  max-height: calc(100vh - var(--scrolly-header-h, 52px) - 1.5rem - 55px);
-  overflow: hidden;
-}
-.home-right-image-area {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding-top: 1.5rem;
-  overflow: hidden;
-}
-.home-right-image-area img {
-  aspect-ratio: 1 / 1;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  flex-shrink: 1;
-  min-height: 0;
-}
-.home-featured-credit {
-  flex: 0 0 auto;
-  font-size: 0.805rem;
-  color: rgba(0, 0, 0, 0.35);
-  line-height: 1.5;
-  margin-top: 0.3rem;
-  text-align: center;
-}
-.home-right-cta {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 1.25rem;
-  padding-bottom: 1rem;
-}
-.home-read-btn {
-  display: inline-block;
-  padding: 0.8rem 2.5rem;
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  color: #111111;
-  font-size: 1.15rem;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-decoration: none;
-  border-radius: 2px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  text-align: center;
-}
-.home-read-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.9);
-  color: #111111;
-}
-
-/* ── Collapse TOC sidebar below 992px ────────────────────────────────── */
-@media screen and (max-width: 992px) {
-  #home-toc-sidebar { display: none !important; }
-  #home-grid        { margin-left: 0 !important; }
-}
-
-/* ── MOBILE: identity → image → abstract; TOC via header hamburger ─── */
-@media (max-width: 768px) {
-  #home-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    grid-template-areas:
-      "identity"
-      "right"
-      "abstract";
-    margin-top: 160px;
-    margin-left: 0;
-    min-height: unset;
-  }
-
-  #home-col-identity {
-    border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 1.5rem 1.5rem 2rem;
-    justify-content: flex-start;
-  }
-
-  #home-col-abstract {
-    border-right: none;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 2rem 1.5rem 70px;
-    justify-content: flex-start;
-  }
-
-  #home-col-right {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 0.75rem 1.5rem 1rem;
-    height: calc(100vh - 160px - 45px);
-    max-height: calc(100vh - 160px - 45px);
-    overflow: hidden;
-  }
-
-  .home-right-image-area {
-    flex: 1 1 0;
-    min-height: 0;
-    height: auto;
-    padding-top: 0.5rem;
-    overflow: hidden;
-  }
-
-  .home-right-cta {
-    flex: 0 0 auto;
-    padding-top: 0.85rem;
-    padding-bottom: 0.75rem;
-  }
-
-  .scrolly-footer {
-    padding: 0.4rem 1.25rem !important;
-    min-height: unset !important;
-    flex-direction: row !important;
-    align-items: center !important;
-  }
-  .scrolly-footer .chapter-nav              { width: 36px !important; height: 36px !important; font-size: 1.25rem !important; }
-  .scrolly-footer .scrolly-citation-wrapper { display: none !important; }
-}
-
-/* ── Single-essay content (preserved) ───────────────────────────────── */
-#single-essay-content { margin-top: 2rem; }
-</style>
-
 {%- assign sorted_essays = site.essay | sort: 'order' -%}
 {%- assign first_essay = sorted_essays | first -%}
 
-<!-- ── FIXED TOC SIDEBAR ───────────────────────────────────────────────── -->
 <aside class="scrolly-toc-sidebar" id="home-toc-sidebar" aria-label="Table of contents">
   <p class="scrolly-toc-heading">Contents</p>
   <ul class="scrolly-toc-list">
 
-    <!-- No toc-active on Home — keeps it unbolded to match other sidebar instances -->
     <li>
       <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
     </li>
@@ -310,10 +50,8 @@ body {
   </ul>
 </aside>
 
-<!-- ── MAIN GRID ───────────────────────────────────────────────────────── -->
 <div id="home-grid">
 
-  <!-- Identity (top-left, 35% of height) ──────────────────────────── -->
   <div id="home-col-identity">
     <h1 class="home-site-title">{{ site.title }}</h1>
     {% if site.tagline %}<p class="home-site-tagline">{{ site.tagline }}</p>{% endif %}
@@ -339,7 +77,6 @@ body {
     
   </div>
 
-  <!-- Right: image + CTA ───────────────────────────────────────────── -->
   <div id="home-col-right">
     <div class="home-right-image-area">
       {% if site.data.theme.featured-image %}
