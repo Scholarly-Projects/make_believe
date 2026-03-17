@@ -4,7 +4,23 @@ layout: about
 permalink: /technical.html
 credits: false
 hide-default-footer: true
-# Edit the markdown in this file to describe your project
 ---
 
+<style>
+  #about-contents-wrapper p {
+    font-size: clamp(0.92rem, 1.15vw, 1.05rem);
+    line-height: 2;
+    color: rgba(17, 17, 17, 0.65);
+    margin: 0;
+    text-indent: 2em;
+    text-align: left;
+  }
+</style>
+
 ## Technical Notes
+
+<br>
+
+<p>par1</p>
+<p>par2</p>
+<p>par3</p>

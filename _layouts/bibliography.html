@@ -60,9 +60,6 @@ layout: default
 
 <style>
     /* ── Bibliography page: light-mode overrides for the scrolly TOC sidebar ── */
-    /* The scrolly.scss sidebar defaults to dark; these rules invert it for the
-       light bibliography context without touching the shared stylesheet.        */
-
     #bib-toc-sidebar.scrolly-toc-sidebar {
         background-color: #ffffff;
         scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
@@ -113,7 +110,6 @@ layout: default
     }
 
     @media screen and (max-width: 992px) {
-        /* Hide the TOC sidebar and remove its margin offset on mobile */
         #bib-toc-sidebar {
             display: none !important;
         }
@@ -130,7 +126,7 @@ layout: default
         }
     }
 
-    /* ── Bibliography list styles (unchanged) ── */
+    /* ── Bibliography list styles ── */
     #bibliography-list {
         list-style: none;
         padding-left: 0;
@@ -153,6 +149,9 @@ layout: default
         text-indent: -2em;
         word-break: break-word;
         overflow-wrap: break-word;
+        font-size: clamp(0.92rem, 1.15vw, 1.05rem);
+        color: rgba(17, 17, 17, 0.65);
+        line-height: 2;
     }
     .bib-back-col {
         flex: 0 0 4rem;
@@ -201,7 +200,7 @@ layout: default
     }
 </style>
 
-<!-- ── TOC SIDEBAR (mirrors essay-right.html) ────────────────────────────── -->
+<!-- ── TOC SIDEBAR ────────────────────────────────────────────────────── -->
 <aside class="scrolly-toc-sidebar" id="bib-toc-sidebar" aria-label="Table of contents">
     <p class="scrolly-toc-heading">Contents</p>
     <ul class="scrolly-toc-list" id="scrolly-toc-list">
@@ -237,7 +236,7 @@ layout: default
     </ul>
 </aside>
 
-<!-- ── MAIN CONTENT ──────────────────────────────────────────────────────── -->
+<!-- ── MAIN CONTENT ──────────────────────────────────────────────────── -->
 <div id="about-wrapper">
     <div id="about-contents-wrapper">
         {{ content }}
