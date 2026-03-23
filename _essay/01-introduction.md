@@ -51,7 +51,7 @@ This paper situates Spokane within evolving ideologies of U.S. expansion. Resear
 
 The centrality of European American settlers’ imitation of other cultures in Spokane’s civic pageantry and commercial iconography was exemplified in the 1913 Pow Wow program. Led by organizers and city leaders in Indigenous dress, the events featured “fifty Zulu cannibals,” “The Thirty Six Tribes of American Indians,” the Gonzaga College band made up as various tribes, and Lewis and Clark High School staging an ethnic reenactment of their namesake expedition. 
 
-This demonstration of European American Spokane citizens who performed _who they were not_ was counterbalanced by equally broad expressions of _who they were_, or, _who they aspired to be_. Settler identities as American citizens and a sense of legacy which gave them rights and privileges to the land and resources were bolstered by processions like “Olde Colonial Days.” This event in the 1913 Pow Wow featured a George Washington character in a powdered wig balancing on stilts, waving his tri-cornered hat at attendees as a marching band followed behind. 
+European American Spokane citizens demonstrated _who they were not_ through cultural imitation were counterbalanced by similarly broad expressions of _who they were_, or, _who they aspired to be_. Settler identities as American citizens with a lineage that gave them rights and privileges to the land its resources were bolstered by processions like “Olde Colonial Days.” This event in the 1913 Pow Wow featured a George Washington character in a powdered wig balancing on stilts, waving his tri-cornered hat at attendees as a marching band followed behind. 
 
 {% trigger type: image id: make_believe_007 action: end zoom: 12 coordinates: %}
 
