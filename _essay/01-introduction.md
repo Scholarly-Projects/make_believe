@@ -37,22 +37,28 @@ Contrary to both local booster narratives and traditional understandings of the 
 
 ---
 
-{% trigger type: image id: make_believe_005 action: start zoom: coordinates: %}
+{% trigger type: image id: make_believe_006 action: start zoom: coordinates: %}
 
 The foundational scholarship on Dutch investment in Spokane comes from Eastern Washington University professor John Fahey. While Fahey’s work meticulously documents *what* Dutch investors acquired and *where* they invested in Spokane, this project explores *why* they chose this specific region and *how* capital flowed from the Netherlands to the Inland Northwest through international financial and promotional networks. Context is utilized through scholarly work providing an overview on Dutch global ventures, the introduction of American railway bonds in Amsterdam, and the new class of Dutch workers whose sudden wealth fueled overseas speculation.^7 This work also draws on research documenting the emergence of immigration departments within major railroads to boost foreign settlements and how their booster publications helped market this business model to foreign and domestic audiences.^8   
 
-{% trigger type: image id: make_believe_005 action: end zoom: coordinates: %}
-
-{% trigger type: image id: make_believe_006 action: start zoom: coordinates: %}
-
-This paper situates Spokane within evolving ideologies of U.S. expansion. Research on settler colonialism and anti-imperial discourse helps contextualize the tension between America’s professed aversion to foreign entanglement and its own imperial practices, both continental and overseas.^9 Contemporaneous Dutch-language accounts, including firsthand narratives from key financiers operating in Spokane, provide an external vantage point rarely captured in American sources.^10  
+This paper situates Spokane within evolving ideologies of U.S. expansion. Research on settler colonialism and anti-imperial discourse helps contextualize the tension between America’s professed aversion to foreign entanglement and its own imperial practices, both continental and overseas.^9 Contemporaneous Dutch-language accounts, including firsthand narratives from key financiers operating in Spokane, provide an external vantage point rarely captured in American sources.^10 These resources allow new pathways to understand how Spokane was a uniquely international project, materially built and symbolically influenced by Dutch colonial assets.  
 
 {% trigger type: image id: make_believe_006 action: end zoom: 11 coordinates: %}
 
 ---
 
-{% trigger type: image id: make_believe_007 action: start zoom: 11 coordinates: %}
+{% trigger type: image id: make_believe_007 action: start zoom: 09 coordinates: %}
+
+The centrality of European American settlers’ imitation of other cultures in Spokane’s civic pageantry and commercial iconography was exemplified in the 1913 Pow Wow program. Led by organizers and city leaders in Indigenous dress, the events featured “fifty Zulu cannibals,” “The Thirty Six Tribes of American Indians,” the Gonzaga College band made up as various tribes, and Lewis and Clark High School staging an ethnic reenactment of their namesake expedition. 
+
+This demonstration of European American Spokane citizens who performed _who they were not_ was counterbalanced by equally broad expressions of _who they were_, or, _who they aspired to be_. Settler identities as American citizens and a sense of legacy which gave them rights and privileges to the land and resources were bolstered by processions like “Olde Colonial Days.” This event in the 1913 Pow Wow featured a George Washington character in a powdered wig balancing on stilts, waving his tri-cornered hat at attendees as a marching band followed behind. 
+
+{% trigger type: image id: make_believe_007 action: end zoom: 12 coordinates: %}
+
+{% trigger type: image id: make_believe_005 action: start zoom: coordinates: %}
+
+While this kind of cultural imitation was not uncommon among European American communities in the Pacific Northwest, its scale and significance in Spokane were closely tied to the broader promotional project of the “Inland Empire.” Now associated with central California, the term initially circulated in the 1860s as a hypothetical region within an expanding continental empire. An 1869 article in the _Idaho Statesman_, for instance, clarified that Corrine, Utah, was "not the right place for the great and coming Inland Empire.” After being periodically associated with The Dalles, Washington throughout the 1870s, an organized push from multiple news sources established the Inland Empire as the “eastern half of Oregon, the eastern half of Washington territory and the Northern half of Idaho.”
 
 Spokane’s post-fire transformation was not a triumph of rugged American individualism but the product of financial influence that quietly supplanted local enterprise with foreign control. Far from contradicting the spirit of US expansion, these foreign interests overlapped with American imperial ambitions, leveraging the rhetoric of settler colonialism while consolidating economic power through mortgage banking, asset liquidation, and strategic obscurity. Beneath the city’s pervasive frontier iconography, disseminated through parades, expositions, and booster literature, was a performative assertion of American identity in reaction to a built environment made possible through international capital. 
 
-{% trigger type: image id: make_believe_007 action: end zoom: 12 coordinates: %}
+{% trigger type: image id: make_believe_007 action: end zoom: coordinates: %}
