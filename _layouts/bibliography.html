@@ -240,10 +240,26 @@ layout: default
 <div id="about-wrapper">
     <div id="about-contents-wrapper">
         {{ content }}
+
+        {%- comment -%}
+          Auto-generated bibliography list from _data/citation.
+          - Opt out per-page by setting `auto_bibliography: false` in front matter.
+            Use this when the page's Markdown body already renders its own list
+            to prevent every entry from appearing twice.
+          - Because the list is sorted by "text", duplicate citation texts are
+            always adjacent. We track the previous item's text and skip any entry
+            whose text matches it, so each unique source appears exactly once
+            regardless of how many footnote IDs reference it.
+        {%- endcomment -%}
+
+        {% unless page.auto_bibliography == false %}
         {% assign citations = site.data.citation | sort: "text" %}
         {% if citations %}
+        {% assign last_text = "" %}
         <ul id="bibliography-list">
             {% for item in citations %}
+            {% if item.text != last_text %}
+            {% assign last_text = item.text %}
             {%- assign fn_num = item.id | remove: "citation_" | plus: 0 -%}
             <li id="{{ item.id }}">
                 <span class="bib-text">{{ item.text }}</span>
@@ -254,9 +270,11 @@ layout: default
                        aria-label="Return to footnote {{ fn_num }} in text">↩ back</a>
                 </span>
             </li>
+            {% endif %}
             {% endfor %}
         </ul>
         {% endif %}
+        {% endunless %}
     </div>
 
     {% if page.credits == true %}
