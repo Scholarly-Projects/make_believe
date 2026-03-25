@@ -24,9 +24,6 @@ window.citationData['{{ citation.id }}'] = {
 };
 {% endfor %}
 
-// Base URL used to build bibliography anchor links throughout this file
-var BIBLIOGRAPHY_URL = '{{ "/bibliography.html" | relative_url }}';
-
 class ScrollyTelling {
   constructor() {
     this.triggers = [];
@@ -399,7 +396,6 @@ class ScrollyTelling {
     }
     
     if (this.currentLayout !== 'full') {
-      // Normal image swap via triggers (liquid commands in markdown)
       if (newActiveId !== this.activeImageId) {
         this.updateImageVisibility(newActiveId, lastStartParams);
       }
@@ -459,9 +455,9 @@ class ScrollyTelling {
   }
 
   _figureLabel(objectid) {
-  const match = objectid ? /(\d+)$/.exec(objectid) : null;
-  return match ? `<i>Figure ${parseInt(match[1], 10)}:</i> ` : '';
-}
+    const match = objectid ? /(\d+)$/.exec(objectid) : null;
+    return match ? `<i>Figure ${parseInt(match[1], 10)}:</i> ` : '';
+  }
 
   updateFooterImageCitation(objectid) {
     const desktopContent = document.getElementById('scrolly-image-citation-content');
@@ -843,6 +839,7 @@ class ScrollyTelling {
 
   // ─────────────────────────────────────────────────────────────────
   // CITATIONS
+  // Sidebar shows plain text — no link to bibliography page.
   // ─────────────────────────────────────────────────────────────────
   handleCitations(triggerThreshold) {
     let active = null;
@@ -853,13 +850,12 @@ class ScrollyTelling {
       const citation = window.citationData[active.citationId];
       if (citation) {
         const formattedText = this.formatCitation(citation.text);
-        const bibUrl        = `${BIBLIOGRAPHY_URL}#${active.citationId}`;
         if (this.citationDisplayEl) {
           this.citationDisplayEl.innerHTML =
             `<span class="citation-number">${active.number}</span>` +
-            `<a href="${bibUrl}" class="bib-citation-link">${formattedText}</a>`;
+            `<span class="bib-citation-text">${formattedText}</span>`;
           
-          // ── Truncate URLs after content is inserted ──
+          // ── Truncate long URLs after content is inserted ──
           this.truncateCitationUrls();
           
           this.citationDisplayEl.classList.add('visible');
@@ -869,33 +865,29 @@ class ScrollyTelling {
     }
   }
 
-// ─────────────────────────────────────────────────────────────────
-// Truncate URLs in citation sidebar to "(cont.)"
-// ─────────────────────────────────────────────────────────────────
-truncateCitationUrls() {
-  if (!this.citationDisplayEl) return;
-  
-  // Get the main citation link element
-  const citationLink = this.citationDisplayEl.querySelector('.bib-citation-link');
-  if (!citationLink) return;
-  
-  let citationText = citationLink.innerHTML;
-  
-  // More robust URL pattern (same as lightbox)
-  const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
-  
-  // Check if citation contains a URL
-  if (urlPattern.test(citationText)) {
-    // Replace URLs with "(cont.)" indicator
-    const truncatedText = citationText.replace(urlPattern, (match, openBracket, closeBracket) => {
-      const hasBrackets = openBracket === '[' || closeBracket === ']';
-      return hasBrackets 
-        ? `[<span class="citation-url-continuation">(cont.)</span>]`
-        : `<span class="citation-url-continuation">(cont.)</span>`;
-    });
-    citationLink.innerHTML = truncatedText;
+  // ─────────────────────────────────────────────────────────────────
+  // Truncate URLs in citation sidebar to "(cont.)"
+  // ─────────────────────────────────────────────────────────────────
+  truncateCitationUrls() {
+    if (!this.citationDisplayEl) return;
+    
+    const citationText = this.citationDisplayEl.querySelector('.bib-citation-text');
+    if (!citationText) return;
+    
+    const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
+    
+    if (urlPattern.test(citationText.innerHTML)) {
+      citationText.innerHTML = citationText.innerHTML.replace(
+        urlPattern,
+        (match, openBracket, closeBracket) => {
+          const hasBrackets = openBracket === '[' || closeBracket === ']';
+          return hasBrackets
+            ? `[<span class="citation-url-continuation">(cont.)</span>]`
+            : `<span class="citation-url-continuation">(cont.)</span>`;
+        }
+      );
+    }
   }
-}
 
   // ─────────────────────────────────────────────────────────────────
   formatCitation(text) {
@@ -905,44 +897,35 @@ truncateCitationUrls() {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // CHAPTER SEPARATOR FADE - REVISED (OPACITY RESTORATION FIXED)
+  // CHAPTER SEPARATOR FADE
   // ─────────────────────────────────────────────────────────────────
   handleSeparatorFade(triggerThreshold) {
     if (this.currentLayout === 'full') return;
     
-    // ── Progressive image fade-out as separator icon scrolls through viewport ──
     for (const icon of this.separatorIcons) {
       const iconRect  = icon.getBoundingClientRect();
       const imageCol = document.getElementById('scrolly-image');
       if (!imageCol) continue;
       
-      // ── FIX: Icon has exited viewport - restore full opacity for new chapter ──
-      // This is the key fix - when icon exits (top < 0), we restore opacity to 1.0
-      // so the new chapter's images display at full opacity
       if (iconRect.top < 0) {
         imageCol.style.transition = 'opacity 0.3s ease';
         imageCol.style.opacity    = '1';
         continue;
       }
       
-      // ── Icon in viewport - apply progressive fade ───────────────────────────
       if (iconRect.top >= 0 && iconRect.top <= window.innerHeight) {
-        // progress: 0 when icon at viewport bottom → 1 when at viewport top
         const progress = 1 - (iconRect.top / window.innerHeight);
-        // Fade from 1.0 → 0.15 over the last 60% of the icon's upward travel
         const fade = progress > 0.4
           ? Math.max(0.15, 1 - ((progress - 0.4) / 0.6) * 0.85)
           : 1;
         imageCol.style.transition = 'opacity 0.1s linear';
         imageCol.style.opacity    = fade.toFixed(3);
       } else if (iconRect.top > window.innerHeight) {
-        // Icon not yet in view — restore full opacity
         imageCol.style.transition = 'opacity 0.2s ease';
         imageCol.style.opacity    = '1';
       }
     }
     
-    // ── Citation panel: hide while between chapters ───────────────────────────
     let inGap = false;
     for (const icon of this.separatorIcons) {
       const iconRect   = icon.getBoundingClientRect();
@@ -975,20 +958,15 @@ truncateCitationUrls() {
     }
   }
 
-  formatCitation(text) {
-    return text
-      .replace(/_(.*?)_/g, '<i>$1</i>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  }
-
+  // ─────────────────────────────────────────────────────────────────
+  // FOOTNOTE CONVERSION
+  // Superscript numbers are plain text — no link to bibliography page.
+  // ─────────────────────────────────────────────────────────────────
   convertFootnotesToSuperscript(container) {
     container.querySelectorAll('p').forEach(p => {
       if (!p.querySelector('sup[id^="fnref:"]')) {
         p.innerHTML = p.innerHTML.replace(/\^(\d+)/g, (match, num) => {
-          const citationId = `citation_${num.padStart(3, '0')}`;
-          const bibUrl     = `${BIBLIOGRAPHY_URL}#${citationId}`;
-          return `<sup id="fnref:${num}" class="footnote-ref">` +
-            `<a href="${bibUrl}" class="footnote-link">${num}</a></sup>`;
+          return `<sup id="fnref:${num}" class="footnote-ref">${num}</sup>`;
         });
       }
     });
@@ -1400,51 +1378,43 @@ truncateCitationUrls() {
     });
   }
 
-openLightbox(src, caption) {
-  const overlay    = document.getElementById('scrolly-lightbox');
-  const imgEl      = document.getElementById('scrolly-lightbox-img');
-  const captionEl  = document.getElementById('scrolly-lightbox-caption');
-  if (!overlay || !imgEl) return;
-  imgEl.src            = src;
-  captionEl.innerHTML  = caption || '';
-  overlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  
-  // ── Truncate URLs in lightbox caption ──
-  this.truncateCitationUrlsForLightbox();
-  
-  this._wireLightboxOnInlineImages();
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Truncate URLs in lightbox caption to "(cont.)"
-// ─────────────────────────────────────────────────────────────────
-truncateCitationUrlsForLightbox() {
-  const captionEl = document.getElementById('scrolly-lightbox-caption');
-  if (!captionEl) return;
-  
-  let captionText = captionEl.innerHTML;
-  
-  // More robust URL pattern that handles:
-  // - http:// and https://
-  // - URLs with colons in path (ark:, doi:, etc.)
-  // - URLs wrapped in brackets [url] or parentheses (url)
-  // - URLs with trailing punctuation
-  const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
-  
-  // Check if caption contains a URL
-  if (urlPattern.test(captionText)) {
-    // Replace URLs with "(cont.)" indicator
-    // Preserve surrounding brackets if they exist
-    const truncatedText = captionText.replace(urlPattern, (match, openBracket, closeBracket) => {
-      const hasBrackets = openBracket === '[' || closeBracket === ']';
-      return hasBrackets 
-        ? `[<span class="citation-url-continuation">(cont.)</span>]`
-        : `<span class="citation-url-continuation">(cont.)</span>`;
-    });
-    captionEl.innerHTML = truncatedText;
+  openLightbox(src, caption) {
+    const overlay    = document.getElementById('scrolly-lightbox');
+    const imgEl      = document.getElementById('scrolly-lightbox-img');
+    const captionEl  = document.getElementById('scrolly-lightbox-caption');
+    if (!overlay || !imgEl) return;
+    imgEl.src            = src;
+    captionEl.innerHTML  = caption || '';
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // ── Truncate URLs in lightbox caption ──
+    this.truncateCitationUrlsForLightbox();
+    
+    this._wireLightboxOnInlineImages();
   }
-}
+
+  // ─────────────────────────────────────────────────────────────────
+  // Truncate URLs in lightbox caption to "(cont.)"
+  // ─────────────────────────────────────────────────────────────────
+  truncateCitationUrlsForLightbox() {
+    const captionEl = document.getElementById('scrolly-lightbox-caption');
+    if (!captionEl) return;
+    
+    const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
+    
+    if (urlPattern.test(captionEl.innerHTML)) {
+      captionEl.innerHTML = captionEl.innerHTML.replace(
+        urlPattern,
+        (match, openBracket, closeBracket) => {
+          const hasBrackets = openBracket === '[' || closeBracket === ']';
+          return hasBrackets
+            ? `[<span class="citation-url-continuation">(cont.)</span>]`
+            : `<span class="citation-url-continuation">(cont.)</span>`;
+        }
+      );
+    }
+  }
 
   closeLightbox() {
     const overlay = document.getElementById('scrolly-lightbox');
