@@ -42,6 +42,7 @@ import csv
 import tempfile
 import yaml
 import markdown
+import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -67,6 +68,8 @@ try:
         Image, KeepTogether, Flowable,
         Table, TableStyle,
     )
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
@@ -93,7 +96,7 @@ def to_roman(n: int) -> str:
 class SectionMarker(Flowable):
     """
     Zero-height, zero-width flowable that records the PDF page number the
-    moment it is rendered.  Used to build the TOC and header numbering after
+    moment it is rendered. Used to build the TOC and header numbering after
     pass 1.
     """
     def __init__(self, key: str, registry: Dict[str, int]):
@@ -123,7 +126,7 @@ class ThesisExporter:
     MARGIN_TOP    = 1.00 * inch
     MARGIN_BOTTOM = 1.00 * inch
     PAGE_WIDTH, PAGE_HEIGHT = LETTER
-    USABLE_WIDTH  = PAGE_WIDTH  - (MARGIN_LEFT + MARGIN_RIGHT)
+    USABLE_WIDTH  = PAGE_WIDTH - (MARGIN_LEFT + MARGIN_RIGHT)
     USABLE_HEIGHT = PAGE_HEIGHT - (MARGIN_TOP  + MARGIN_BOTTOM)
     MAX_IMG_HEIGHT = 4.5 * inch   # ≈ 50 % of usable height — keeps caption together
 
@@ -142,6 +145,10 @@ class ThesisExporter:
         self.metadata_lookup : Dict[str, Dict] = {}
         self.ordered_figures : List[Dict]      = []
         self.citations       : List[Dict]      = []
+
+        # Fonts
+        self.font_body = 'Times-Roman'
+        self.font_bold = 'Times-Bold'
 
         # State (reset between passes)
         self.story           : List[Any]       = []
@@ -167,14 +174,16 @@ class ThesisExporter:
         # Config
         cfg_path = self.base_path / "_config.yml"
         with open(cfg_path, 'r', encoding='utf-8') as fh:
-            self.config = yaml.safe_load(fh)
+            raw_cfg = unicodedata.normalize('NFC', fh.read())
+            self.config = yaml.safe_load(raw_cfg)
 
         # Figure metadata (order from CSV = figure appearance order in text)
         meta_name    = self.config.get('metadata', 'make_believe')
         metadata_path = self.base_path / "_data" / f"{meta_name}.csv"
         if metadata_path.exists():
             with open(metadata_path, 'r', encoding='utf-8') as fh:
-                self.ordered_figures = list(csv.DictReader(fh))
+                raw_meta = unicodedata.normalize('NFC', fh.read())
+                self.ordered_figures = list(csv.DictReader(raw_meta.splitlines()))
             for row in self.ordered_figures:
                 self.metadata_lookup[row['objectid']] = row
         else:
@@ -184,7 +193,8 @@ class ThesisExporter:
         citation_path = self.base_path / "_data" / "citation.csv"
         if citation_path.exists():
             with open(citation_path, 'r', encoding='utf-8') as fh:
-                self.citations = list(csv.DictReader(fh))
+                raw_cite = unicodedata.normalize('NFC', fh.read())
+                self.citations = list(csv.DictReader(raw_cite.splitlines()))
         else:
             print(f"Warning: citation.csv not found at {citation_path}")
 
@@ -192,7 +202,7 @@ class ThesisExporter:
         essay_dir = self.base_path / "_essay"
         for essay_file in sorted(essay_dir.glob("*.md")):
             with open(essay_file, 'r', encoding='utf-8') as fh:
-                raw = fh.read()
+                raw = unicodedata.normalize('NFC', fh.read())
             parts = raw.split('---', 2)
             fm    = yaml.safe_load(parts[1]) if len(parts) > 1 else {}
             body  = parts[2].strip()         if len(parts) > 2 else raw.strip()
@@ -209,13 +219,28 @@ class ThesisExporter:
         if not path.exists():
             return ""
         with open(path, 'r', encoding='utf-8') as fh:
-            raw = fh.read()
+            raw = unicodedata.normalize('NFC', fh.read())
         parts = raw.split('---', 2)
         return (parts[2].strip() if len(parts) > 2 else raw.strip())
 
     # ─────────────────────────────────────────────────────────────────────────
-    # Styles
+    # Styles & Fonts
     # ─────────────────────────────────────────────────────────────────────────
+
+    def _setup_fonts(self):
+        """Attempt to register TrueType fonts for full UTF-8 character support."""
+        try:
+            # Place times.ttf and timesbd.ttf in the same directory as the script
+            # or provide an absolute path to system fonts.
+            pdfmetrics.registerFont(TTFont('TimesNewRoman-TTF', 'times.ttf'))
+            pdfmetrics.registerFont(TTFont('TimesNewRoman-TTF-Bold', 'timesbd.ttf'))
+            self.font_body = 'TimesNewRoman-TTF'
+            self.font_bold = 'TimesNewRoman-TTF-Bold'
+            print("  Loaded TrueType fonts for extended character support.")
+        except Exception:
+            print("  Note: TrueType fonts (times.ttf) not found. Standard ReportLab fonts will be used.")
+            self.font_body = 'Times-Roman'
+            self.font_bold = 'Times-Bold'
 
     def _setup_styles(self):
         self.styles = getSampleStyleSheet()
@@ -226,45 +251,45 @@ class ThesisExporter:
 
         # Body — 11 pt, 1.5 leading, justified, first-line 0.5" indent
         add('ThesisBody',
-            fontName='Times-Roman', fontSize=11, leading=16.5,
+            fontName=self.font_body, fontSize=11, leading=16.5,
             alignment=TA_JUSTIFY, firstLineIndent=0.5 * inch, textColor=black)
 
         # Heading — 14 pt bold, centred; caller provides ALL-CAPS text
         add('ThesisHeading',
-            fontName='Times-Bold', fontSize=14, leading=21,
+            fontName=self.font_bold, fontSize=14, leading=21,
             alignment=TA_CENTER, spaceBefore=12, spaceAfter=18,
             keepWithNext=True, textColor=black)
 
         # Caption — 9 pt, centred, single-spaced
         add('ThesisCaption',
-            fontName='Times-Roman', fontSize=9, leading=11,
+            fontName=self.font_body, fontSize=9, leading=11,
             alignment=TA_CENTER, spaceBefore=4, spaceAfter=10, textColor=black)
 
         # Bibliography / literature cited — hanging indent, single-spaced
         add('ThesisBib',
-            fontName='Times-Roman', fontSize=11, leading=16.5,
+            fontName=self.font_body, fontSize=11, leading=16.5,
             alignment=TA_JUSTIFY,
             firstLineIndent=-(0.3 * inch), leftIndent=0.3 * inch,
             spaceBefore=0, spaceAfter=6, textColor=black)
 
         # Centred body (degree statement lines, "by", date, etc.)
         add('ThesisCentered',
-            fontName='Times-Roman', fontSize=11, leading=16.5,
+            fontName=self.font_body, fontSize=11, leading=16.5,
             alignment=TA_CENTER, textColor=black)
 
         # Approval block (left-aligned body size)
         add('ThesisApproval',
-            fontName='Times-Roman', fontSize=11, leading=16.5,
+            fontName=self.font_body, fontSize=11, leading=16.5,
             alignment=TA_LEFT, textColor=black)
 
         # TOC entries
         add('ThesisTOC',
-            fontName='Times-Roman', fontSize=11, leading=16.5,
+            fontName=self.font_body, fontSize=11, leading=16.5,
             alignment=TA_LEFT, firstLineIndent=0, textColor=black)
 
         # LOF entries (indented)
         add('ThesisLOF',
-            fontName='Times-Roman', fontSize=11, leading=16.5,
+            fontName=self.font_body, fontSize=11, leading=16.5,
             alignment=TA_LEFT, firstLineIndent=0,
             leftIndent=0.35 * inch, textColor=black)
 
@@ -276,7 +301,7 @@ class ThesisExporter:
         """
         Draws the page number top-right, followed by a period.
           page 1         : no number  (title page)
-          pages 2 …      : i. ii. iii. …  until first chapter
+          pages 2 …      : i. ii. iii. … until first chapter
           first chapter+ : 1. 2. 3. …
         """
         page      = doc.page
@@ -291,7 +316,7 @@ class ThesisExporter:
             label = str(page - main_start + 1) + "."
 
         canvas.saveState()
-        canvas.setFont('Times-Roman', 11)
+        canvas.setFont(self.font_body, 11)
         canvas.drawRightString(
             self.PAGE_WIDTH  - self.MARGIN_RIGHT,
             self.PAGE_HEIGHT - 0.75 * inch,
@@ -395,7 +420,6 @@ class ThesisExporter:
     def _sanitize_for_reportlab(html_fragment: str) -> str:
         """
         Sanitize an HTML fragment for ReportLab's Paragraph parser.
-
         - <br>, <br/>, <br /> → space   (bare void tags crash the parser)
         - ^123 → <super>123</super>     (markdown-style footnote markers)
         - <a href="...">text</a> → text  (links are not rendered, keep text only)
@@ -411,8 +435,7 @@ class ThesisExporter:
         clean = re.sub(r'  +', ' ', clean).strip()
         return clean
 
-    @staticmethod
-    def _md_to_paragraphs(text: str, style) -> List[Any]:
+    def _md_to_paragraphs(self, text: str, style) -> List[Any]:
         """Convert a plain markdown string to a list of Paragraph flowables."""
         if not text:
             return []
@@ -421,7 +444,7 @@ class ThesisExporter:
         html = md.convert(text)
         out  = []
         for p_text in re.findall(r'<p>(.*?)</p>', html, flags=re.DOTALL):
-            p_text = ThesisExporter._sanitize_for_reportlab(p_text)
+            p_text = self._sanitize_for_reportlab(p_text)
             if p_text:
                 out.append(Paragraph(p_text, style))
         return out
@@ -429,7 +452,7 @@ class ThesisExporter:
     def _process_essay_md(self, text: str) -> List[Any]:
         """
         Parse essay markdown that may contain CollectionBuilder trigger tags:
-          {% include trigger.html id="make_believe_001" action:start %}
+        {% include trigger.html id="make_believe_001" action:start %}
         Paragraphs are rendered as ThesisBody; triggers become figures.
         """
         flowables = []
@@ -487,7 +510,7 @@ class ThesisExporter:
             hAlign  = 'LEFT',
         )
         t.setStyle(TableStyle([
-            ('FONT',           (0, 0), (-1, -1), 'Times-Roman', 11),
+            ('FONT',           (0, 0), (-1, -1), self.font_body, 11),
             ('LEADING',        (0, 0), (-1, -1), 16.5),
             ('VALIGN',         (0, 0), (-1, -1), 'TOP'),
             ('ALIGN',          (1, 0), (1,  -1), 'RIGHT'),
@@ -727,41 +750,30 @@ class ThesisExporter:
         bullets = [
             "Reading interface is designed to set off a series of citation and image triggers, "
             "which are activated as the reader progresses through the text.",
-
             "\"Sticky\" media configuration where images remain static as the text scrolls "
             "through vertically, intended for a more concentrated, unified reading experience.",
-
             "Sidebar which generates a text citation following the reader\u2019s progress through "
             "the material, providing only the most relevant information without cluttering "
             "the interface.",
-
             "Programmatic manipulation of how images display, where the author of the template "
             "can enter zoom and coordinate data in the essay markdown templates to control how "
             "readers view the media as they scroll through the text.",
-
             "Citations and images are informed by CSV data, allowing for automatic generation "
             "and editing of Image Credit and Bibliography pages.",
-
             "\u201cInfinite Scroll\u201d function, which allows readers to seamlessly scroll "
             "from one chapter to another in the essay section of the site, so they can remain "
             "focused on the text, rather than hunting in menu drop-downs to progress. Images and "
             "citations are triggered identically moving both forward and backwards in the text "
             "like an audio recording, which is where the temporal in Textemporal comes from.",
-
             "Scroll state preservation, to ensure that the reader is returned to where they left "
             "off in the chapter, if they engage with the associated item-level images or "
             "text citations.",
-
             "Light / Dark mode toggle for essay portions of the site.",
-
             "Mobile configuration, which displays images and their associated citations in full.",
-
             "Minimal, horizontally-oriented site design.",
-
             "Dual navigation tracks: readers can quickly use arrow keys to cycle through "
             "site-level pages (home, browse, map, etc.), or drop down to the item-level pages "
             "to cycle through that material.",
-
             "Retains CollectionBuilder\u2019s database-oriented approach allowing readers to "
             "dive deeper into the media that complements the essay material and make further "
             "research connections by visualizing those items chronologically, geographically, "
@@ -797,7 +809,7 @@ class ThesisExporter:
         doc = BaseDocTemplate(
             path,
             pagesize    = LETTER,
-            compress    = 1,        # zlib-compress all PDF content streams
+            compress    = 1,         # zlib-compress all PDF content streams
             leftMargin  = self.MARGIN_LEFT,
             rightMargin = self.MARGIN_RIGHT,
             topMargin   = self.MARGIN_TOP,
@@ -821,6 +833,7 @@ class ThesisExporter:
             return
 
         self.load_data()
+        self._setup_fonts()
         self._setup_styles()
 
         # ── Pass 1: render to /dev/null to record section page numbers ─────
@@ -856,7 +869,6 @@ class ThesisExporter:
                 f"{self.IMG_QUALITY}) or IMG_MAX_PX ({self.IMG_MAX_PX}).\n"
                 "  Example: exporter.IMG_QUALITY = 60; exporter.IMG_MAX_PX = 1800"
             )
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI
