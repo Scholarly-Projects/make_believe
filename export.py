@@ -404,9 +404,9 @@ class ThesisExporter:
         img.drawWidth  = orig_w * scale
         img.drawHeight = orig_h * scale
 
-        title    = meta.get('title', '')
+        # FIX: Removed the redundant 'title' variable prefix [cite: 168]
         img_cite = meta.get('image_citation', '')
-        caption  = f"Figure {self.figure_count}. {title}. {img_cite}".strip(". ")
+        caption  = f"Figure {self.figure_count}. {img_cite}".strip(". ")
         caption  = caption + "."
 
         self.processed_images.add(obj_id)
@@ -633,9 +633,9 @@ class ThesisExporter:
         )
 
         for i, row in enumerate(self.ordered_figures, 1):
-            title    = row.get('title', row.get('objectid', ''))
+            # FIX: Removed the redundant 'title' variable prefix [cite: 203]
             img_cite = row.get('image_citation', '')
-            full_title = f"{title}. {img_cite}".strip(". ") + "."
+            full_title = img_cite.strip(". ") + "."
 
             t = Table(
                 data      = [[
@@ -643,7 +643,7 @@ class ThesisExporter:
                     Paragraph(full_title,      lof_body),
                 ]],
                 colWidths = [LABEL_W, self.USABLE_WIDTH - LABEL_W],
-                hAlign    = 'LEFT',
+                hAlign  = 'LEFT',
             )
             t.setStyle(TableStyle([
                 ('VALIGN',        (0, 0), (-1, -1), 'TOP'),
