@@ -1,0 +1,589 @@
+<script>
+/* =========================================================
+   interact-handler.html  (Jekyll include)
+   Six-stage image sorting interaction — Make, Believe
+   =========================================================
+
+   STAGES
+   ──────
+   1  Parent image (left) + instruction text (right)
+   2  Breaking animation: parent → scattered fragments
+   3  Fragments live; click = lightbox (no description);
+      drag = drop into zone  [stages 3+4 are concurrent]
+   4  Last fragment dropped → fragments return, stage-5 prompt
+   5  Fragments live; click = lightbox WITH description;
+      right zone swapped for Skip button
+   6  All fragments inspected → reassemble; Skip → Next
+   ========================================================= */
+
+(function () {
+  'use strict';
+
+  /* ── State ─────────────────────────────────────────────── */
+  var S = {
+    stage:        1,
+    imgIdx:       0,
+    droppedCount: 0,
+    inspected:    {},      // fragId → true
+    positions:    {},      // fragId → {x, y, r}
+    origin:       null,    // {x, y} — center of scatter area, set once
+    totalFrags:   0,
+    draggedId:    null
+  };
+
+  var cfg = null;    // window.interactConfig
+  var app = null;    // #interact-app mount point
+
+  /* ── Boot ──────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function () {
+    cfg = window.interactConfig;
+    if (!cfg || !cfg.images || !cfg.images.length) return;
+    app = document.getElementById('interact-app');
+    if (!app) return;
+    buildShell();
+    loadImage(0);
+  });
+
+  /* ─────────────────────────────────────────────────────────
+     DOM Construction
+     One-time shell; inner content is reused across images.
+  ───────────────────────────────────────────────────────── */
+  function buildShell() {
+    app.innerHTML =
+
+      /* ── Stage 1: image-left / text-right ── */
+      '<div class="ia-stage1-layout" id="ia-s1">' +
+        '<div class="ia-stage1-image-col">' +
+          '<img id="ia-parent" class="ia-parent-image" src="" alt="" />' +
+        '</div>' +
+        '<div class="ia-stage1-text-col" id="ia-s1-text">' +
+          '<h2 class="ia-instruction-title">Interaction</h2>' +
+          '<p class="ia-instruction-body">' +
+            'Take a look at this image. Which elements seem like they ' +
+            'represent American identity and which elements seem like ' +
+            'they represent non-American identities?' +
+          '</p>' +
+          '<p class="ia-instruction-cta">' +
+            'Select the image to break into individual pieces.' +
+          '</p>' +
+        '</div>' +
+      '</div>' +
+
+      /* ── Scatter field (stages 2–6) ── */
+      '<div id="ia-scatter-wrap" class="ia-scatter-wrap" ' +
+           'style="display:none;"></div>' +
+
+      /* ── Stage prompt ── */
+      '<p class="ia-prompt" id="ia-prompt"></p>' +
+
+      /* ── Drop zones ── */
+      '<div class="ia-drop-row" id="ia-drop-row">' +
+        '<div class="ia-drop-zone-wrap">' +
+          '<div class="ia-drop-label">Non-American Images</div>' +
+          '<div class="ia-drop-zone" id="ia-zone-L" data-zone="L"></div>' +
+        '</div>' +
+        '<div class="ia-drop-zone-wrap" id="ia-right-wrap">' +
+          '<div class="ia-drop-label" id="ia-lbl-r">American Images</div>' +
+          '<div class="ia-drop-zone" id="ia-zone-R" data-zone="R"></div>' +
+        '</div>' +
+      '</div>' +
+
+      /* ── Lightbox ── */
+      '<div class="ia-lightbox" id="ia-lightbox">' +
+        '<div class="ia-lb-backdrop" id="ia-lb-back"></div>' +
+        '<div class="ia-lb-panel">' +
+          '<button class="ia-lb-close" id="ia-lb-close" ' +
+                  'aria-label="Close">&#215;</button>' +
+          '<img class="ia-lb-image" id="ia-lb-img" src="" alt="" />' +
+          '<p  class="ia-lb-desc"  id="ia-lb-desc" ' +
+              'style="display:none;"></p>' +
+        '</div>' +
+      '</div>';
+
+    /* Lightbox close targets */
+    id('ia-lb-back').addEventListener('click', closeLightbox);
+    id('ia-lb-close').addEventListener('click', closeLightbox);
+
+    /* Drop zone events */
+    bindZone(id('ia-zone-L'));
+    bindZone(id('ia-zone-R'));
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Load an image set
+  ───────────────────────────────────────────────────────── */
+  function loadImage(idx) {
+    S.imgIdx       = idx;
+    S.stage        = 1;
+    S.droppedCount = 0;
+    S.inspected    = {};
+    S.positions    = {};
+    S.origin       = null;
+    S.draggedId    = null;
+
+    var def = cfg.images[idx];
+    S.totalFrags = def.fragments.length;
+
+    /* Show stage-1 layout; hide scatter */
+    show('ia-s1');
+    hide('ia-scatter-wrap');
+    setPrompt('');
+    restoreRightZone();
+
+    /* Parent image */
+    var par = id('ia-parent');
+    par.src       = cfg.objectsPath + '/' + def.id + '.jpg';
+    par.className = 'ia-parent-image';
+    par.onclick   = handleParentClick;
+
+    /* Build fragment elements (hidden) inside scatter wrap */
+    var scatter = id('ia-scatter-wrap');
+    scatter.innerHTML = '';
+    def.fragments.forEach(function (frag, i) {
+      var el = document.createElement('img');
+      el.id              = 'frag-' + frag.id;
+      el.className       = 'ia-fragment';
+      el.src             = cfg.objectsPath + '/' + frag.id + '.png';
+      el.alt             = '';
+      el.dataset.fragId  = frag.id;
+      el.dataset.fragIdx = String(i);
+
+      /* Start invisible at origin; JS will fly them out */
+      el.style.cssText =
+        'position:absolute; opacity:0; ' +
+        'transform:scale(0.15) rotate(0deg); ' +
+        'left:50%; top:50%;';
+
+      el.setAttribute('draggable', 'true');
+      scatter.appendChild(el);
+
+      el.addEventListener('click',     function () { onFragmentClick(frag.id); });
+      el.addEventListener('dragstart', onDragStart);
+      el.addEventListener('dragend',   onDragEnd);
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Stage 1 → 2: Breaking animation
+  ───────────────────────────────────────────────────────── */
+  function handleParentClick() {
+    if (S.stage !== 1) return;
+    S.stage = 2;
+
+    var par     = id('ia-parent');
+    var scatter = id('ia-scatter-wrap');
+    var s1text  = id('ia-s1-text');
+
+    /* Reveal scatter before measuring so offsetWidth is real */
+    scatter.style.display = 'block';
+    scatter.style.visibility = 'hidden';
+
+    /* Wait two frames for layout to settle before measuring */
+    raf2(function () {
+      var sw = scatter.offsetWidth  || 700;
+      var sh = scatter.offsetHeight || 420;
+
+      /* Origin = centre of scatter container */
+      S.origin = { x: sw / 2, y: sh / 2 };
+
+      /* Calculate scatter positions now that we know the container size */
+      var positions = calcPositions(S.totalFrags, sw, sh);
+      var frags = scatter.querySelectorAll('.ia-fragment');
+
+      frags.forEach(function (el, i) {
+        S.positions[el.dataset.fragId] = positions[i];
+        /* Place at origin, invisible */
+        el.style.transition = 'none';
+        el.style.left       = (S.origin.x - 60) + 'px';
+        el.style.top        = (S.origin.y - 50) + 'px';
+        el.style.opacity    = '0';
+        el.style.transform  = 'scale(0.15) rotate(0deg)';
+      });
+
+      scatter.style.visibility = 'visible';
+
+      /* ── Fade parent image and stage-1 text out ── */
+      par.style.transition    = 'opacity 0.38s ease';
+      par.style.opacity       = '0';
+      if (s1text) {
+        s1text.style.transition = 'opacity 0.28s ease';
+        s1text.style.opacity    = '0';
+      }
+
+      /* ── Staggered fragment scatter ── */
+      frags.forEach(function (el, i) {
+        var pos = S.positions[el.dataset.fragId];
+        setTimeout(function () {
+          el.style.transition =
+            'left 0.55s cubic-bezier(.2,.9,.4,1.0), ' +
+            'top  0.55s cubic-bezier(.2,.9,.4,1.0), ' +
+            'opacity 0.4s ease, ' +
+            'transform 0.55s cubic-bezier(.2,.9,.4,1.0)';
+          el.style.left      = pos.x + 'px';
+          el.style.top       = pos.y + 'px';
+          el.style.opacity   = '1';
+          el.style.transform = 'scale(1) rotate(' + pos.r + 'deg)';
+        }, 55 + i * 90);
+      });
+
+      /* After animation ends, collapse stage-1 header row and enter stage 3 */
+      var endDelay = 55 + (frags.length - 1) * 90 + 680;
+      setTimeout(function () {
+        hide('ia-s1');
+        S.stage = 3;
+        setPrompt(
+          'Click a fragment to inspect it, or drag it into a category below.'
+        );
+      }, endDelay);
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Scatter position calculator
+     Produces a grid of positions with controlled jitter.
+     Uses a seeded LCG so results are stable across reloads.
+  ───────────────────────────────────────────────────────── */
+  function calcPositions(count, sw, sh) {
+    var positions = [];
+    var FW  = 150, FH = 118;   /* approximate fragment footprint px */
+    var pad = 20;
+    var usableH = sh - pad;    /* keep fragments above the bottom edge */
+
+    var cols = Math.max(2, Math.ceil(Math.sqrt(count * (sw / usableH))));
+    var rows = Math.ceil(count / cols);
+    cols     = Math.max(cols, Math.ceil(count / rows));
+
+    var cellW = (sw - pad * 2) / cols;
+    var cellH = (usableH - pad) / rows;
+
+    /* Seeded LCG for reproducibility */
+    var seed = count * 13 + Math.round(sw);
+    function rnd() {
+      seed = (seed * 1664525 + 1013904223) & 0x7fffffff;
+      return seed / 0x7fffffff;
+    }
+
+    for (var i = 0; i < count; i++) {
+      var col = i % cols;
+      var row = Math.floor(i / cols);
+
+      var jx = (rnd() - 0.5) * cellW * 0.36;
+      var jy = (rnd() - 0.5) * cellH * 0.36;
+      var r  = (rnd() - 0.5) * 13;
+
+      var x = pad + col * cellW + (cellW - FW) / 2 + jx;
+      var y = pad + row * cellH + (cellH - FH) / 2 + jy;
+
+      positions.push({
+        x: Math.max(pad, Math.min(sw - FW - pad, x)),
+        y: Math.max(pad, Math.min(usableH - FH,  y)),
+        r: r
+      });
+    }
+    return positions;
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Fragment click handler (stages 3 and 5)
+  ───────────────────────────────────────────────────────── */
+  function onFragmentClick(fragId) {
+    if (S.stage === 3) {
+      openLightbox(fragId, false);
+    } else if (S.stage === 5) {
+      S.inspected[fragId] = true;
+      var el = id('frag-' + fragId);
+      if (el) el.classList.add('ia-inspected');
+      openLightbox(fragId, true);
+      /* If all inspected, advance stage before closing */
+      if (Object.keys(S.inspected).length >= S.totalFrags) {
+        S.stage = 6;
+      }
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Drag & Drop
+  ───────────────────────────────────────────────────────── */
+  function onDragStart(e) {
+    if (S.stage !== 3 && S.stage !== 5) { e.preventDefault(); return; }
+    S.draggedId = e.target.dataset.fragId;
+    e.dataTransfer.setData('text/plain', S.draggedId);
+    e.dataTransfer.effectAllowed = 'move';
+    e.target.classList.add('ia-dragging');
+  }
+
+  function onDragEnd(e) {
+    e.target.classList.remove('ia-dragging');
+  }
+
+  function bindZone(zone) {
+    if (!zone) return;
+    zone.addEventListener('dragenter', function (e) {
+      e.preventDefault();
+      if (S.stage === 3 || S.stage === 5)
+        zone.classList.add('ia-drop-hover');
+    });
+    zone.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+    zone.addEventListener('dragleave', function () {
+      zone.classList.remove('ia-drop-hover');
+    });
+    zone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      zone.classList.remove('ia-drop-hover');
+      if ((S.stage === 3 || S.stage === 5) && S.draggedId) {
+        dropFragment(S.draggedId, zone);
+        S.draggedId = null;
+      }
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Drop a fragment into a zone
+  ───────────────────────────────────────────────────────── */
+  function dropFragment(fragId, zoneEl) {
+    var el      = id('frag-' + fragId);
+    if (!el)    return;
+
+    /* Measure zone centre relative to scatter container */
+    var scatter = id('ia-scatter-wrap');
+    var zR      = zoneEl.getBoundingClientRect();
+    var sR      = scatter.getBoundingClientRect();
+    var tx      = zR.left - sR.left + zR.width  / 2 - 45;
+    var ty      = zR.top  - sR.top  + zR.height / 2 - 35;
+
+    /* Animate toward zone, then vanish */
+    el.style.transition =
+      'left 0.32s ease-in, top 0.32s ease-in, ' +
+      'opacity 0.28s ease-in, transform 0.32s ease-in';
+    el.style.left      = tx + 'px';
+    el.style.top       = ty + 'px';
+    el.style.opacity   = '0';
+    el.style.transform = 'scale(0.06)';
+
+    /* Zone flash */
+    zoneEl.classList.add('ia-drop-flash');
+    setTimeout(function () {
+      zoneEl.classList.remove('ia-drop-flash');
+    }, 520);
+
+    setTimeout(function () {
+      el.style.visibility = 'hidden';
+      S.droppedCount++;
+      if (S.droppedCount >= S.totalFrags) {
+        setTimeout(returnFragments, 380);
+      }
+    }, 360);
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Stage 4 → 5: Return fragments for description inspection
+  ───────────────────────────────────────────────────────── */
+  function returnFragments() {
+    S.stage        = 5;
+    S.droppedCount = 0;
+
+    var scatter = id('ia-scatter-wrap');
+    var frags   = scatter.querySelectorAll('.ia-fragment');
+
+    frags.forEach(function (el, i) {
+      var pos = S.positions[el.dataset.fragId];
+      el.style.visibility = 'visible';
+      el.style.transition = 'none';
+      el.style.left       = (S.origin.x - 60) + 'px';
+      el.style.top        = (S.origin.y - 50) + 'px';
+      el.style.opacity    = '0';
+      el.style.transform  = 'scale(0.15)';
+
+      setTimeout(function () {
+        el.style.transition =
+          'left 0.5s cubic-bezier(.2,.9,.4,1.0), ' +
+          'top  0.5s cubic-bezier(.2,.9,.4,1.0), ' +
+          'opacity 0.4s ease, ' +
+          'transform 0.5s cubic-bezier(.2,.9,.4,1.0)';
+        el.style.left      = pos.x + 'px';
+        el.style.top       = pos.y + 'px';
+        el.style.opacity   = '1';
+        el.style.transform = 'scale(1) rotate(' + pos.r + 'deg)';
+      }, i * 85);
+    });
+
+    var done = (frags.length - 1) * 85 + 620;
+    setTimeout(function () {
+      setPrompt('Select each fragment to learn more about it.');
+      showSkipBtn();
+    }, done);
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Stage 6: Reassemble image
+     Called after lightbox closes when stage === 6
+  ───────────────────────────────────────────────────────── */
+  function reassemble() {
+    var scatter = id('ia-scatter-wrap');
+    var frags   = scatter.querySelectorAll('.ia-fragment');
+
+    frags.forEach(function (el, i) {
+      setTimeout(function () {
+        el.style.transition =
+          'left 0.45s cubic-bezier(.55,.06,.68,.19), ' +
+          'top  0.45s cubic-bezier(.55,.06,.68,.19), ' +
+          'opacity 0.3s ease, transform 0.4s ease';
+        el.style.left      = (S.origin.x - 60) + 'px';
+        el.style.top       = (S.origin.y - 50) + 'px';
+        el.style.opacity   = '0';
+        el.style.transform = 'scale(0.08)';
+      }, i * 55);
+    });
+
+    var done = (frags.length - 1) * 55 + 560;
+    setTimeout(function () {
+      /* Hide scatter, show stage-1 layout with reassembled parent */
+      scatter.style.display = 'none';
+      setPrompt('');
+
+      var s1    = id('ia-s1');
+      var s1txt = id('ia-s1-text');
+      var par   = id('ia-parent');
+
+      s1.style.display = 'flex';
+      par.style.opacity  = '0';
+      par.style.cursor   = 'default';
+      par.onclick        = null;
+
+      if (s1txt) {
+        s1txt.style.opacity = '1';
+        s1txt.innerHTML =
+          '<h2 class="ia-instruction-title">Complete</h2>' +
+          '<p class="ia-instruction-body">' +
+            'You have inspected all the elements of this image.' +
+          '</p>';
+      }
+
+      /* Fade parent back in */
+      raf2(function () {
+        par.style.transition = 'opacity 0.55s ease';
+        par.style.opacity    = '1';
+      });
+
+      showNextBtn();
+    }, done);
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Right-zone controls
+  ───────────────────────────────────────────────────────── */
+  function restoreRightZone() {
+    var wrap = id('ia-right-wrap');
+    if (!wrap) return;
+    wrap.innerHTML =
+      '<div class="ia-drop-label" id="ia-lbl-r">American Images</div>' +
+      '<div class="ia-drop-zone" id="ia-zone-R" data-zone="R"></div>';
+    bindZone(id('ia-zone-R'));
+  }
+
+  function showSkipBtn() {
+    var wrap = id('ia-right-wrap');
+    if (!wrap) return;
+    wrap.innerHTML =
+      '<div class="ia-drop-label">&nbsp;</div>' +
+      '<button class="ia-action-btn" id="ia-skip-btn">Skip &rarr;</button>';
+    id('ia-skip-btn').addEventListener('click', advanceImage);
+  }
+
+  function showNextBtn() {
+    var wrap = id('ia-right-wrap');
+    if (!wrap) return;
+    wrap.innerHTML =
+      '<div class="ia-drop-label">&nbsp;</div>' +
+      '<button class="ia-action-btn" id="ia-next-btn">Next &rarr;</button>';
+    id('ia-next-btn').addEventListener('click', advanceImage);
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Advance to next image (or completion screen)
+  ───────────────────────────────────────────────────────── */
+  function advanceImage() {
+    var next = S.imgIdx + 1;
+    if (next < cfg.images.length) {
+      /* Reset scatter field */
+      var scatter = id('ia-scatter-wrap');
+      scatter.innerHTML = '';
+      scatter.style.display = 'none';
+
+      /* Re-render stage-1 text */
+      var s1txt = id('ia-s1-text');
+      if (s1txt) {
+        s1txt.style.opacity = '1';
+        s1txt.innerHTML =
+          '<h2 class="ia-instruction-title">Interaction</h2>' +
+          '<p class="ia-instruction-body">' +
+            'Take a look at this image. Which elements seem like they ' +
+            'represent American identity and which elements seem like ' +
+            'they represent non-American identities?' +
+          '</p>' +
+          '<p class="ia-instruction-cta">' +
+            'Select the image to break into individual pieces.' +
+          '</p>';
+      }
+      show('ia-s1');
+      loadImage(next);
+    } else {
+      app.innerHTML =
+        '<div style="padding:3rem 1rem; text-align:center;">' +
+          '<h2 style="font-size:1.55rem; margin-bottom:1rem;">' +
+            'Activity Complete' +
+          '</h2>' +
+          '<p style="font-size:0.97rem; line-height:1.7;">' +
+            'You have sorted and examined all images in this exercise.' +
+          '</p>' +
+        '</div>';
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Lightbox
+  ───────────────────────────────────────────────────────── */
+  function openLightbox(fragId, withDesc) {
+    var def  = cfg.images[S.imgIdx];
+    var frag = def.fragments.find(function (f) { return f.id === fragId; });
+    if (!frag) return;
+
+    var lbImg  = id('ia-lb-img');
+    var lbDesc = id('ia-lb-desc');
+    lbImg.src  = cfg.objectsPath + '/' + frag.id + '.png';
+
+    if (withDesc && frag.text) {
+      lbDesc.textContent   = frag.text;
+      lbDesc.style.display = 'block';
+    } else {
+      lbDesc.style.display = 'none';
+    }
+
+    id('ia-lightbox').classList.add('ia-lb-visible');
+  }
+
+  function closeLightbox() {
+    id('ia-lightbox').classList.remove('ia-lb-visible');
+    if (S.stage === 6) {
+      setTimeout(reassemble, 200);
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Helpers
+  ───────────────────────────────────────────────────────── */
+  function id(s)      { return document.getElementById(s); }
+  function show(s)    { var e = id(s); if (e) e.style.display = ''; }
+  function hide(s)    { var e = id(s); if (e) e.style.display = 'none'; }
+  function setPrompt(t) { var e = id('ia-prompt'); if (e) e.textContent = t; }
+
+  /* Two animation frames: ensures layout reflow before measuring */
+  function raf2(fn) {
+    requestAnimationFrame(function () { requestAnimationFrame(fn); });
+  }
+
+})();
+</script>
