@@ -591,7 +591,7 @@ class ThesisExporter:
             "interests between 1889 and 1923. Capital originating from the Dutch merchant class, "
             "fueled by the 1870s Cape Era diamond boom, flowed into American railway bonds to "
             "establish a foreign-controlled financial market. Consequently, the city's aggressive "
-            "display of frontier iconography was less an act of civic pride than a cultural "
+            "display of both exclusionary and aspirational iconography was less an act of civic pride than a cultural "
             "assertion of American identity that obscured its relationship with foreign capital.",
 
             "While imitation of cultures was common for European American settlers in the Pacific "
