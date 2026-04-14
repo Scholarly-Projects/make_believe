@@ -2,27 +2,6 @@
 """
 renumber_citations.py
 ---------------------
-Uses citation.csv as the source of truth. When you insert or remove a row
-in the CSV, this script:
-
-  1. Renumbers all citation IDs in citation.csv sequentially
-     (citation_001, citation_002, ...)
-  2. Assigns and shifts all citation markers in the essay markdown files,
-     updating every number from the insertion point onward
-
-Workflow:
-  1. Insert a new row at the correct position in _data/citation.csv
-     using any placeholder ID (e.g. citation_new — the ID doesn't matter)
-  2. Insert a bare ^ marker at the correct location in the relevant essay file
-     — no number needed, just a caret: ^
-  3. Commit your work in git so you can review the diff
-  4. Run: python renumber_citations.py
-
-The script matches both bare ^ placeholders and existing ^N markers,
-renumbering the entire sequence from 1 in chapter order.
-
-Usage (run from your project root):
-    python renumber_citations.py
 """
 
 import csv
