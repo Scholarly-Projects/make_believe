@@ -8,6 +8,34 @@ layout: default
 
 <style>
 /* ============================================================
+   SKIP LINK — keyboard users jump directly to first tile
+   ============================================================ */
+.skip-to-tiles {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 9999;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.85rem;
+}
+
+.skip-to-tiles:focus {
+    left: 1rem;
+    top: 1rem;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    background: #0a0a0a;
+    color: #fff;
+    padding: 0.4rem 0.8rem;
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* ============================================================
    TOC SIDEBAR — light-mode overrides, mirrored from browse.html
    ============================================================ */
 #interact-toc-sidebar.scrolly-toc-sidebar {
@@ -18,7 +46,7 @@ layout: default
     background-color: rgba(0, 0, 0, 0.15);
 }
 #interact-toc-sidebar .scrolly-toc-heading { color: #000000; }
-#interact-toc-sidebar .scrolly-toc-link { color: #353535; }
+#interact-toc-sidebar .scrolly-toc-link    { color: #353535; }
 #interact-toc-sidebar .scrolly-toc-link:hover {
     color: #1B1B1B;
     background-color: rgba(0, 0, 0, 0.05);
@@ -27,26 +55,32 @@ layout: default
     color: #000000;
     font-weight: 600;
 }
-#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link { color: #353535; }
+#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link       { color: #353535; }
 #interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover { color: #1B1B1B; }
 #interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
-#interact-toc-sidebar .toc-section-rule { background-color: rgba(0, 0, 0, 0.22); }
-#interact-toc-sidebar .toc-section-rule:hover { background-color: rgba(0, 0, 0, 0.55); }
+#interact-toc-sidebar .toc-section-rule         { background-color: rgba(0, 0, 0, 0.22); }
+#interact-toc-sidebar .toc-section-rule:hover   { background-color: rgba(0, 0, 0, 0.55); }
 #interact-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(0, 0, 0, 0.48); }
 
 /* ============================================================
-   WRAPPER — same offset as browse.html #browse-wrapper
+   WRAPPER
+   Matches browse.html margin-left / padding-top / padding-bottom.
+   Wall centers itself within the available space.
    ============================================================ */
 #interact-wrapper {
     margin-left: 14%;
     padding-top: 120px;
     padding-bottom: 6rem;
     font-family: 'Times New Roman', Times, Georgia, serif;
+    /* Center content within the available column */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @media screen and (max-width: 992px) {
     #interact-toc-sidebar { display: none !important; }
-    #interact-wrapper { margin-left: 0 !important; }
+    #interact-wrapper     { margin-left: 0 !important; }
 }
 
 @media screen and (max-width: 768px) {
@@ -58,11 +92,14 @@ layout: default
 
 /* ============================================================
    PAGE HEADER
+   Stretches full available width so the rules reach edge-to-edge.
    ============================================================ */
 .interact-header {
-    max-width: 920px;
-    margin-bottom: 1.75rem;
-    padding: 0 1rem;
+    width: 100%;
+    max-width: 1400px;
+    margin-bottom: 1.4rem;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
 }
 
 .interact-rule-top {
@@ -74,7 +111,7 @@ layout: default
 .interact-rule-bottom {
     border: none;
     border-top: 1px solid #c0b8ae;
-    margin-top: 0.5rem;
+    margin-top: 0.45rem;
     margin-bottom: 0;
 }
 
@@ -108,25 +145,52 @@ layout: default
 
 /* ============================================================
    WALL SCENE
+   Fills all available width; no fixed max-width.
    ============================================================ */
 .wall-scene {
-    padding: 0 1rem;
-    max-width: 920px;
+    width: 100%;
+    max-width: 1400px;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
 }
 
-.face-toggle-bar {
+/* ============================================================
+   FACE TOGGLE BAR + FLIP CONTROLS  (single flex row)
+   Left: dot indicators + face labels
+   Right: flip button + keyboard hint
+   ============================================================ */
+.face-controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.65rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.face-toggle-group {
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    margin-bottom: 0.65rem;
 }
 
 .face-toggle-label {
-    font-size: 0.63rem;
-    letter-spacing: 0.15em;
+    font-size: 0.88rem;       /* increased from 0.63rem */
+    letter-spacing: 0.13em;
     text-transform: uppercase;
     color: #bbb;
-    transition: color 0.25s;
+    transition: color 0.2s;
+    /* Button reset — labels are now interactive */
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    line-height: 1;
+}
+
+.face-toggle-label:hover {
+    color: #555;
 }
 
 .face-toggle-label.active {
@@ -152,173 +216,12 @@ layout: default
     color: #c0b8ae;
 }
 
-/* ============================================================
-   ORB DRAG ZONE — 28px border ring captures drag events
-   ============================================================ */
-.orb-zone {
-    position: relative;
-    display: inline-block;
-    padding: 28px;
-    cursor: grab;
-    touch-action: none;
-    user-select: none;
-}
-
-.orb-zone:active { cursor: grabbing; }
-
-.orb-ring-border {
-    position: absolute;
-    inset: 0;
-    border: 1px dashed rgba(0, 0, 0, 0.18);
-    pointer-events: none;
-}
-
-.orb-hint {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-    color: rgba(0, 0, 0, 0.25);
-    pointer-events: none;
-    white-space: nowrap;
-}
-
-.orb-hint-left  { left:  6px; }
-.orb-hint-right { right: 6px; }
-
-@media screen and (max-width: 768px) {
-    .orb-zone {
-        padding: 0;
-        cursor: default;
-        touch-action: auto;
-    }
-    .orb-ring-border,
-    .orb-hint { display: none; }
-}
-
-/* ============================================================
-   3D PERSPECTIVE + CARD
-   ============================================================ */
-.wall-perspective {
-    perspective: 1800px;
-    perspective-origin: 50% 35%;
-}
-
-.wall-card {
-    transform-origin: center center;
-    will-change: transform;
-}
-
-/* ============================================================
-   WALL FACE
-   ============================================================ */
-.wall-face {
-    background: #ffffff;
-    border: 1px solid #0a0a0a;
-    box-shadow:
-        4px 4px 0 #666,
-        8px 8px 0 #aaa,
-        11px 11px 16px rgba(0, 0, 0, 0.14);
-    padding: 2px;
-}
-
-/* ============================================================
-   TILES GRID — uniform size, ordered by frequency
-   ============================================================ */
-.tiles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-    gap: 2px;
-}
-
-/* ============================================================
-   INDIVIDUAL TILE
-   ============================================================ */
-.tile {
-    aspect-ratio: 1 / 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    background: #ffffff;
-    border: 1px solid #0a0a0a;
-    cursor: pointer;
-    box-sizing: border-box;
-    padding: 5px 4px 4px;
-    overflow: hidden;
-    position: relative;
-    appearance: none;
-    -webkit-appearance: none;
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    text-align: center;
-    transition: background 0.1s;
-}
-
-.tile:hover,
-.tile:focus-visible {
-    background: #f5f2ec;
-    outline: 2px solid #0a0a0a;
-    outline-offset: -2px;
-    z-index: 4;
-}
-
-.tile:focus {
-    outline: 2px solid #0a0a0a;
-    outline-offset: -2px;
-}
-
-.tile-img-wrap {
-    flex: 1;
-    width: 100%;
+/* Flip controls — right side of the same bar */
+.flip-controls-group {
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 0;
-    overflow: hidden;
-}
-
-.tile img {
-    max-width: 82%;
-    max-height: 82%;
-    object-fit: contain;
-    display: block;
-    filter: grayscale(100%) contrast(1.1);
-}
-
-/* No-image tiles: img-wrap stays empty — intentionally blank */
-
-.tile-caption {
+    gap: 0.75rem;
     flex-shrink: 0;
-    width: 100%;
-    border-top: 1px solid rgba(0, 0, 0, 0.11);
-    margin-top: 3px;
-    padding-top: 3px;
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.57em;
-    line-height: 1.25;
-    color: #0a0a0a;
-    text-align: center;
-}
-
-.tile-caption strong { display: block; font-weight: bold; }
-
-.tile-caption .tile-pct {
-    display: block;
-    color: #777;
-    margin-top: 1px;
-}
-
-/* ============================================================
-   CONTROLS BAR
-   ============================================================ */
-.wall-controls {
-    margin-top: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 1.1rem;
-    flex-wrap: wrap;
 }
 
 .flip-btn {
@@ -331,7 +234,7 @@ layout: default
     font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 0.4rem 0.9rem;
+    padding: 0.38rem 0.85rem;
     cursor: pointer;
     color: #0a0a0a;
     transition: background 0.15s, color 0.15s;
@@ -347,9 +250,157 @@ layout: default
 .flip-btn svg { width: 13px; height: 13px; }
 
 .wall-shortcut-note {
-    font-size: 0.62rem;
-    color: #aaa;
+    font-size: 0.82rem;       /* increased from 0.62rem */
+    color: #888;
     font-style: italic;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 600px) {
+    .wall-shortcut-note { display: none; }
+}
+
+/* ============================================================
+   WALL WRAPPER — passive container only (no drag interaction)
+   ============================================================ */
+.orb-zone {
+    position: relative;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ============================================================
+   3D PERSPECTIVE + CARD
+   ============================================================ */
+.wall-perspective {
+    perspective: 2200px;
+    perspective-origin: 50% 35%;
+    width: 100%;
+}
+
+.wall-card {
+    transform-origin: center center;
+    will-change: transform;
+    width: 100%;
+}
+
+/* ============================================================
+   WALL FACE
+   ============================================================ */
+.wall-face {
+    background: #ffffff;
+    border: 1px solid #0a0a0a;
+    box-shadow:
+        4px 4px 0 #666,
+        8px 8px 0 #aaa,
+        11px 11px 16px rgba(0, 0, 0, 0.13);
+    padding: 2px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ============================================================
+   TILES GRID
+   Fills available width; tiles are ~25% larger than previous
+   (185px min vs 148px). auto-fill means columns increase as
+   space allows — more tiles per row on wider viewports.
+   ============================================================ */
+.tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    gap: 2px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 480px) {
+    .tiles-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+}
+
+/* ============================================================
+   INDIVIDUAL TILE  — +25% size, larger caption, updated hover
+   ============================================================ */
+.tile {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    background: #ffffff;
+    border: 1px solid #0a0a0a;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding: 7px 5px 5px;
+    overflow: hidden;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    text-align: center;
+    /* No transition — feedback must be instant for keyboard nav */
+    outline: none;
+}
+
+/* Inset box-shadow is used instead of outline because outline
+   is clipped by overflow:hidden in some browsers.
+   The rgba background is the requested color; the inset shadow
+   provides the visible border contrast against the tile edge. */
+.tile:hover,
+.tile:focus,
+.tile:focus-visible {
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: inset 0 0 0 2px #0a0a0a;
+    z-index: 4;
+}
+
+.tile-img-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px 4px 0;
+    box-sizing: border-box;
+}
+
+.tile img {
+    max-width: 88%;
+    max-height: 88%;
+    object-fit: contain;
+    display: block;
+    filter: grayscale(100%) contrast(1.1);
+}
+
+/* No-image tiles: blank white — no shape, no border */
+
+.tile-caption {
+    flex-shrink: 0;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+    padding-top: 4px;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.72em;    /* was 0.57em — proportionally larger */
+    line-height: 1.25;
+    color: #0a0a0a;
+    text-align: center;
+}
+
+.tile-caption strong {
+    display: block;
+    font-weight: bold;
+}
+
+.tile-caption .tile-pct {
+    display: block;
+    color: #666;
+    margin-top: 1px;
+    font-size: 0.9em;
 }
 
 /* ============================================================
@@ -501,7 +552,7 @@ layout: default
 }
 
 /* ============================================================
-   LIGHTBOX
+   LIGHTBOX — 15% larger, white image column, larger image
    ============================================================ */
 #lightbox {
     position: fixed;
@@ -521,16 +572,17 @@ layout: default
     position: relative;
     background: #ffffff;
     border: 1px solid #0a0a0a;
-    max-width: 880px;
+    /* 880 * 1.15 = 1012 */
+    max-width: 1012px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
     display: grid;
-    grid-template-columns: 1fr 1.35fr;
+    grid-template-columns: 1fr 1.25fr;
     box-shadow: 5px 5px 0 #444, 10px 10px 22px rgba(0, 0, 0, 0.38);
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 660px) {
     .lb-inner { grid-template-columns: 1fr; }
 }
 
@@ -561,30 +613,34 @@ layout: default
     outline: none;
 }
 
+/* Image column — white background, tighter padding for more image room */
 .lb-image-col {
     border-right: 1px solid #0a0a0a;
-    padding: 2rem 1.5rem;
+    padding: 1.25rem 1rem;        /* was 2rem 1.5rem */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #faf8f4;
-    min-height: 280px;
+    background: #ffffff;          /* was #faf8f4 */
+    min-height: 300px;
 }
 
 .lb-image-col img {
-    max-width: 100%;
-    max-height: 290px;
+    max-width: 96%;               /* was 100%, effectively same but explicit */
+    max-height: 360px;            /* was 290px — noticeably larger */
     object-fit: contain;
     filter: grayscale(100%) contrast(1.1);
     display: block;
-    margin-bottom: 1.1rem;
+    margin-bottom: 0.9rem;
 }
 
-/* No-image: blank area, no shape */
-.lb-no-image { flex: 1; min-height: 140px; }
+/* No-image: blank white space */
+.lb-no-image { flex: 1; min-height: 120px; }
 
-.lb-caption { text-align: center; font-family: 'Times New Roman', Times, serif; }
+.lb-caption {
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+}
 
 .lb-caption-title {
     font-weight: bold;
@@ -602,6 +658,7 @@ layout: default
     margin-top: 0.15rem;
 }
 
+/* Text column */
 .lb-text-col {
     padding: 1.75rem;
     display: flex;
@@ -657,18 +714,20 @@ layout: default
 }
 </style>
 
+<!-- Skip-navigation link: keyboard users jump directly to first tile -->
+<a class="skip-to-tiles" href="#first-tile">Skip to visualization</a>
+
 <!-- ============================================================
      INTRO MODAL
      ============================================================ -->
 <div id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-inner">
     <button class="modal-close" id="modal-close-btn" aria-label="Close introduction">×</button>
-    <p class="modal-eyebrow">1906 Miller-Dervant Costume Catalog
-</p>
-    <h2 id="modal-title">Early Spokane Imitative Identities</h2>
-    <p>This visualization highlights the categories of costumes from the leading company in Spokane, Washington from their 1906 catalog.</p>
-    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>: military, theatrical, royal and supernatural. The reverse organizes the same catalog organized by the <strong>ethnic identity being imitated</strong>. Entries are sorted in order of frequency; select any tile to read more.</p>
-    <p>Drag around the wall's border, or use the Flip button, to turn it over.</p>
+    <p class="modal-eyebrow">1906 Miller-Dervant Catalog Visualization</p>
+    <h2 id="modal-title">Imitative Identities</h2>
+    <p>This visualization highlights the materials of the leading costume company in Spokane, Washington from their 1906 catalog.</p>
+    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>: military, theatrical, royal, etc. The reverse organizes the same catalog by <strong>ethnic identity</strong>. Entries are sorted in order of frequency. Select any tile to read more.</p>
+    <p>Select <strong>Costume Type</strong> or <strong>Ethnic Identity</strong>, press <strong>F</strong> or use the <strong>Flip Wall</strong> button to change visualizations.</p>
     <p><strong>Source:</strong> Miller-Dervant Catalog, 1906, Miller-Dervant Company Records, 1896–1955, MsSC 198, Eastern Washington State Historical Society, Northwest Museum of Arts and Culture, Spokane, WA.</p>
     <div class="ctrl-list">
       <span class="ctrl-list-heading">Controls</span>
@@ -687,10 +746,6 @@ layout: default
       <div class="ctrl-row">
         <span class="ctrl-key">F</span>
         <span class="ctrl-desc">Flip the wall to the other face</span>
-      </div>
-      <div class="ctrl-row">
-        <span class="ctrl-key">drag</span>
-        <span class="ctrl-desc">Click and drag the border ring to rotate</span>
       </div>
     </div>
     <button class="modal-begin" id="modal-begin-btn">Enter the Catalog</button>
@@ -715,6 +770,7 @@ layout: default
 
 <!-- ============================================================
      TOC SIDEBAR — mirrors browse.html aside exactly
+     JS sets all links here to tabindex="-1" so tab begins on tiles
      ============================================================ -->
 <aside class="scrolly-toc-sidebar" id="interact-toc-sidebar" aria-label="Table of contents">
   <p class="scrolly-toc-heading">Contents</p>
@@ -751,31 +807,55 @@ layout: default
      ============================================================ -->
 <div id="interact-wrapper">
 
+  <!-- Page header — full available width -->
   <div class="interact-header">
     <hr class="interact-rule-top">
     <div class="interact-header-meta">
       <span class="interact-kicker">Interact</span>
-      <span class="interact-catalogue-note">Miller-Devant Catalog, 1913</span>
+      <span class="interact-catalogue-note">Miller-Dervant Catalog, 1906</span>
     </div>
     <h1 class="interact-h1">Costume by Type &amp; Imitated Ethnicity</h1>
     <hr class="interact-rule-bottom">
   </div>
 
+  <!-- Wall scene -->
   <div class="wall-scene">
 
-    <div class="face-toggle-bar" aria-live="polite">
-      <span class="face-toggle-dot filled" id="dot-front"></span>
-      <span class="face-toggle-label active" id="label-front">Costume Type</span>
-      <span class="face-divider-glyph">◆</span>
-      <span class="face-toggle-label" id="label-back">Ethnic Identity</span>
-      <span class="face-toggle-dot" id="dot-back"></span>
+    <!-- Single bar: face indicator buttons LEFT, flip controls RIGHT -->
+    <div class="face-controls-bar" aria-live="polite">
+      <div class="face-toggle-group">
+        <span class="face-toggle-dot filled" id="dot-front"></span>
+        <button class="face-toggle-label active"
+                id="label-front"
+                aria-label="Show Costume Type face"
+                aria-pressed="true">Costume Type</button>
+        <span class="face-divider-glyph">◆</span>
+        <button class="face-toggle-label"
+                id="label-back"
+                aria-label="Show Ethnic Identity face"
+                aria-pressed="false">Ethnic Identity</button>
+        <span class="face-toggle-dot" id="dot-back"></span>
+      </div>
+      <div class="flip-controls-group">
+        <span class="wall-shortcut-note">
+          Press <kbd>F</kbd> or select the
+        </span>
+        <button class="flip-btn" id="flip-btn"
+                aria-label="Flip wall to show the other face">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
+               stroke-width="1.6" aria-hidden="true">
+            <path d="M2 10a8 8 0 0114-4.5M18 10a8 8 0 01-14 4.5"/>
+            <polyline points="14.5,5 18,5.5 17.5,2"/>
+            <polyline points="5.5,15 2,14.5 2.5,18"/>
+          </svg>
+          Flip Wall
+        </button>
+        <span class="wall-shortcut-note">button to flip</span>
+      </div>
     </div>
 
+    <!-- Wall wrapper — passive container, no drag -->
     <div class="orb-zone" id="orb-zone">
-      <div class="orb-ring-border" aria-hidden="true"></div>
-      <span class="orb-hint orb-hint-left" aria-hidden="true">‹ drag</span>
-      <span class="orb-hint orb-hint-right" aria-hidden="true">drag ›</span>
-
       <div class="wall-perspective">
         <div class="wall-card" id="wall-card">
           <div class="wall-face">
@@ -784,44 +864,33 @@ layout: default
           </div>
         </div>
       </div>
+    </div><!-- /orb-zone -->
 
-    </div>
+  </div><!-- /wall-scene -->
 
-    <div class="wall-controls">
-      <button class="flip-btn" id="flip-btn"
-              aria-label="Flip wall to show the other face">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
-             stroke-width="1.6" aria-hidden="true">
-          <path d="M2 10a8 8 0 0114-4.5M18 10a8 8 0 01-14 4.5"/>
-          <polyline points="14.5,5 18,5.5 17.5,2"/>
-          <polyline points="5.5,15 2,14.5 2.5,18"/>
-        </svg>
-        Flip Wall
-      </button>
-      <span class="wall-shortcut-note">
-        Drag the border ring to rotate &middot; <kbd>F</kbd> to flip
-      </span>
-    </div>
-
-  </div>
-</div>
+</div><!-- /interact-wrapper -->
 
 {% include essay/footer-scrollytelling.html %}
 
 <!-- ============================================================
      DATA — Jekyll/Liquid injects CSV rows as JSON
+     Both CSVs now share the standardized column order:
+       filename, title, count, percentage, examples, alt_text,
+       description, full
      ============================================================ -->
 <script>
 var TYPE_DATA = [
   {% for item in site.data.interact_type %}
   {
-    filename: {{ item.filename | jsonify }},
-    title: {{ item.title | jsonify }},
-    count: {{ item.count | plus: 0 }},
-    percentage: {{ item.percentage | jsonify }},
-    pct: {{ item.percentage | remove: "%" | strip | plus: 0 }},
-    description: {{ item.description | jsonify }},
-    full: {{ item.full | jsonify }}
+    filename:   {{ item.filename    | jsonify }},
+    title:      {{ item.title       | jsonify }},
+    count:      {{ item.count       | plus: 0 }},
+    percentage: {{ item.percentage  | jsonify }},
+    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0 }},
+    examples:   {{ item.examples    | jsonify }},
+    alt_text:   {{ item.alt_text    | jsonify }},
+    description:{{ item.description | jsonify }},
+    full:       {{ item.full        | jsonify }}
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
@@ -829,13 +898,15 @@ var TYPE_DATA = [
 var ETHNIC_DATA = [
   {% for item in site.data.interact_ethnic %}
   {
-    filename: {{ item.image | jsonify }},
-    title: {{ item.category | jsonify }},
-    count: {{ item.count | plus: 0 }},
-    percentage: {{ item.percentage | jsonify }},
-    pct: {{ item.percentage | remove: "%" | strip | plus: 0 }},
-    description: {{ item.description | jsonify }},
-    full: {{ item.full | jsonify }}
+    filename:   {{ item.filename    | jsonify }},
+    title:      {{ item.title       | jsonify }},
+    count:      {{ item.count       | plus: 0 }},
+    percentage: {{ item.percentage  | jsonify }},
+    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0 }},
+    examples:   {{ item.examples    | jsonify }},
+    alt_text:   {{ item.alt_text    | jsonify }},
+    description:{{ item.description | jsonify }},
+    full:       {{ item.full        | jsonify }}
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
@@ -856,8 +927,6 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
   var currentFace = 'front';
   var isFlipping  = false;
   var isMobile    = window.innerWidth < 768;
-  var dragActive  = false;
-  var dragStartX  = 0;
 
   /* ----------------------------------------------------------
      DOM REFS
@@ -875,7 +944,6 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
   var wallCard   = document.getElementById('wall-card');
   var tilesGrid  = document.getElementById('tiles-grid');
   var flipBtn    = document.getElementById('flip-btn');
-  var orbZone    = document.getElementById('orb-zone');
   var labelFront = document.getElementById('label-front');
   var labelBack  = document.getElementById('label-back');
   var dotFront   = document.getElementById('dot-front');
@@ -883,9 +951,10 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
 
   /* ----------------------------------------------------------
      RENDER TILES
-     Uniform tile size (CSS handles it via grid + aspect-ratio).
-     Data is pre-sorted by count descending in the CSV.
-     No placeholder rendered when filename is absent.
+     Uniform tile size via CSS grid.
+     Data pre-sorted by count descending in the CSV.
+     First tile gets id="first-tile" for the skip link target.
+     alt_text field used for img[alt]; falls back to title.
   ---------------------------------------------------------- */
   function renderTiles(data, faceName) {
     tilesGrid.innerHTML = '';
@@ -897,13 +966,19 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
 
     var frag = document.createDocumentFragment();
 
-    data.forEach(function (item) {
+    data.forEach(function (item, index) {
       var btn = document.createElement('button');
       btn.className = 'tile';
       btn.setAttribute('role', 'listitem');
       btn.setAttribute('aria-label',
-        item.title + ' — ' + item.percentage + ' of catalog'
+        item.title + ' — ' + item.percentage +
+        (faceName === 'back' ? ' of category' : ' of catalog')
       );
+
+      /* First tile: hook for skip link and keyboard starting point */
+      if (index === 0) {
+        btn.id = 'first-tile';
+      }
 
       /* Image area */
       var imgWrap = document.createElement('div');
@@ -912,17 +987,21 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
       if (item.filename && item.filename.trim() !== '') {
         var img = document.createElement('img');
         img.src     = IMG_BASE + item.filename.trim();
-        img.alt     = item.title;
+        /* Use alt_text if provided; fall back to title */
+        img.alt     = (item.alt_text && item.alt_text.trim() !== '')
+                      ? item.alt_text.trim()
+                      : item.title;
         img.loading = 'lazy';
         imgWrap.appendChild(img);
       }
-      /* No filename → imgWrap is empty; area is blank white, no shape */
+      /* No filename → blank white area, no placeholder shape */
 
       btn.appendChild(imgWrap);
 
       /* Caption */
       var cap = document.createElement('div');
       cap.className = 'tile-caption';
+      cap.setAttribute('aria-hidden', 'true'); /* title already in aria-label */
       cap.innerHTML =
         '<strong>' + esc(item.title) + '</strong>' +
         '<span class="tile-pct">' + esc(item.percentage) + '</span>';
@@ -946,19 +1025,18 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
 
   /* ----------------------------------------------------------
      FLIP ANIMATION
-     "Door" technique: rotate to 90° edge-on, swap content,
-     rotate from -90° back to 0°. Height stays fully auto.
+     "Door" technique — rotate to 90° (edge-on), swap content,
+     arrive from -90° back to 0°. Height remains fully auto.
   ---------------------------------------------------------- */
   function flipWall() {
     if (isFlipping) return;
     isFlipping = true;
-    var HALF = 310; /* ms per half */
+    var HALF = 310;
 
     wallCard.style.transition = 'transform ' + HALF + 'ms ease-in';
-    wallCard.style.transform  = 'perspective(1800px) rotateY(90deg)';
+    wallCard.style.transform  = 'perspective(2200px) rotateY(90deg)';
 
     setTimeout(function () {
-      /* Swap face */
       currentFace = (currentFace === 'front') ? 'back' : 'front';
       renderTiles(
         currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA,
@@ -966,15 +1044,13 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
       );
       updateLabels();
 
-      /* Arrive from the other side */
       wallCard.style.transition = 'none';
-      wallCard.style.transform  = 'perspective(1800px) rotateY(-90deg)';
+      wallCard.style.transform  = 'perspective(2200px) rotateY(-90deg)';
 
-      /* Force reflow */
-      void wallCard.offsetWidth;
+      void wallCard.offsetWidth; /* force reflow */
 
       wallCard.style.transition = 'transform ' + HALF + 'ms ease-out';
-      wallCard.style.transform  = 'perspective(1800px) rotateY(0deg)';
+      wallCard.style.transform  = 'perspective(2200px) rotateY(0deg)';
 
       setTimeout(function () {
         wallCard.style.transform  = '';
@@ -985,96 +1061,23 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
     }, HALF);
   }
 
+  /* Flip to a specific face; no-op if already there */
+  function flipToFace(target) {
+    if (currentFace !== target) flipWall();
+  }
+
   /* ----------------------------------------------------------
      FACE LABELS & DOTS
   ---------------------------------------------------------- */
   function updateLabels() {
     var front = (currentFace === 'front');
-    labelFront.className = 'face-toggle-label' + (front ? ' active' : '');
-    labelBack.className  = 'face-toggle-label' + (front ? '' : ' active');
-    dotFront.className   = 'face-toggle-dot'   + (front ? ' filled' : '');
-    dotBack.className    = 'face-toggle-dot'   + (front ? '' : ' filled');
+    labelFront.className  = 'face-toggle-label' + (front ? ' active' : '');
+    labelBack.className   = 'face-toggle-label' + (front ? '' : ' active');
+    dotFront.className    = 'face-toggle-dot'   + (front ? ' filled' : '');
+    dotBack.className     = 'face-toggle-dot'   + (front ? '' : ' filled');
+    labelFront.setAttribute('aria-pressed', front ? 'true' : 'false');
+    labelBack.setAttribute('aria-pressed',  front ? 'false' : 'true');
   }
-
-  /* ----------------------------------------------------------
-     ORB DRAG
-     Only starts when pointer hits the orb border zone,
-     not a tile button.
-  ---------------------------------------------------------- */
-  function isBorderTarget(el) {
-    return el === orbZone ||
-           el.classList.contains('orb-ring-border') ||
-           el.classList.contains('orb-hint') ||
-           el.classList.contains('wall-perspective') ||
-           el === wallCard ||
-           el.classList.contains('wall-face');
-  }
-
-  orbZone.addEventListener('pointerdown', function (e) {
-    if (isMobile || !isBorderTarget(e.target)) return;
-    dragActive = true;
-    dragStartX = e.clientX;
-    orbZone.setPointerCapture(e.pointerId);
-  });
-
-  window.addEventListener('pointermove', function (e) {
-    if (!dragActive) return;
-    var dx  = e.clientX - dragStartX;
-    /* 380px drag = 180° */
-    var rot = Math.max(-30, Math.min(210, (dx / 380) * 180));
-    wallCard.style.transition = 'none';
-    wallCard.style.transform  = 'perspective(1800px) rotateY(' + rot + 'deg)';
-  });
-
-  window.addEventListener('pointerup', function () {
-    if (!dragActive) return;
-    dragActive = false;
-
-    /* Read current rotation from computed matrix */
-    var m   = new DOMMatrix(window.getComputedStyle(wallCard).transform);
-    var rot = Math.atan2(m.m13, m.m11) * (180 / Math.PI);
-    var abs = ((rot % 360) + 360) % 360;
-
-    /* > 65° and < 295° = user dragged past midpoint → flip */
-    var crossedMid = (abs > 65 && abs < 295);
-
-    if (crossedMid) {
-      /* Animate to edge then content-swap */
-      wallCard.style.transition = 'transform 0.28s ease-in';
-      wallCard.style.transform  = 'perspective(1800px) rotateY(90deg)';
-
-      wallCard.addEventListener('transitionend', function onEdge() {
-        wallCard.removeEventListener('transitionend', onEdge);
-        currentFace = (currentFace === 'front') ? 'back' : 'front';
-        renderTiles(
-          currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA,
-          currentFace
-        );
-        updateLabels();
-
-        wallCard.style.transition = 'none';
-        wallCard.style.transform  = 'perspective(1800px) rotateY(-90deg)';
-        void wallCard.offsetWidth;
-        wallCard.style.transition = 'transform 0.28s ease-out';
-        wallCard.style.transform  = 'perspective(1800px) rotateY(0deg)';
-
-        wallCard.addEventListener('transitionend', function onDone() {
-          wallCard.removeEventListener('transitionend', onDone);
-          wallCard.style.transform  = '';
-          wallCard.style.transition = '';
-        });
-      });
-    } else {
-      /* Snap back */
-      wallCard.style.transition = 'transform 0.3s ease-out';
-      wallCard.style.transform  = 'perspective(1800px) rotateY(0deg)';
-      wallCard.addEventListener('transitionend', function onBack() {
-        wallCard.removeEventListener('transitionend', onBack);
-        wallCard.style.transform  = '';
-        wallCard.style.transition = '';
-      });
-    }
-  });
 
   /* ----------------------------------------------------------
      LIGHTBOX
@@ -1085,10 +1088,11 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
     if (item.filename && item.filename.trim() !== '') {
       var img = document.createElement('img');
       img.src = IMG_BASE + item.filename.trim();
-      img.alt = item.title;
+      img.alt = (item.alt_text && item.alt_text.trim() !== '')
+                ? item.alt_text.trim()
+                : item.title;
       lbImageCol.appendChild(img);
     } else {
-      /* No image — blank space only */
       var blank = document.createElement('div');
       blank.className = 'lb-no-image';
       lbImageCol.appendChild(blank);
@@ -1098,7 +1102,8 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
     cap.className = 'lb-caption';
     cap.innerHTML =
       '<span class="lb-caption-title">' + esc(item.title) + '</span>' +
-      '<span class="lb-caption-pct">'   + esc(item.percentage) + ' of catalog</span>';
+      '<span class="lb-caption-pct">'   + esc(item.percentage) +
+      (faceName === 'back' ? ' of category' : ' of catalog') + '</span>';
     lbImageCol.appendChild(cap);
 
     lbEyebrow.textContent = (faceName === 'front') ? 'Costume Type' : 'Ethnic Identity';
@@ -1109,7 +1114,6 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
       return p.trim().length > 0;
     }).slice(0, 3);
     if (!paras.length && raw) paras = [raw];
-
     lbBody.innerHTML = paras.map(function (p) {
       return '<p>' + esc(p.trim()) + '</p>';
     }).join('');
@@ -1160,9 +1164,43 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
   });
 
   /* ----------------------------------------------------------
+     TAB ORDER — remove TOC from tab sequence on this page
+     so Tab starts directly on the first tile.
+     TOC links remain clickable; only keyboard tab is adjusted.
+  ---------------------------------------------------------- */
+  function removeTocFromTabOrder() {
+    var sidebar = document.getElementById('interact-toc-sidebar');
+    if (!sidebar) return;
+    var focusable = sidebar.querySelectorAll(
+      'a, button, input, select, textarea, [tabindex]'
+    );
+    focusable.forEach(function (el) {
+      el.setAttribute('tabindex', '-1');
+    });
+    /* Also suppress the sidebar heading — it's a <p>, not interactive,
+       but mark it inert for good measure */
+    var heading = sidebar.querySelector('.scrolly-toc-heading');
+    if (heading) heading.setAttribute('aria-hidden', 'true');
+  }
+
+  /* ----------------------------------------------------------
      BINDINGS
   ---------------------------------------------------------- */
   flipBtn.addEventListener('click', flipWall);
+
+  /* Face labels navigate directly to that face */
+  labelFront.addEventListener('click', function () { flipToFace('front'); });
+  labelBack.addEventListener('click',  function () { flipToFace('back');  });
+  /* Keyboard support for the label buttons (Enter / Space) */
+  [labelFront, labelBack].forEach(function (el) {
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        el.click();
+      }
+    });
+  });
+
   modalClose.addEventListener('click', closeModal);
   modalBegin.addEventListener('click', closeModal);
   lbClose.addEventListener('click', closeLightbox);
@@ -1177,6 +1215,7 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
     isMobile = window.innerWidth < 768;
     renderTiles(TYPE_DATA, 'front');
     updateLabels();
+    removeTocFromTabOrder();
   }
 
   var resizeTimer;
