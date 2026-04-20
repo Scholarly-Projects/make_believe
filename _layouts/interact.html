@@ -1,0 +1,1206 @@
+---
+layout: default
+---
+
+{% include essay/header-scrollytelling.html %}
+
+<link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
+
+<style>
+/* ============================================================
+   TOC SIDEBAR — light-mode overrides, mirrored from browse.html
+   ============================================================ */
+#interact-toc-sidebar.scrolly-toc-sidebar {
+    background-color: #ffffff;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+#interact-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+#interact-toc-sidebar .scrolly-toc-heading { color: #000000; }
+#interact-toc-sidebar .scrolly-toc-link { color: #353535; }
+#interact-toc-sidebar .scrolly-toc-link:hover {
+    color: #1B1B1B;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+#interact-toc-sidebar .scrolly-toc-link.toc-active {
+    color: #000000;
+    font-weight: 600;
+}
+#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link { color: #353535; }
+#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover { color: #1B1B1B; }
+#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
+#interact-toc-sidebar .toc-section-rule { background-color: rgba(0, 0, 0, 0.22); }
+#interact-toc-sidebar .toc-section-rule:hover { background-color: rgba(0, 0, 0, 0.55); }
+#interact-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(0, 0, 0, 0.48); }
+
+/* ============================================================
+   WRAPPER — same offset as browse.html #browse-wrapper
+   ============================================================ */
+#interact-wrapper {
+    margin-left: 14%;
+    padding-top: 120px;
+    padding-bottom: 6rem;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+}
+
+@media screen and (max-width: 992px) {
+    #interact-toc-sidebar { display: none !important; }
+    #interact-wrapper { margin-left: 0 !important; }
+}
+
+@media screen and (max-width: 768px) {
+    #interact-wrapper {
+        padding-top: 100px;
+        padding-bottom: 5rem;
+    }
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+.interact-header {
+    max-width: 920px;
+    margin-bottom: 1.75rem;
+    padding: 0 1rem;
+}
+
+.interact-rule-top {
+    border: none;
+    border-top: 2px solid #0a0a0a;
+    margin-bottom: 0.5rem;
+}
+
+.interact-rule-bottom {
+    border: none;
+    border-top: 1px solid #c0b8ae;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+.interact-header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.interact-kicker {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #333;
+}
+
+.interact-catalogue-note {
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: #999;
+    font-style: italic;
+}
+
+.interact-h1 {
+    font-size: clamp(1.3rem, 2.5vw, 1.85rem);
+    font-weight: bold;
+    line-height: 1.2;
+    margin: 0.25rem 0 0;
+    color: #0a0a0a;
+}
+
+/* ============================================================
+   WALL SCENE
+   ============================================================ */
+.wall-scene {
+    padding: 0 1rem;
+    max-width: 920px;
+}
+
+.face-toggle-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.65rem;
+}
+
+.face-toggle-label {
+    font-size: 0.63rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #bbb;
+    transition: color 0.25s;
+}
+
+.face-toggle-label.active {
+    color: #0a0a0a;
+    font-weight: bold;
+}
+
+.face-toggle-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1px solid #0a0a0a;
+    background: #fff;
+    display: inline-block;
+    transition: background 0.25s;
+    flex-shrink: 0;
+}
+
+.face-toggle-dot.filled { background: #0a0a0a; }
+
+.face-divider-glyph {
+    font-size: 0.5rem;
+    color: #c0b8ae;
+}
+
+/* ============================================================
+   ORB DRAG ZONE — 28px border ring captures drag events
+   ============================================================ */
+.orb-zone {
+    position: relative;
+    display: inline-block;
+    padding: 28px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.orb-zone:active { cursor: grabbing; }
+
+.orb-ring-border {
+    position: absolute;
+    inset: 0;
+    border: 1px dashed rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+}
+
+.orb-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    color: rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.orb-hint-left  { left:  6px; }
+.orb-hint-right { right: 6px; }
+
+@media screen and (max-width: 768px) {
+    .orb-zone {
+        padding: 0;
+        cursor: default;
+        touch-action: auto;
+    }
+    .orb-ring-border,
+    .orb-hint { display: none; }
+}
+
+/* ============================================================
+   3D PERSPECTIVE + CARD
+   ============================================================ */
+.wall-perspective {
+    perspective: 1800px;
+    perspective-origin: 50% 35%;
+}
+
+.wall-card {
+    transform-origin: center center;
+    will-change: transform;
+}
+
+/* ============================================================
+   WALL FACE
+   ============================================================ */
+.wall-face {
+    background: #ffffff;
+    border: 1px solid #0a0a0a;
+    box-shadow:
+        4px 4px 0 #666,
+        8px 8px 0 #aaa,
+        11px 11px 16px rgba(0, 0, 0, 0.14);
+    padding: 2px;
+}
+
+/* ============================================================
+   TILES GRID — uniform size, ordered by frequency
+   ============================================================ */
+.tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 2px;
+}
+
+/* ============================================================
+   INDIVIDUAL TILE
+   ============================================================ */
+.tile {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    background: #ffffff;
+    border: 1px solid #0a0a0a;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding: 5px 4px 4px;
+    overflow: hidden;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    text-align: center;
+    transition: background 0.1s;
+}
+
+.tile:hover,
+.tile:focus-visible {
+    background: #f5f2ec;
+    outline: 2px solid #0a0a0a;
+    outline-offset: -2px;
+    z-index: 4;
+}
+
+.tile:focus {
+    outline: 2px solid #0a0a0a;
+    outline-offset: -2px;
+}
+
+.tile-img-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tile img {
+    max-width: 82%;
+    max-height: 82%;
+    object-fit: contain;
+    display: block;
+    filter: grayscale(100%) contrast(1.1);
+}
+
+/* No-image tiles: img-wrap stays empty — intentionally blank */
+
+.tile-caption {
+    flex-shrink: 0;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.11);
+    margin-top: 3px;
+    padding-top: 3px;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.57em;
+    line-height: 1.25;
+    color: #0a0a0a;
+    text-align: center;
+}
+
+.tile-caption strong { display: block; font-weight: bold; }
+
+.tile-caption .tile-pct {
+    display: block;
+    color: #777;
+    margin-top: 1px;
+}
+
+/* ============================================================
+   CONTROLS BAR
+   ============================================================ */
+.wall-controls {
+    margin-top: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+}
+
+.flip-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: 1px solid #0a0a0a;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+    color: #0a0a0a;
+    transition: background 0.15s, color 0.15s;
+}
+
+.flip-btn:hover,
+.flip-btn:focus-visible {
+    background: #0a0a0a;
+    color: #ffffff;
+    outline: none;
+}
+
+.flip-btn svg { width: 13px; height: 13px; }
+
+.wall-shortcut-note {
+    font-size: 0.62rem;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* ============================================================
+   INTRO MODAL
+   ============================================================ */
+#intro-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.86);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    backdrop-filter: blur(2px);
+}
+
+#intro-modal.hidden { display: none; }
+
+.modal-inner {
+    position: relative;
+    max-width: 560px;
+    width: 100%;
+    padding: 2.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #f8f5ee;
+}
+
+.modal-inner::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: -6px; bottom: -6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+.modal-close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #f8f5ee;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.modal-close:hover,
+.modal-close:focus-visible {
+    background: rgba(255, 255, 255, 0.14);
+    outline: 1px solid #f8f5ee;
+    outline-offset: 2px;
+}
+
+.modal-eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(248, 245, 238, 0.42);
+    margin-bottom: 0.85rem;
+}
+
+.modal-inner h2 {
+    font-size: 1.35rem;
+    font-weight: bold;
+    line-height: 1.3;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.modal-inner p {
+    font-size: 0.87rem;
+    line-height: 1.76;
+    color: rgba(248, 245, 238, 0.76);
+    margin-bottom: 0.85rem;
+}
+
+.ctrl-list {
+    margin: 1.2rem 0 0;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ctrl-list-heading {
+    font-size: 0.57rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(248, 245, 238, 0.38);
+    margin-bottom: 0.6rem;
+    display: block;
+}
+
+.ctrl-row {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    margin-bottom: 0.42rem;
+}
+
+.ctrl-key {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    padding: 0.07rem 0.38rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.66rem;
+    color: rgba(248, 245, 238, 0.8);
+    min-width: 2rem;
+    text-align: center;
+}
+
+.ctrl-desc {
+    font-size: 0.71rem;
+    color: rgba(248, 245, 238, 0.52);
+    line-height: 1.45;
+}
+
+.modal-begin {
+    display: block;
+    width: 100%;
+    margin-top: 1.75rem;
+    padding: 0.65rem;
+    background: none;
+    border: 1px solid rgba(248, 245, 238, 0.42);
+    color: #f8f5ee;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+}
+
+.modal-begin:hover,
+.modal-begin:focus-visible {
+    background: #f8f5ee;
+    color: #0a0a0a;
+    outline: none;
+}
+
+/* ============================================================
+   LIGHTBOX
+   ============================================================ */
+#lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.76);
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    backdrop-filter: blur(1px);
+}
+
+#lightbox.hidden { display: none; }
+
+.lb-inner {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #0a0a0a;
+    max-width: 880px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    box-shadow: 5px 5px 0 #444, 10px 10px 22px rgba(0, 0, 0, 0.38);
+}
+
+@media screen and (max-width: 600px) {
+    .lb-inner { grid-template-columns: 1fr; }
+}
+
+.lb-close {
+    position: sticky;
+    top: 0.7rem;
+    right: 0.7rem;
+    float: right;
+    background: none;
+    border: 1px solid #0a0a0a;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 0.9rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.7rem 0.7rem 0 auto;
+    transition: background 0.15s, color 0.15s;
+    z-index: 10;
+}
+
+.lb-close:hover,
+.lb-close:focus-visible {
+    background: #0a0a0a;
+    color: #ffffff;
+    outline: none;
+}
+
+.lb-image-col {
+    border-right: 1px solid #0a0a0a;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #faf8f4;
+    min-height: 280px;
+}
+
+.lb-image-col img {
+    max-width: 100%;
+    max-height: 290px;
+    object-fit: contain;
+    filter: grayscale(100%) contrast(1.1);
+    display: block;
+    margin-bottom: 1.1rem;
+}
+
+/* No-image: blank area, no shape */
+.lb-no-image { flex: 1; min-height: 140px; }
+
+.lb-caption { text-align: center; font-family: 'Times New Roman', Times, serif; }
+
+.lb-caption-title {
+    font-weight: bold;
+    font-size: 0.97rem;
+    line-height: 1.3;
+    color: #0a0a0a;
+    display: block;
+}
+
+.lb-caption-pct {
+    font-size: 0.82rem;
+    color: #777;
+    font-style: italic;
+    display: block;
+    margin-top: 0.15rem;
+}
+
+.lb-text-col {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.lb-eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 0.6rem;
+}
+
+.lb-text-col h3 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    line-height: 1.3;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid #0a0a0a;
+    color: #0a0a0a;
+}
+
+.lb-body p {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.9rem;
+    line-height: 1.82;
+    color: #111;
+    margin-bottom: 0.9rem;
+}
+
+.lb-examples {
+    margin-top: auto;
+    padding-top: 0.9rem;
+    border-top: 1px solid #e8e4dc;
+}
+
+.lb-examples-label {
+    font-size: 0.57rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.lb-examples-text {
+    font-size: 0.75rem;
+    color: #777;
+    line-height: 1.65;
+    font-style: italic;
+}
+</style>
+
+<!-- ============================================================
+     INTRO MODAL
+     ============================================================ -->
+<div id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-inner">
+    <button class="modal-close" id="modal-close-btn" aria-label="Close introduction">×</button>
+    <p class="modal-eyebrow">1913 Costume Catalog</p>
+    <h2 id="modal-title">A Wall of Imitation</h2>
+    <p>This visualization surfaces the categories of disguise offered in a 1913 costume shop catalog — examining who was imitated, how often, and in what guise.</p>
+    <p>The wall has two faces. The front organizes costumes by <strong>type</strong> — military, theatrical, royal, fantastical. The reverse reveals the same catalog organized by the <strong>ethnic identity being imitated</strong>. Entries appear in order of frequency; select any to read more.</p>
+    <p>Drag around the wall's border ring, or use the Flip button, to turn it over.</p>
+    <div class="ctrl-list">
+      <span class="ctrl-list-heading">Controls</span>
+      <div class="ctrl-row">
+        <span class="ctrl-key">Tab</span>
+        <span class="ctrl-desc">Move between tiles, most to least frequent</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">Enter</span>
+        <span class="ctrl-desc">Open selected tile's detail view</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">Esc</span>
+        <span class="ctrl-desc">Close detail view or this introduction</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">F</span>
+        <span class="ctrl-desc">Flip the wall to the other face</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">drag</span>
+        <span class="ctrl-desc">Click and drag the border ring to rotate</span>
+      </div>
+    </div>
+    <button class="modal-begin" id="modal-begin-btn">Enter the Catalog</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     LIGHTBOX
+     ============================================================ -->
+<div id="lightbox" class="hidden" role="dialog" aria-modal="true" aria-labelledby="lb-title">
+  <div class="lb-inner">
+    <div class="lb-image-col" id="lb-image-col"></div>
+    <div class="lb-text-col">
+      <button class="lb-close" id="lb-close-btn" aria-label="Close detail view">×</button>
+      <p class="lb-eyebrow" id="lb-eyebrow">Costume Category</p>
+      <h3 id="lb-title">—</h3>
+      <div class="lb-body" id="lb-body"></div>
+      <div class="lb-examples" id="lb-examples"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOC SIDEBAR — mirrors browse.html aside exactly
+     ============================================================ -->
+<aside class="scrolly-toc-sidebar" id="interact-toc-sidebar" aria-label="Table of contents">
+  <p class="scrolly-toc-heading">Contents</p>
+  <ul class="scrolly-toc-list">
+    <li>
+      <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
+    </li>
+    {% assign toc_essays = site.essay | sort: 'order' %}
+    {% for essay in toc_essays %}
+    <li class="toc-chapter-entry">
+      <a href="{{ essay.url | prepend: site.baseurl }}"
+         class="scrolly-toc-link"
+         data-toc-chapter="{{ essay.order }}">
+        {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+      </a>
+    </li>
+    {% endfor %}
+    <hr class="toc-divider">
+    {% for nav in site.data.config-nav %}
+      {% unless nav.stub == "/" or nav.stub contains "/essay/" %}
+    <li>
+      <a href="{{ nav.stub | relative_url }}"
+         class="scrolly-toc-link {% if nav.stub == page.url %}toc-active{% endif %}">
+        {{ nav.display_name }}
+      </a>
+    </li>
+      {% endunless %}
+    {% endfor %}
+  </ul>
+</aside>
+
+<!-- ============================================================
+     MAIN WRAPPER
+     ============================================================ -->
+<div id="interact-wrapper">
+
+  <div class="interact-header">
+    <hr class="interact-rule-top">
+    <div class="interact-header-meta">
+      <span class="interact-kicker">Interact</span>
+      <span class="interact-catalogue-note">Miller-Devant Catalog, 1913</span>
+    </div>
+    <h1 class="interact-h1">Costume by Type &amp; Imitated Ethnicity</h1>
+    <hr class="interact-rule-bottom">
+  </div>
+
+  <div class="wall-scene">
+
+    <div class="face-toggle-bar" aria-live="polite">
+      <span class="face-toggle-dot filled" id="dot-front"></span>
+      <span class="face-toggle-label active" id="label-front">Costume Type</span>
+      <span class="face-divider-glyph">◆</span>
+      <span class="face-toggle-label" id="label-back">Ethnic Identity</span>
+      <span class="face-toggle-dot" id="dot-back"></span>
+    </div>
+
+    <div class="orb-zone" id="orb-zone">
+      <div class="orb-ring-border" aria-hidden="true"></div>
+      <span class="orb-hint orb-hint-left" aria-hidden="true">‹ drag</span>
+      <span class="orb-hint orb-hint-right" aria-hidden="true">drag ›</span>
+
+      <div class="wall-perspective">
+        <div class="wall-card" id="wall-card">
+          <div class="wall-face">
+            <div class="tiles-grid" id="tiles-grid" role="list"
+                 aria-label="Costume categories ordered by frequency"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="wall-controls">
+      <button class="flip-btn" id="flip-btn"
+              aria-label="Flip wall to show the other face">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
+             stroke-width="1.6" aria-hidden="true">
+          <path d="M2 10a8 8 0 0114-4.5M18 10a8 8 0 01-14 4.5"/>
+          <polyline points="14.5,5 18,5.5 17.5,2"/>
+          <polyline points="5.5,15 2,14.5 2.5,18"/>
+        </svg>
+        Flip Wall
+      </button>
+      <span class="wall-shortcut-note">
+        Drag the border ring to rotate &middot; <kbd>F</kbd> to flip
+      </span>
+    </div>
+
+  </div>
+</div>
+
+{% include essay/footer-scrollytelling.html %}
+
+<!-- ============================================================
+     DATA — Jekyll/Liquid injects CSV rows as JSON
+     ============================================================ -->
+<script>
+var TYPE_DATA = [
+  {% for item in site.data.interact_type %}
+  {
+    filename: {{ item.filename | jsonify }},
+    title: {{ item.title | jsonify }},
+    count: {{ item.count | plus: 0 }},
+    percentage: {{ item.percentage | jsonify }},
+    pct: {{ item.percentage | remove: "%" | strip | plus: 0 }},
+    description: {{ item.description | jsonify }},
+    full: {{ item.full | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+];
+
+var ETHNIC_DATA = [
+  {% for item in site.data.interact_ethnic %}
+  {
+    filename: {{ item.image | jsonify }},
+    title: {{ item.category | jsonify }},
+    count: {{ item.count | plus: 0 }},
+    percentage: {{ item.percentage | jsonify }},
+    pct: {{ item.percentage | remove: "%" | strip | plus: 0 }},
+    description: {{ item.description | jsonify }},
+    full: {{ item.full | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+];
+
+var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
+</script>
+
+<!-- ============================================================
+     VISUALIZATION CONTROLLER
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ----------------------------------------------------------
+     STATE
+  ---------------------------------------------------------- */
+  var currentFace = 'front';
+  var isFlipping  = false;
+  var isMobile    = window.innerWidth < 768;
+  var dragActive  = false;
+  var dragStartX  = 0;
+
+  /* ----------------------------------------------------------
+     DOM REFS
+  ---------------------------------------------------------- */
+  var introModal = document.getElementById('intro-modal');
+  var modalClose = document.getElementById('modal-close-btn');
+  var modalBegin = document.getElementById('modal-begin-btn');
+  var lightbox   = document.getElementById('lightbox');
+  var lbClose    = document.getElementById('lb-close-btn');
+  var lbImageCol = document.getElementById('lb-image-col');
+  var lbEyebrow  = document.getElementById('lb-eyebrow');
+  var lbTitle    = document.getElementById('lb-title');
+  var lbBody     = document.getElementById('lb-body');
+  var lbExamples = document.getElementById('lb-examples');
+  var wallCard   = document.getElementById('wall-card');
+  var tilesGrid  = document.getElementById('tiles-grid');
+  var flipBtn    = document.getElementById('flip-btn');
+  var orbZone    = document.getElementById('orb-zone');
+  var labelFront = document.getElementById('label-front');
+  var labelBack  = document.getElementById('label-back');
+  var dotFront   = document.getElementById('dot-front');
+  var dotBack    = document.getElementById('dot-back');
+
+  /* ----------------------------------------------------------
+     RENDER TILES
+     Uniform tile size (CSS handles it via grid + aspect-ratio).
+     Data is pre-sorted by count descending in the CSV.
+     No placeholder rendered when filename is absent.
+  ---------------------------------------------------------- */
+  function renderTiles(data, faceName) {
+    tilesGrid.innerHTML = '';
+    tilesGrid.setAttribute('aria-label',
+      faceName === 'front'
+        ? 'Costume types ordered by frequency'
+        : 'Imitated ethnic identities ordered by frequency'
+    );
+
+    var frag = document.createDocumentFragment();
+
+    data.forEach(function (item) {
+      var btn = document.createElement('button');
+      btn.className = 'tile';
+      btn.setAttribute('role', 'listitem');
+      btn.setAttribute('aria-label',
+        item.title + ' — ' + item.percentage + ' of catalog'
+      );
+
+      /* Image area */
+      var imgWrap = document.createElement('div');
+      imgWrap.className = 'tile-img-wrap';
+
+      if (item.filename && item.filename.trim() !== '') {
+        var img = document.createElement('img');
+        img.src     = IMG_BASE + item.filename.trim();
+        img.alt     = item.title;
+        img.loading = 'lazy';
+        imgWrap.appendChild(img);
+      }
+      /* No filename → imgWrap is empty; area is blank white, no shape */
+
+      btn.appendChild(imgWrap);
+
+      /* Caption */
+      var cap = document.createElement('div');
+      cap.className = 'tile-caption';
+      cap.innerHTML =
+        '<strong>' + esc(item.title) + '</strong>' +
+        '<span class="tile-pct">' + esc(item.percentage) + '</span>';
+      btn.appendChild(cap);
+
+      btn.addEventListener('click', function () {
+        openLightbox(item, faceName);
+      });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(item, faceName);
+        }
+      });
+
+      frag.appendChild(btn);
+    });
+
+    tilesGrid.appendChild(frag);
+  }
+
+  /* ----------------------------------------------------------
+     FLIP ANIMATION
+     "Door" technique: rotate to 90° edge-on, swap content,
+     rotate from -90° back to 0°. Height stays fully auto.
+  ---------------------------------------------------------- */
+  function flipWall() {
+    if (isFlipping) return;
+    isFlipping = true;
+    var HALF = 310; /* ms per half */
+
+    wallCard.style.transition = 'transform ' + HALF + 'ms ease-in';
+    wallCard.style.transform  = 'perspective(1800px) rotateY(90deg)';
+
+    setTimeout(function () {
+      /* Swap face */
+      currentFace = (currentFace === 'front') ? 'back' : 'front';
+      renderTiles(
+        currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA,
+        currentFace
+      );
+      updateLabels();
+
+      /* Arrive from the other side */
+      wallCard.style.transition = 'none';
+      wallCard.style.transform  = 'perspective(1800px) rotateY(-90deg)';
+
+      /* Force reflow */
+      void wallCard.offsetWidth;
+
+      wallCard.style.transition = 'transform ' + HALF + 'ms ease-out';
+      wallCard.style.transform  = 'perspective(1800px) rotateY(0deg)';
+
+      setTimeout(function () {
+        wallCard.style.transform  = '';
+        wallCard.style.transition = '';
+        isFlipping = false;
+      }, HALF);
+
+    }, HALF);
+  }
+
+  /* ----------------------------------------------------------
+     FACE LABELS & DOTS
+  ---------------------------------------------------------- */
+  function updateLabels() {
+    var front = (currentFace === 'front');
+    labelFront.className = 'face-toggle-label' + (front ? ' active' : '');
+    labelBack.className  = 'face-toggle-label' + (front ? '' : ' active');
+    dotFront.className   = 'face-toggle-dot'   + (front ? ' filled' : '');
+    dotBack.className    = 'face-toggle-dot'   + (front ? '' : ' filled');
+  }
+
+  /* ----------------------------------------------------------
+     ORB DRAG
+     Only starts when pointer hits the orb border zone,
+     not a tile button.
+  ---------------------------------------------------------- */
+  function isBorderTarget(el) {
+    return el === orbZone ||
+           el.classList.contains('orb-ring-border') ||
+           el.classList.contains('orb-hint') ||
+           el.classList.contains('wall-perspective') ||
+           el === wallCard ||
+           el.classList.contains('wall-face');
+  }
+
+  orbZone.addEventListener('pointerdown', function (e) {
+    if (isMobile || !isBorderTarget(e.target)) return;
+    dragActive = true;
+    dragStartX = e.clientX;
+    orbZone.setPointerCapture(e.pointerId);
+  });
+
+  window.addEventListener('pointermove', function (e) {
+    if (!dragActive) return;
+    var dx  = e.clientX - dragStartX;
+    /* 380px drag = 180° */
+    var rot = Math.max(-30, Math.min(210, (dx / 380) * 180));
+    wallCard.style.transition = 'none';
+    wallCard.style.transform  = 'perspective(1800px) rotateY(' + rot + 'deg)';
+  });
+
+  window.addEventListener('pointerup', function () {
+    if (!dragActive) return;
+    dragActive = false;
+
+    /* Read current rotation from computed matrix */
+    var m   = new DOMMatrix(window.getComputedStyle(wallCard).transform);
+    var rot = Math.atan2(m.m13, m.m11) * (180 / Math.PI);
+    var abs = ((rot % 360) + 360) % 360;
+
+    /* > 65° and < 295° = user dragged past midpoint → flip */
+    var crossedMid = (abs > 65 && abs < 295);
+
+    if (crossedMid) {
+      /* Animate to edge then content-swap */
+      wallCard.style.transition = 'transform 0.28s ease-in';
+      wallCard.style.transform  = 'perspective(1800px) rotateY(90deg)';
+
+      wallCard.addEventListener('transitionend', function onEdge() {
+        wallCard.removeEventListener('transitionend', onEdge);
+        currentFace = (currentFace === 'front') ? 'back' : 'front';
+        renderTiles(
+          currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA,
+          currentFace
+        );
+        updateLabels();
+
+        wallCard.style.transition = 'none';
+        wallCard.style.transform  = 'perspective(1800px) rotateY(-90deg)';
+        void wallCard.offsetWidth;
+        wallCard.style.transition = 'transform 0.28s ease-out';
+        wallCard.style.transform  = 'perspective(1800px) rotateY(0deg)';
+
+        wallCard.addEventListener('transitionend', function onDone() {
+          wallCard.removeEventListener('transitionend', onDone);
+          wallCard.style.transform  = '';
+          wallCard.style.transition = '';
+        });
+      });
+    } else {
+      /* Snap back */
+      wallCard.style.transition = 'transform 0.3s ease-out';
+      wallCard.style.transform  = 'perspective(1800px) rotateY(0deg)';
+      wallCard.addEventListener('transitionend', function onBack() {
+        wallCard.removeEventListener('transitionend', onBack);
+        wallCard.style.transform  = '';
+        wallCard.style.transition = '';
+      });
+    }
+  });
+
+  /* ----------------------------------------------------------
+     LIGHTBOX
+  ---------------------------------------------------------- */
+  function openLightbox(item, faceName) {
+    lbImageCol.innerHTML = '';
+
+    if (item.filename && item.filename.trim() !== '') {
+      var img = document.createElement('img');
+      img.src = IMG_BASE + item.filename.trim();
+      img.alt = item.title;
+      lbImageCol.appendChild(img);
+    } else {
+      /* No image — blank space only */
+      var blank = document.createElement('div');
+      blank.className = 'lb-no-image';
+      lbImageCol.appendChild(blank);
+    }
+
+    var cap = document.createElement('div');
+    cap.className = 'lb-caption';
+    cap.innerHTML =
+      '<span class="lb-caption-title">' + esc(item.title) + '</span>' +
+      '<span class="lb-caption-pct">'   + esc(item.percentage) + ' of catalog</span>';
+    lbImageCol.appendChild(cap);
+
+    lbEyebrow.textContent = (faceName === 'front') ? 'Costume Type' : 'Ethnic Identity';
+    lbTitle.textContent   = item.title;
+
+    var raw   = (item.description || '').trim();
+    var paras = raw.split(/\n+/).filter(function (p) {
+      return p.trim().length > 0;
+    }).slice(0, 3);
+    if (!paras.length && raw) paras = [raw];
+
+    lbBody.innerHTML = paras.map(function (p) {
+      return '<p>' + esc(p.trim()) + '</p>';
+    }).join('');
+
+    var exText = (item.full || '').trim();
+    lbExamples.innerHTML = exText
+      ? '<span class="lb-examples-label">Costumes in this category</span>' +
+        '<div class="lb-examples-text">' + esc(exText) + '</div>'
+      : '';
+
+    lightbox.classList.remove('hidden');
+    lightbox.removeAttribute('aria-hidden');
+    lbClose.focus();
+    document.addEventListener('keydown', lbKeyHandler);
+  }
+
+  function closeLightbox() {
+    lightbox.classList.add('hidden');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.removeEventListener('keydown', lbKeyHandler);
+  }
+
+  function lbKeyHandler(e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); }
+  }
+
+  /* ----------------------------------------------------------
+     MODAL
+  ---------------------------------------------------------- */
+  function closeModal() {
+    introModal.classList.add('hidden');
+    introModal.setAttribute('aria-hidden', 'true');
+  }
+
+  /* ----------------------------------------------------------
+     GLOBAL KEYBOARD SHORTCUTS
+  ---------------------------------------------------------- */
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox.classList.contains('hidden')) return;
+    if (e.key === 'Escape') {
+      if (!introModal.classList.contains('hidden')) closeModal();
+    } else if ((e.key === 'f' || e.key === 'F') &&
+               e.target.tagName !== 'INPUT' &&
+               e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      flipWall();
+    }
+  });
+
+  /* ----------------------------------------------------------
+     BINDINGS
+  ---------------------------------------------------------- */
+  flipBtn.addEventListener('click', flipWall);
+  modalClose.addEventListener('click', closeModal);
+  modalBegin.addEventListener('click', closeModal);
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  /* ----------------------------------------------------------
+     INIT
+  ---------------------------------------------------------- */
+  function init() {
+    isMobile = window.innerWidth < 768;
+    renderTiles(TYPE_DATA, 'front');
+    updateLabels();
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      isMobile = window.innerWidth < 768;
+    }, 200);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  /* ----------------------------------------------------------
+     UTILITY
+  ---------------------------------------------------------- */
+  function esc(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+}());
+</script>
