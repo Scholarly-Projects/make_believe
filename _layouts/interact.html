@@ -65,14 +65,13 @@ layout: default
 /* ============================================================
    WRAPPER
    Matches browse.html margin-left / padding-top / padding-bottom.
-   Wall centers itself within the available space.
+   Reduced top padding now that the header block is removed.
    ============================================================ */
 #interact-wrapper {
     margin-left: 14%;
-    padding-top: 120px;
+    padding-top: 140px;        
     padding-bottom: 6rem;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    /* Center content within the available column */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -85,84 +84,30 @@ layout: default
 
 @media screen and (max-width: 768px) {
     #interact-wrapper {
-        padding-top: 100px;
+        padding-top: 56px;
         padding-bottom: 5rem;
     }
 }
 
 /* ============================================================
-   PAGE HEADER
-   Stretches full available width so the rules reach edge-to-edge.
-   ============================================================ */
-.interact-header {
-    width: 100%;
-    max-width: 1400px;
-    margin-bottom: 1.4rem;
-    padding: 0 1.5rem;
-    box-sizing: border-box;
-}
-
-.interact-rule-top {
-    border: none;
-    border-top: 2px solid #0a0a0a;
-    margin-bottom: 0.5rem;
-}
-
-.interact-rule-bottom {
-    border: none;
-    border-top: 1px solid #c0b8ae;
-    margin-top: 0.45rem;
-    margin-bottom: 0;
-}
-
-.interact-header-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-
-.interact-kicker {
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #333;
-}
-
-.interact-catalogue-note {
-    font-size: 0.65rem;
-    letter-spacing: 0.06em;
-    color: #999;
-    font-style: italic;
-}
-
-.interact-h1 {
-    font-size: clamp(1.3rem, 2.5vw, 1.85rem);
-    font-weight: bold;
-    line-height: 1.2;
-    margin: 0.25rem 0 0;
-    color: #0a0a0a;
-}
-
-/* ============================================================
    WALL SCENE
-   Fills all available width; no fixed max-width.
+   No fixed max-width cap — fills the available column so the
+   grid uses every pixel on wide monitors (1920 px+).
    ============================================================ */
 .wall-scene {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1800px;        /* raised from 1400 px */
     padding: 0 1.5rem;
     box-sizing: border-box;
 }
 
 /* ============================================================
-   FACE TOGGLE BAR + FLIP CONTROLS  (single flex row)
-   Left: dot indicators + face labels
-   Right: flip button + keyboard hint
+   FACE TOGGLE BAR  (label buttons + press-F hint — all left)
+   Flip button has been removed; F-key is the sole flip control.
    ============================================================ */
 .face-controls-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     margin-bottom: 0.65rem;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -175,12 +120,11 @@ layout: default
 }
 
 .face-toggle-label {
-    font-size: 0.88rem;       /* increased from 0.63rem */
+    font-size: 0.88rem;
     letter-spacing: 0.13em;
     text-transform: uppercase;
     color: #bbb;
     transition: color 0.2s;
-    /* Button reset — labels are now interactive */
     background: none;
     border: none;
     padding: 0;
@@ -189,9 +133,7 @@ layout: default
     line-height: 1;
 }
 
-.face-toggle-label:hover {
-    color: #555;
-}
+.face-toggle-label:hover { color: #555; }
 
 .face-toggle-label.active {
     color: #0a0a0a;
@@ -216,52 +158,33 @@ layout: default
     color: #c0b8ae;
 }
 
-/* Flip controls — right side of the same bar */
-.flip-controls-group {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
-}
-
-.flip-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: none;
-    border: 1px solid #0a0a0a;
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.38rem 0.85rem;
-    cursor: pointer;
-    color: #0a0a0a;
-    transition: background 0.15s, color 0.15s;
-}
-
-.flip-btn:hover,
-.flip-btn:focus-visible {
-    background: #0a0a0a;
-    color: #ffffff;
-    outline: none;
-}
-
-.flip-btn svg { width: 13px; height: 13px; }
-
-.wall-shortcut-note {
-    font-size: 0.82rem;       /* increased from 0.62rem */
-    color: #888;
+/* "or press F" inline hint */
+.face-f-hint {
+    font-size: 0.75rem;
+    color: #aaa;
     font-style: italic;
+    font-family: 'Times New Roman', Times, Georgia, serif;
     white-space: nowrap;
+    margin-left: 0.35rem;
 }
 
-@media screen and (max-width: 600px) {
-    .wall-shortcut-note { display: none; }
+.face-f-hint kbd {
+    font-style: normal;
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    background: rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.18);
+    border-radius: 2px;
+    padding: 0.05rem 0.32rem;
+    color: #555;
+}
+
+@media screen and (max-width: 480px) {
+    .face-f-hint { display: none; }
 }
 
 /* ============================================================
-   WALL WRAPPER — passive container only (no drag interaction)
+   WALL WRAPPER — passive container only
    ============================================================ */
 .orb-zone {
     position: relative;
@@ -302,9 +225,9 @@ layout: default
 
 /* ============================================================
    TILES GRID
-   Fills available width; tiles are ~25% larger than previous
-   (185px min vs 148px). auto-fill means columns increase as
-   space allows — more tiles per row on wider viewports.
+   Base: 185 px min — same as before.
+   Wide-screen bump: 220 px+ at ≥1400 px, 260 px+ at ≥1800 px.
+   auto-fill means columns grow naturally as space opens up.
    ============================================================ */
 .tiles-grid {
     display: grid;
@@ -314,6 +237,18 @@ layout: default
     box-sizing: border-box;
 }
 
+@media screen and (min-width: 1400px) {
+    .tiles-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}
+
+@media screen and (min-width: 1800px) {
+    .tiles-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+}
+
 @media screen and (max-width: 480px) {
     .tiles-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -321,7 +256,7 @@ layout: default
 }
 
 /* ============================================================
-   INDIVIDUAL TILE  — +25% size, larger caption, updated hover
+   INDIVIDUAL TILE
    ============================================================ */
 .tile {
     aspect-ratio: 1 / 1;
@@ -340,14 +275,9 @@ layout: default
     -webkit-appearance: none;
     font-family: 'Times New Roman', Times, Georgia, serif;
     text-align: center;
-    /* No transition — feedback must be instant for keyboard nav */
     outline: none;
 }
 
-/* Inset box-shadow is used instead of outline because outline
-   is clipped by overflow:hidden in some browsers.
-   The rgba background is the requested color; the inset shadow
-   provides the visible border contrast against the tile edge. */
 .tile:hover,
 .tile:focus,
 .tile:focus-visible {
@@ -376,8 +306,6 @@ layout: default
     filter: grayscale(100%) contrast(1.1);
 }
 
-/* No-image tiles: blank white — no shape, no border */
-
 .tile-caption {
     flex-shrink: 0;
     width: 100%;
@@ -385,7 +313,7 @@ layout: default
     margin-top: 4px;
     padding-top: 4px;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.72em;    /* was 0.57em — proportionally larger */
+    font-size: 0.72em;
     line-height: 1.25;
     color: #0a0a0a;
     text-align: center;
@@ -405,6 +333,8 @@ layout: default
 
 /* ============================================================
    INTRO MODAL
+   Anchored to the top of the viewport so it is always reachable
+   without scrolling. Scrolls internally if content is tall.
    ============================================================ */
 #intro-modal {
     position: fixed;
@@ -412,10 +342,12 @@ layout: default
     background: rgba(10, 10, 10, 0.86);
     z-index: 2000;
     display: flex;
-    align-items: center;
+    align-items: flex-start;       /* anchor to top */
     justify-content: center;
-    padding: 2rem;
+    padding: 3.5rem 2rem 2rem;     /* top breathing room below nav */
+    overflow-y: auto;              /* scroll if modal is taller than viewport */
     backdrop-filter: blur(2px);
+    -webkit-overflow-scrolling: touch;
 }
 
 #intro-modal.hidden { display: none; }
@@ -427,6 +359,8 @@ layout: default
     padding: 2.75rem;
     border: 1px solid rgba(255, 255, 255, 0.22);
     color: #f8f5ee;
+    /* Allow the card to scroll into view cleanly on very small screens */
+    margin-bottom: 2rem;
 }
 
 .modal-inner::before {
@@ -551,8 +485,23 @@ layout: default
     outline: none;
 }
 
+/* Tap-outside hint on mobile */
+.modal-tap-hint {
+    display: none;
+    text-align: center;
+    font-size: 0.68rem;
+    color: rgba(248, 245, 238, 0.35);
+    margin-top: 0.6rem;
+    font-style: italic;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+}
+
+@media screen and (max-width: 768px) {
+    .modal-tap-hint { display: block; }
+}
+
 /* ============================================================
-   LIGHTBOX — 15% larger, white image column, larger image
+   LIGHTBOX
    ============================================================ */
 #lightbox {
     position: fixed;
@@ -572,7 +521,6 @@ layout: default
     position: relative;
     background: #ffffff;
     border: 1px solid #0a0a0a;
-    /* 880 * 1.15 = 1012 */
     max-width: 1012px;
     width: 100%;
     max-height: 90vh;
@@ -613,28 +561,27 @@ layout: default
     outline: none;
 }
 
-/* Image column — white background, tighter padding for more image room */
 .lb-image-col {
     border-right: 1px solid #0a0a0a;
-    padding: 1.25rem 1rem;        /* was 2rem 1.5rem */
+    padding: 1.25rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #ffffff;          /* was #faf8f4 */
+    background: #ffffff;
     min-height: 300px;
 }
 
+/* Lightbox image — full-resolution from /objects/interact/ */
 .lb-image-col img {
-    max-width: 96%;               /* was 100%, effectively same but explicit */
-    max-height: 360px;            /* was 290px — noticeably larger */
+    max-width: 96%;
+    max-height: 360px;
     object-fit: contain;
     filter: grayscale(100%) contrast(1.1);
     display: block;
     margin-bottom: 0.9rem;
 }
 
-/* No-image: blank white space */
 .lb-no-image { flex: 1; min-height: 120px; }
 
 .lb-caption {
@@ -658,7 +605,6 @@ layout: default
     margin-top: 0.15rem;
 }
 
-/* Text column */
 .lb-text-col {
     padding: 1.75rem;
     display: flex;
@@ -714,11 +660,11 @@ layout: default
 }
 </style>
 
-<!-- Skip-navigation link: keyboard users jump directly to first tile -->
+<!-- Skip-navigation link -->
 <a class="skip-to-tiles" href="#first-tile">Skip to visualization</a>
 
 <!-- ============================================================
-     INTRO MODAL
+     INTRO MODAL  (anchored to viewport top; scrollable on mobile)
      ============================================================ -->
 <div id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-inner">
@@ -727,7 +673,7 @@ layout: default
     <h2 id="modal-title">Imitative Identities</h2>
     <p>This visualization highlights the materials of the leading costume company in Spokane, Washington from their 1906 catalog.</p>
     <p>The wall has two faces. The front organizes costumes by <strong>type</strong>: military, theatrical, royal, etc. The reverse organizes the same catalog by <strong>ethnic identity</strong>. Entries are sorted in order of frequency. Select any tile to read more.</p>
-    <p>Select <strong>Costume Type</strong> or <strong>Ethnic Identity</strong>, press <strong>F</strong> or use the <strong>Flip Wall</strong> button to change visualizations.</p>
+    <p>Select <strong>Costume Type</strong> or <strong>Ethnic Identity</strong> at the top of the wall, or press <strong>F</strong> to flip between views.</p>
     <p><strong>Source:</strong> Miller-Dervant Catalog, 1906, Miller-Dervant Company Records, 1896–1955, MsSC 198, Eastern Washington State Historical Society, Northwest Museum of Arts and Culture, Spokane, WA.</p>
     <div class="ctrl-list">
       <span class="ctrl-list-heading">Controls</span>
@@ -749,6 +695,7 @@ layout: default
       </div>
     </div>
     <button class="modal-begin" id="modal-begin-btn">Enter the Catalog</button>
+    <p class="modal-tap-hint">Tap outside this card or press Esc to dismiss</p>
   </div>
 </div>
 
@@ -769,8 +716,7 @@ layout: default
 </div>
 
 <!-- ============================================================
-     TOC SIDEBAR — mirrors browse.html aside exactly
-     JS sets all links here to tabindex="-1" so tab begins on tiles
+     TOC SIDEBAR
      ============================================================ -->
 <aside class="scrolly-toc-sidebar" id="interact-toc-sidebar" aria-label="Table of contents">
   <p class="scrolly-toc-heading">Contents</p>
@@ -807,21 +753,10 @@ layout: default
      ============================================================ -->
 <div id="interact-wrapper">
 
-  <!-- Page header — full available width -->
-  <div class="interact-header">
-    <hr class="interact-rule-top">
-    <div class="interact-header-meta">
-      <span class="interact-kicker">Interact</span>
-      <span class="interact-catalogue-note">Miller-Dervant Catalog, 1906</span>
-    </div>
-    <h1 class="interact-h1">Costume by Type &amp; Imitated Ethnicity</h1>
-    <hr class="interact-rule-bottom">
-  </div>
-
-  <!-- Wall scene -->
+  <!-- Wall scene — no page header above it -->
   <div class="wall-scene">
 
-    <!-- Single bar: face indicator buttons LEFT, flip controls RIGHT -->
+    <!-- Single bar: face indicators + inline F-key hint — all left-aligned -->
     <div class="face-controls-bar" aria-live="polite">
       <div class="face-toggle-group">
         <span class="face-toggle-dot filled" id="dot-front"></span>
@@ -835,26 +770,11 @@ layout: default
                 aria-label="Show Ethnic Identity face"
                 aria-pressed="false">Ethnic Identity</button>
         <span class="face-toggle-dot" id="dot-back"></span>
-      </div>
-      <div class="flip-controls-group">
-        <span class="wall-shortcut-note">
-          Press <kbd>F</kbd> or select the
-        </span>
-        <button class="flip-btn" id="flip-btn"
-                aria-label="Flip wall to show the other face">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor"
-               stroke-width="1.6" aria-hidden="true">
-            <path d="M2 10a8 8 0 0114-4.5M18 10a8 8 0 01-14 4.5"/>
-            <polyline points="14.5,5 18,5.5 17.5,2"/>
-            <polyline points="5.5,15 2,14.5 2.5,18"/>
-          </svg>
-          Flip Wall
-        </button>
-        <span class="wall-shortcut-note">button to flip</span>
+        <span class="face-f-hint">or press <kbd>F</kbd></span>
       </div>
     </div>
 
-    <!-- Wall wrapper — passive container, no drag -->
+    <!-- Wall wrapper -->
     <div class="orb-zone" id="orb-zone">
       <div class="wall-perspective">
         <div class="wall-card" id="wall-card">
@@ -874,9 +794,6 @@ layout: default
 
 <!-- ============================================================
      DATA — Jekyll/Liquid injects CSV rows as JSON
-     Both CSVs now share the standardized column order:
-       filename, title, count, percentage, examples, alt_text,
-       description, full
      ============================================================ -->
 <script>
 var TYPE_DATA = [
@@ -911,7 +828,10 @@ var ETHNIC_DATA = [
   {% endfor %}
 ];
 
-var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
+/* Full-resolution images — lightbox detail view */
+var IMG_BASE  = "{{ site.baseurl }}/objects/interact/";
+/* Thumbnail images (max 300 PPI JPG) — wall tiles */
+var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
 </script>
 
 <!-- ============================================================
@@ -943,18 +863,24 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
   var lbExamples = document.getElementById('lb-examples');
   var wallCard   = document.getElementById('wall-card');
   var tilesGrid  = document.getElementById('tiles-grid');
-  var flipBtn    = document.getElementById('flip-btn');
   var labelFront = document.getElementById('label-front');
   var labelBack  = document.getElementById('label-back');
   var dotFront   = document.getElementById('dot-front');
   var dotBack    = document.getElementById('dot-back');
 
   /* ----------------------------------------------------------
+     THUMBNAIL SOURCE HELPER
+     Wall tiles use the small/JPG versions for faster loading.
+     Strips any existing image extension and appends .jpg.
+  ---------------------------------------------------------- */
+  function thumbSrc(filename) {
+    if (!filename || !filename.trim()) return '';
+    return IMG_SMALL + filename.trim().replace(/\.(png|gif|webp|jpeg)$/i, '.jpg');
+  }
+
+  /* ----------------------------------------------------------
      RENDER TILES
-     Uniform tile size via CSS grid.
-     Data pre-sorted by count descending in the CSV.
-     First tile gets id="first-tile" for the skip link target.
-     alt_text field used for img[alt]; falls back to title.
+     Tiles load the small/ thumbnail; lightbox loads full-res.
   ---------------------------------------------------------- */
   function renderTiles(data, faceName) {
     tilesGrid.innerHTML = '';
@@ -975,33 +901,31 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
         (faceName === 'back' ? ' of category' : ' of catalog')
       );
 
-      /* First tile: hook for skip link and keyboard starting point */
       if (index === 0) {
         btn.id = 'first-tile';
       }
 
-      /* Image area */
+      /* Image area — thumbnail from /small/ */
       var imgWrap = document.createElement('div');
       imgWrap.className = 'tile-img-wrap';
 
-      if (item.filename && item.filename.trim() !== '') {
+      var src = thumbSrc(item.filename);
+      if (src) {
         var img = document.createElement('img');
-        img.src     = IMG_BASE + item.filename.trim();
-        /* Use alt_text if provided; fall back to title */
+        img.src     = src;
         img.alt     = (item.alt_text && item.alt_text.trim() !== '')
                       ? item.alt_text.trim()
                       : item.title;
         img.loading = 'lazy';
         imgWrap.appendChild(img);
       }
-      /* No filename → blank white area, no placeholder shape */
 
       btn.appendChild(imgWrap);
 
       /* Caption */
       var cap = document.createElement('div');
       cap.className = 'tile-caption';
-      cap.setAttribute('aria-hidden', 'true'); /* title already in aria-label */
+      cap.setAttribute('aria-hidden', 'true');
       cap.innerHTML =
         '<strong>' + esc(item.title) + '</strong>' +
         '<span class="tile-pct">' + esc(item.percentage) + '</span>';
@@ -1025,8 +949,6 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
 
   /* ----------------------------------------------------------
      FLIP ANIMATION
-     "Door" technique — rotate to 90° (edge-on), swap content,
-     arrive from -90° back to 0°. Height remains fully auto.
   ---------------------------------------------------------- */
   function flipWall() {
     if (isFlipping) return;
@@ -1047,7 +969,7 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
       wallCard.style.transition = 'none';
       wallCard.style.transform  = 'perspective(2200px) rotateY(-90deg)';
 
-      void wallCard.offsetWidth; /* force reflow */
+      void wallCard.offsetWidth;
 
       wallCard.style.transition = 'transform ' + HALF + 'ms ease-out';
       wallCard.style.transform  = 'perspective(2200px) rotateY(0deg)';
@@ -1061,7 +983,6 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
     }, HALF);
   }
 
-  /* Flip to a specific face; no-op if already there */
   function flipToFace(target) {
     if (currentFace !== target) flipWall();
   }
@@ -1080,13 +1001,14 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
   }
 
   /* ----------------------------------------------------------
-     LIGHTBOX
+     LIGHTBOX — uses full-resolution images from IMG_BASE
   ---------------------------------------------------------- */
   function openLightbox(item, faceName) {
     lbImageCol.innerHTML = '';
 
     if (item.filename && item.filename.trim() !== '') {
       var img = document.createElement('img');
+      /* Full-res image for the detail panel */
       img.src = IMG_BASE + item.filename.trim();
       img.alt = (item.alt_text && item.alt_text.trim() !== '')
                 ? item.alt_text.trim()
@@ -1148,6 +1070,11 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
     introModal.setAttribute('aria-hidden', 'true');
   }
 
+  /* Clicking the dark backdrop (outside the card) also closes the modal */
+  introModal.addEventListener('click', function (e) {
+    if (e.target === introModal) closeModal();
+  });
+
   /* ----------------------------------------------------------
      GLOBAL KEYBOARD SHORTCUTS
   ---------------------------------------------------------- */
@@ -1164,9 +1091,7 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
   });
 
   /* ----------------------------------------------------------
-     TAB ORDER — remove TOC from tab sequence on this page
-     so Tab starts directly on the first tile.
-     TOC links remain clickable; only keyboard tab is adjusted.
+     TAB ORDER — remove TOC from tab sequence
   ---------------------------------------------------------- */
   function removeTocFromTabOrder() {
     var sidebar = document.getElementById('interact-toc-sidebar');
@@ -1177,8 +1102,6 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
     focusable.forEach(function (el) {
       el.setAttribute('tabindex', '-1');
     });
-    /* Also suppress the sidebar heading — it's a <p>, not interactive,
-       but mark it inert for good measure */
     var heading = sidebar.querySelector('.scrolly-toc-heading');
     if (heading) heading.setAttribute('aria-hidden', 'true');
   }
@@ -1186,12 +1109,9 @@ var IMG_BASE = "{{ site.baseurl }}/objects/interact/";
   /* ----------------------------------------------------------
      BINDINGS
   ---------------------------------------------------------- */
-  flipBtn.addEventListener('click', flipWall);
-
-  /* Face labels navigate directly to that face */
   labelFront.addEventListener('click', function () { flipToFace('front'); });
   labelBack.addEventListener('click',  function () { flipToFace('back');  });
-  /* Keyboard support for the label buttons (Enter / Space) */
+
   [labelFront, labelBack].forEach(function (el) {
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
