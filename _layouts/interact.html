@@ -183,6 +183,30 @@ layout: default
     .face-f-hint { display: none; }
 }
 
+/* Source / citation note — right side of controls bar */
+.face-source-note {
+    font-size: 0.75rem;
+    color: #aaa;
+    font-style: italic;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    line-height: 1.45;
+    margin-left: auto;
+    text-align: right;
+    max-width: 340px;
+}
+
+@media screen and (max-width: 768px) {
+    .face-source-note {
+        margin-left: 0;
+        text-align: left;
+        max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .face-source-note { display: none; }
+}
+
 /* ============================================================
    WALL WRAPPER — passive container only
    ============================================================ */
@@ -587,6 +611,7 @@ layout: default
 .lb-caption {
     text-align: center;
     font-family: 'Times New Roman', Times, serif;
+    width: 100%;
 }
 
 .lb-caption-title {
@@ -603,6 +628,25 @@ layout: default
     font-style: italic;
     display: block;
     margin-top: 0.15rem;
+    line-height: 1.6;
+}
+
+/* Stats line for ethnic identity detail view */
+.lb-stats-line {
+    font-size: 0.79rem;
+    color: #777;
+    font-style: italic;
+    display: block;
+    margin-top: 0.2rem;
+    line-height: 1.7;
+    text-align: center;
+    padding: 0 0.25rem;
+}
+
+.lb-stats-line .lb-stats-sep {
+    color: #c0b8ae;
+    font-style: normal;
+    margin: 0 0.2em;
 }
 
 .lb-text-col {
@@ -756,7 +800,7 @@ layout: default
   <!-- Wall scene — no page header above it -->
   <div class="wall-scene">
 
-    <!-- Single bar: face indicators + inline F-key hint — all left-aligned -->
+    <!-- Single bar: face indicators + inline F-key hint (left) + source note (right) -->
     <div class="face-controls-bar" aria-live="polite">
       <div class="face-toggle-group">
         <span class="face-toggle-dot filled" id="dot-front"></span>
@@ -772,6 +816,7 @@ layout: default
         <span class="face-toggle-dot" id="dot-back"></span>
         <span class="face-f-hint">or press <kbd>F</kbd></span>
       </div>
+      <span class="face-source-note" aria-label="Data source">Immigration data from the 1910 Abstract of the Thirteenth Census, Supplement for Washington State.</span>
     </div>
 
     <!-- Wall wrapper -->
@@ -823,7 +868,10 @@ var ETHNIC_DATA = [
     examples:   {{ item.examples    | jsonify }},
     alt_text:   {{ item.alt_text    | jsonify }},
     description:{{ item.description | jsonify }},
-    full:       {{ item.full        | jsonify }}
+    full:       {{ item.full        | jsonify }},
+    pct1910:    {{ item["1910_percent"] | jsonify }},
+    pct1900:    {{ item["1900_percent"] | jsonify }},
+    distance:   {{ item.distance    | jsonify }}
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
@@ -876,6 +924,38 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
   function thumbSrc(filename) {
     if (!filename || !filename.trim()) return '';
     return IMG_SMALL + filename.trim().replace(/\.(png|gif|webp|jpeg)$/i, '.jpg');
+  }
+
+  /* ----------------------------------------------------------
+     STAT FORMATTING HELPERS
+  ---------------------------------------------------------- */
+
+  /* Category percentage — strips unnecessary decimals.
+     e.g. 9.0 → "9%", 10.8 → "10.8%" */
+  function formatCatPct(num) {
+    if (num === null || num === undefined || num === '') return null;
+    var n = parseFloat(num);
+    if (isNaN(n)) return null;
+    return (n % 1 === 0 ? n.toFixed(0) : String(n)) + '%';
+  }
+
+  /* Population percentage — strips leading zero before decimal.
+     e.g. 0.44 → ".44%", 0.5 → ".5%" */
+  function formatPopPct(val) {
+    if (val === null || val === undefined || val === '' || val === false) return null;
+    var n = parseFloat(val);
+    if (isNaN(n) || n === 0) return null;
+    var s = n.toString().replace(/^0\./, '.');
+    return s + '%';
+  }
+
+  /* Distance — adds thousands comma and appends label.
+     e.g. 4859 → "4,859 miles from Spokane" */
+  function formatDistance(val) {
+    if (val === null || val === undefined || val === '' || val === false) return null;
+    var n = parseInt(val, 10);
+    if (isNaN(n) || n === 0) return null;
+    return n.toLocaleString('en-US') + ' miles from Spokane';
   }
 
   /* ----------------------------------------------------------
@@ -1020,12 +1100,45 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
       lbImageCol.appendChild(blank);
     }
 
+    /* Caption block */
     var cap = document.createElement('div');
     cap.className = 'lb-caption';
-    cap.innerHTML =
-      '<span class="lb-caption-title">' + esc(item.title) + '</span>' +
-      '<span class="lb-caption-pct">'   + esc(item.percentage) +
-      (faceName === 'back' ? ' of category' : ' of catalog') + '</span>';
+
+    var titleSpan = document.createElement('span');
+    titleSpan.className   = 'lb-caption-title';
+    titleSpan.textContent = item.title;
+    cap.appendChild(titleSpan);
+
+    if (faceName === 'back') {
+      /* Build pipe-separated stats line; skip null/empty values */
+      var SEP = '<span class="lb-stats-sep"> | </span>';
+      var parts = [];
+
+      var catPct = formatCatPct(item.pct);
+      if (catPct) parts.push(esc(catPct) + ' of category');
+
+      var p1910 = formatPopPct(item.pct1910);
+      if (p1910) parts.push(esc(p1910) + ' of 1910 state census');
+
+      var p1900 = formatPopPct(item.pct1900);
+      if (p1900) parts.push(esc(p1900) + ' of 1900 state census');
+
+      var dist = formatDistance(item.distance);
+      if (dist) parts.push(esc(dist));
+
+      if (parts.length) {
+        var statsSpan = document.createElement('span');
+        statsSpan.className = 'lb-stats-line';
+        statsSpan.innerHTML = parts.join(SEP);
+        cap.appendChild(statsSpan);
+      }
+    } else {
+      var pctSpan = document.createElement('span');
+      pctSpan.className   = 'lb-caption-pct';
+      pctSpan.textContent = item.percentage + ' of catalog';
+      cap.appendChild(pctSpan);
+    }
+
     lbImageCol.appendChild(cap);
 
     lbEyebrow.textContent = (faceName === 'front') ? 'Costume Type' : 'Ethnic Identity';
