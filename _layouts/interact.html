@@ -12,23 +12,18 @@ layout: default
    ============================================================ */
 .skip-to-tiles {
     position: absolute;
-    left: -9999px;
-    top: auto;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    z-index: 9999;
+    left: -9999px; top: auto;
+    width: 1px; height: 1px;
+    overflow: hidden; z-index: 9999;
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.85rem;
 }
 .skip-to-tiles:focus {
     left: 1rem; top: 1rem;
-    width: auto; height: auto;
-    overflow: visible;
+    width: auto; height: auto; overflow: visible;
     background: #0a0a0a; color: #fff;
     padding: 0.4rem 0.8rem;
-    outline: 2px solid #fff;
-    outline-offset: 2px;
+    outline: 2px solid #fff; outline-offset: 2px;
 }
 
 /* ============================================================
@@ -55,12 +50,9 @@ layout: default
    ============================================================ */
 #interact-wrapper {
     margin-left: 14%;
-    padding-top: 140px;
-    padding-bottom: 6rem;
+    padding-top: 140px; padding-bottom: 6rem;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; align-items: center;
 }
 @media screen and (max-width: 992px) {
     #interact-toc-sidebar { display: none !important; }
@@ -74,238 +66,26 @@ layout: default
    WALL SCENE
    ============================================================ */
 .wall-scene {
-    width: 100%;
-    max-width: 1800px;
-    padding: 0 1.5rem;
-    box-sizing: border-box;
+    width: 100%; max-width: 1800px;
+    padding: 0 1.5rem; box-sizing: border-box;
 }
 
 /* ============================================================
-   QUESTION BAR  (above the wall)
+   ROW 1 — Controls bar: face toggles (left) + sort (right)
    ============================================================ */
-.question-bar {
+.controls-bar {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    width: 100%;
-    margin-bottom: 1.5rem;
-    min-height: 185px;
-    box-sizing: border-box;
-}
-
-.question-text-area {
-    flex: 1;
-    min-width: 0;
-    padding-right: 0.5rem;
-}
-
-.q-label {
-    font-size: 0.57rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #999;
-    margin: 0 0 0.45rem;
-    line-height: 1;
-}
-
-.q-text {
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 1.05rem;
-    line-height: 1.5;
-    color: #0a0a0a;
-    margin: 0 0 0;
-    font-weight: bold;
-}
-
-.q-response {
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.85rem;
-    line-height: 1.72;
-    color: #333;
-    margin: 0.55rem 0 0;
-}
-
-/* ============================================================
-   DROP ZONE
-   ============================================================ */
-.drop-zone {
-    width: 185px;
-    height: 185px;
-    flex-shrink: 0;
-    border: 1px dashed #aaa;
-    background: #fafafa;
-    box-sizing: border-box;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.2s, background 0.2s;
-    overflow: hidden;
-}
-
-.drop-zone.drag-over {
-    border-color: #0a0a0a;
-    border-style: solid;
-    background: rgba(0,0,0,0.03);
-}
-
-.dz-hint {
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.7rem;
-    color: #bbb;
-    text-align: center;
-    line-height: 1.5;
-    font-style: italic;
-    pointer-events: none;
-    user-select: none;
-}
-
-/* Card displayed inside the drop zone */
-.dz-card {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    overflow: hidden;
-    background: #fff;
-    border: 1px solid #0a0a0a;
-}
-
-.dz-card-img {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 4px 4px 0;
-    box-sizing: border-box;
-    min-height: 0;
-}
-
-.dz-card-img img {
-    max-width: 88%;
-    max-height: 88%;
-    object-fit: contain;
-    display: block;
-    filter: grayscale(100%) contrast(1.1);
-}
-
-.dz-card-title {
-    flex-shrink: 0;
-    width: 100%;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    padding: 4px 5px 5px;
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.68em;
-    line-height: 1.2;
-    color: #0a0a0a;
-    text-align: center;
-    font-weight: bold;
-    box-sizing: border-box;
-}
-
-/* Tint overlay */
-.dz-tint {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    opacity: 0;
-    transition: opacity 0.2s;
-    pointer-events: none;
-}
-
-.dz-tint.correct  { background: rgba(0, 150, 80, 0.5);  opacity: 1; }
-.dz-tint.wrong    { background: rgba(200, 30,  30, 0.5); opacity: 1; }
-
-@keyframes dzWrongFlash {
-    0%   { opacity: 0; }
-    20%  { opacity: 1; }
-    80%  { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-.dz-tint.wrong-anim {
-    background: rgba(200, 30, 30, 0.5);
-    animation: dzWrongFlash 0.85s ease forwards;
-}
-
-/* ============================================================
-   QUESTION ACTION BUTTONS
-   ============================================================ */
-.question-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.55rem;
-    flex-shrink: 0;
-}
-
-.q-action-btn {
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #0a0a0a;
-    background: none;
-    border: 1px solid #0a0a0a;
-    padding: 0.38rem 0.8rem;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
-    display: block;
-    width: 100%;
-    text-align: center;
-}
-
-.q-action-btn:hover,
-.q-action-btn:focus-visible {
-    background: #0a0a0a;
-    color: #fff;
-    outline: none;
-}
-
-.q-action-btn:disabled,
-.q-action-btn[disabled] {
-    color: #bbb;
-    border-color: #ccc;
-    cursor: default;
-    background: none;
-}
-
-.q-action-btn:disabled:hover { background: none; color: #bbb; }
-
-@media screen and (max-width: 768px) {
-    .question-bar {
-        flex-wrap: wrap;
-        min-height: auto;
-    }
-    .question-text-area { flex-basis: 100%; order: 1; }
-    .drop-zone { order: 2; width: 130px; height: 130px; }
-    .question-actions { order: 3; flex-direction: column; }
-}
-
-@media screen and (max-width: 480px) {
-    .drop-zone { width: 110px; height: 110px; }
-}
-
-/* ============================================================
-   FACE TOGGLE BAR
-   ============================================================ */
-.face-controls-bar {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.65rem;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-bottom: 0.9rem;
+    width: 100%;
 }
 
 .face-toggle-group {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
+    display: flex; align-items: center;
+    gap: 0.7rem; flex-shrink: 0;
 }
 
 .face-toggle-label {
@@ -314,151 +94,199 @@ layout: default
     text-transform: uppercase;
     color: #bbb;
     transition: color 0.2s;
-    background: none;
-    border: none;
-    padding: 0;
+    background: none; border: none; padding: 0;
     cursor: pointer;
     font-family: 'Times New Roman', Times, Georgia, serif;
     line-height: 1;
 }
-
-.face-toggle-label:hover { color: #555; }
-
-.face-toggle-label.active {
-    color: #0a0a0a;
-    font-weight: bold;
-}
+.face-toggle-label:hover  { color: #555; }
+.face-toggle-label.active { color: #0a0a0a; font-weight: bold; }
 
 .face-toggle-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    border: 1px solid #0a0a0a;
-    background: #fff;
-    display: inline-block;
-    transition: background 0.25s;
-    flex-shrink: 0;
+    width: 6px; height: 6px; border-radius: 50%;
+    border: 1px solid #0a0a0a; background: #fff;
+    display: inline-block; transition: background 0.25s; flex-shrink: 0;
 }
-
 .face-toggle-dot.filled { background: #0a0a0a; }
 
-.face-divider-glyph {
-    font-size: 0.5rem;
-    color: #c0b8ae;
-}
+.face-divider-glyph { font-size: 0.5rem; color: #c0b8ae; }
 
 .face-f-hint {
-    font-size: 0.75rem;
-    color: #aaa;
-    font-style: italic;
+    font-size: 0.75rem; color: #aaa; font-style: italic;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    white-space: nowrap;
-    margin-left: 0.35rem;
+    white-space: nowrap; margin-left: 0.35rem;
 }
-
 .face-f-hint kbd {
     font-style: normal;
     font-family: 'Courier New', monospace;
     font-size: 0.72rem;
     background: rgba(0,0,0,0.06);
     border: 1px solid rgba(0,0,0,0.18);
-    border-radius: 2px;
-    padding: 0.05rem 0.32rem;
-    color: #555;
+    border-radius: 2px; padding: 0.05rem 0.32rem; color: #555;
 }
-
 @media screen and (max-width: 480px) { .face-f-hint { display: none; } }
 
-/* ============================================================
-   SORT GROUP  (replaces immigration note, right side of bar)
-   ============================================================ */
+/* Sort group */
 .sort-group {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin-left: auto;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    display: flex; align-items: center;
+    gap: 0.55rem; flex-wrap: wrap; justify-content: flex-end;
 }
-
 .sort-group-prefix {
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #999;
+    font-size: 0.78rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #999;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-style: italic;
-    white-space: nowrap;
+    font-style: italic; white-space: nowrap;
 }
-
-.sort-divider {
-    font-size: 0.55rem;
-    color: #c0b8ae;
-    flex-shrink: 0;
-}
-
+.sort-divider { font-size: 0.55rem; color: #c0b8ae; flex-shrink: 0; }
 .sort-btn {
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #bbb;
-    background: none;
-    border: none;
-    padding: 0;
+    font-size: 0.78rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #bbb;
+    background: none; border: none; padding: 0;
     cursor: pointer;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    line-height: 1;
-    transition: color 0.2s;
-    white-space: nowrap;
+    line-height: 1; transition: color 0.2s; white-space: nowrap;
 }
-
-.sort-btn:hover { color: #555; }
-
-.sort-btn.active {
-    color: #0a0a0a;
-    font-weight: bold;
-}
+.sort-btn:hover  { color: #555; }
+.sort-btn.active { color: #0a0a0a; font-weight: bold; }
 
 @media screen and (max-width: 900px) {
-    .sort-group { margin-left: 0; justify-content: flex-start; }
+    .controls-bar { flex-direction: column; align-items: flex-start; }
+    .sort-group   { justify-content: flex-start; }
 }
-
-@media screen and (max-width: 480px) {
-    .sort-group { display: none; }
-}
+@media screen and (max-width: 480px) { .sort-group { display: none; } }
 
 /* ============================================================
-   WALL WRAPPER
+   ROW 2 — Question bar:
+   [question text (flex:1)] [drop zone (fixed)] [buttons (fixed)]
    ============================================================ */
-.orb-zone {
-    position: relative;
+.question-bar {
+    display: flex; align-items: center;
+    gap: 1.5rem; width: 100%;
+    margin-bottom: 1.25rem;
+    min-height: 185px; box-sizing: border-box;
+}
+
+/* Left */
+.question-text-area { flex: 1; min-width: 0; }
+
+.q-label {
     display: block;
-    width: 100%;
-    box-sizing: border-box;
+    font-size: 0.57rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #999;
+    margin: 0 0 0.45rem; line-height: 1;
+}
+.q-text {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 1.05rem; line-height: 1.5;
+    color: #0a0a0a; margin: 0; font-weight: bold;
+}
+.q-response {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.85rem; line-height: 1.72;
+    color: #333; margin: 0.55rem 0 0; display: none;
 }
 
-.wall-perspective {
-    perspective: 2200px;
-    perspective-origin: 50% 35%;
-    width: 100%;
+/* Centre: drop zone */
+.drop-zone {
+    width: 185px; height: 185px; flex-shrink: 0;
+    border: 1px dashed #aaa; background: #fafafa;
+    box-sizing: border-box; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, background 0.2s; overflow: hidden;
+}
+.drop-zone.drag-over {
+    border-color: #0a0a0a; border-style: solid; background: rgba(0,0,0,0.03);
 }
 
-.wall-card {
-    transform-origin: center center;
-    will-change: transform;
-    width: 100%;
+.dz-hint {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.7rem; color: #bbb;
+    text-align: center; line-height: 1.5;
+    font-style: italic; pointer-events: none; user-select: none;
 }
 
+.dz-card {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    overflow: hidden; background: #fff; border: 1px solid #0a0a0a;
+}
+.dz-card-img {
+    flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; padding: 4px 4px 0; box-sizing: border-box; min-height: 0;
+}
+.dz-card-img img {
+    max-width: 88%; max-height: 88%;
+    object-fit: contain; display: block;
+    filter: grayscale(100%) contrast(1.1);
+}
+.dz-card-title {
+    flex-shrink: 0; width: 100%;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding: 4px 5px 5px;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.68em; line-height: 1.2;
+    color: #0a0a0a; text-align: center;
+    font-weight: bold; box-sizing: border-box;
+}
+
+.dz-tint {
+    position: absolute; inset: 0; z-index: 2;
+    opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+.dz-tint.correct { background: rgba(0,150,80,0.5);  opacity: 1; }
+.dz-tint.wrong   { background: rgba(200,30,30,0.5); opacity: 1; }
+
+@keyframes dzWrongFlash {
+    0%  { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100%{ opacity: 0; }
+}
+.dz-tint.wrong-anim {
+    background: rgba(200,30,30,0.5);
+    animation: dzWrongFlash 0.85s ease forwards;
+}
+
+/* Right: action buttons */
+.question-actions {
+    display: flex; flex-direction: column;
+    align-items: stretch; gap: 0.55rem;
+    flex-shrink: 0; min-width: 130px;
+}
+.q-action-btn {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.75rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #0a0a0a;
+    background: none; border: 1px solid #0a0a0a;
+    padding: 0.38rem 0.8rem; cursor: pointer;
+    white-space: nowrap; text-align: center; width: 100%;
+    transition: background 0.15s, color 0.15s;
+}
+.q-action-btn:hover,
+.q-action-btn:focus-visible { background: #0a0a0a; color: #fff; outline: none; }
+.q-action-btn:disabled { color: #bbb; border-color: #ccc; cursor: default; background: none; }
+.q-action-btn:disabled:hover { background: none; color: #bbb; }
+
+@media screen and (max-width: 768px) {
+    .question-bar { flex-wrap: wrap; min-height: auto; }
+    .question-text-area { flex-basis: 100%; order: 1; }
+    .drop-zone { order: 2; width: 130px; height: 130px; margin: 0; }
+    .question-actions { order: 3; }
+}
+@media screen and (max-width: 480px) { .drop-zone { width: 110px; height: 110px; } }
+
+/* ============================================================
+   WALL
+   ============================================================ */
+.orb-zone { position: relative; display: block; width: 100%; box-sizing: border-box; }
+.wall-perspective { perspective: 2200px; perspective-origin: 50% 35%; width: 100%; }
+.wall-card { transform-origin: center center; will-change: transform; width: 100%; }
 .wall-face {
-    background: #ffffff;
-    border: 1px solid #0a0a0a;
-    box-shadow:
-        4px 4px 0 #666,
-        8px 8px 0 #aaa,
-        11px 11px 16px rgba(0,0,0,0.13);
-    padding: 2px;
-    width: 100%;
-    box-sizing: border-box;
+    background: #ffffff; border: 1px solid #0a0a0a;
+    box-shadow: 4px 4px 0 #666, 8px 8px 0 #aaa, 11px 11px 16px rgba(0,0,0,0.13);
+    padding: 2px; width: 100%; box-sizing: border-box;
 }
 
 /* ============================================================
@@ -467,414 +295,228 @@ layout: default
 .tiles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-    gap: 2px;
-    width: 100%;
-    box-sizing: border-box;
+    gap: 2px; width: 100%; box-sizing: border-box;
 }
-
-@media screen and (min-width: 1400px) {
-    .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
-}
-
-@media screen and (min-width: 1800px) {
-    .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-}
-
-@media screen and (max-width: 480px) {
-    .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-}
+@media screen and (min-width: 1400px) { .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
+@media screen and (min-width: 1800px) { .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
+@media screen and (max-width: 480px)  { .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
 
 /* ============================================================
    INDIVIDUAL TILE
    ============================================================ */
 .tile {
     aspect-ratio: 1 / 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    background: #ffffff;
-    border: 1px solid #0a0a0a;
-    cursor: grab;
-    box-sizing: border-box;
-    padding: 7px 5px 5px;
-    overflow: hidden;
-    position: relative;
-    appearance: none;
-    -webkit-appearance: none;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    background: #ffffff; border: 1px solid #0a0a0a;
+    cursor: grab; box-sizing: border-box;
+    padding: 7px 5px 5px; overflow: hidden; position: relative;
+    appearance: none; -webkit-appearance: none;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    text-align: center;
-    outline: none;
-    user-select: none;
-    touch-action: none;
+    text-align: center; outline: none;
+    user-select: none; touch-action: none;
 }
-
 .tile:active { cursor: grabbing; }
-
-.tile:hover,
-.tile:focus,
-.tile:focus-visible {
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: inset 0 0 0 2px #0a0a0a;
-    z-index: 4;
+.tile:hover, .tile:focus, .tile:focus-visible {
+    background: rgba(255,255,255,0.85);
+    box-shadow: inset 0 0 0 2px #0a0a0a; z-index: 4;
 }
 
 .tile-img-wrap {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 0;
-    overflow: hidden;
-    padding: 4px 4px 0;
-    box-sizing: border-box;
+    flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 0; overflow: hidden;
+    padding: 4px 4px 0; box-sizing: border-box;
 }
-
 .tile img {
-    max-width: 88%;
-    max-height: 88%;
-    object-fit: contain;
-    display: block;
+    max-width: 88%; max-height: 88%;
+    object-fit: contain; display: block;
     filter: grayscale(100%) contrast(1.1);
     pointer-events: none;
 }
 
-/* Caption: hidden by default, shown when grid has show-captions class */
+/* Title always visible; metric only when show-captions class is present */
 .tile-caption {
-    display: none;
-    flex-shrink: 0;
-    width: 100%;
+    flex-shrink: 0; width: 100%;
     border-top: 1px solid rgba(0,0,0,0.1);
-    margin-top: 4px;
-    padding-top: 4px;
+    margin-top: 4px; padding-top: 4px;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.72em;
-    line-height: 1.25;
-    color: #0a0a0a;
-    text-align: center;
+    font-size: 0.72em; line-height: 1.25;
+    color: #0a0a0a; text-align: center;
 }
-
-.tiles-grid.show-captions .tile-caption { display: block; }
-
 .tile-caption strong { display: block; font-weight: bold; }
-
 .tile-caption .tile-metric {
-    display: block;
-    color: #666;
-    margin-top: 1px;
-    font-size: 0.9em;
+    display: none; color: #666; margin-top: 1px; font-size: 0.9em;
 }
+.tiles-grid.show-captions .tile-caption .tile-metric { display: block; }
 
 /* ============================================================
-   DRAG GHOST (pointer-based)
+   DRAG GHOST
    ============================================================ */
 .drag-ghost {
-    position: fixed;
-    z-index: 5000;
-    pointer-events: none;
+    position: fixed; z-index: 5000; pointer-events: none;
     opacity: 0.88;
     box-shadow: 4px 4px 14px rgba(0,0,0,0.32);
-    transform: scale(1.06);
-    transform-origin: top left;
-    background: #fff;
-    border: 1px solid #0a0a0a;
-    overflow: hidden;
+    transform: scale(1.06); transform-origin: top left;
+    background: #fff; border: 1px solid #0a0a0a; overflow: hidden;
 }
 
 /* ============================================================
    INTRO MODAL
    ============================================================ */
 #intro-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(10,10,10,0.86);
-    z-index: 2000;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 3.5rem 2rem 2rem;
-    overflow-y: auto;
-    backdrop-filter: blur(2px);
-    -webkit-overflow-scrolling: touch;
+    position: fixed; inset: 0; background: rgba(10,10,10,0.86);
+    z-index: 2000; display: flex; align-items: flex-start; justify-content: center;
+    padding: 3.5rem 2rem 2rem; overflow-y: auto;
+    backdrop-filter: blur(2px); -webkit-overflow-scrolling: touch;
 }
-
 #intro-modal.hidden { display: none; }
 
 .modal-inner {
-    position: relative;
-    max-width: 560px;
-    width: 100%;
-    padding: 2.75rem;
-    border: 1px solid rgba(255,255,255,0.22);
-    color: #f8f5ee;
-    margin-bottom: 2rem;
+    position: relative; max-width: 560px; width: 100%;
+    padding: 2.75rem; border: 1px solid rgba(255,255,255,0.22);
+    color: #f8f5ee; margin-bottom: 2rem;
 }
-
 .modal-inner::before {
-    content: '';
-    position: absolute;
+    content: ''; position: absolute;
     top: 6px; left: 6px; right: -6px; bottom: -6px;
-    border: 1px solid rgba(255,255,255,0.08);
-    pointer-events: none;
+    border: 1px solid rgba(255,255,255,0.08); pointer-events: none;
 }
-
 .modal-close {
-    position: absolute;
-    top: 0.9rem; right: 0.9rem;
-    background: none;
-    border: 1px solid rgba(255,255,255,0.28);
-    color: #f8f5ee;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 1rem;
-    width: 1.75rem; height: 1.75rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; top: 0.9rem; right: 0.9rem;
+    background: none; border: 1px solid rgba(255,255,255,0.28);
+    color: #f8f5ee; font-family: 'Times New Roman', Times, serif;
+    font-size: 1rem; width: 1.75rem; height: 1.75rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: background 0.15s;
 }
-
 .modal-close:hover, .modal-close:focus-visible {
     background: rgba(255,255,255,0.14);
-    outline: 1px solid #f8f5ee;
-    outline-offset: 2px;
+    outline: 1px solid #f8f5ee; outline-offset: 2px;
 }
-
 .modal-eyebrow {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(248,245,238,0.42);
-    margin-bottom: 0.85rem;
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(248,245,238,0.42); margin-bottom: 0.85rem;
 }
-
 .modal-inner h2 {
-    font-size: 1.35rem;
-    font-weight: bold;
-    line-height: 1.3;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.9rem;
+    font-size: 1.35rem; font-weight: bold; line-height: 1.3;
+    margin-bottom: 1.2rem; padding-bottom: 0.9rem;
     border-bottom: 1px solid rgba(255,255,255,0.16);
 }
-
 .modal-inner p {
-    font-size: 0.87rem;
-    line-height: 1.76;
-    color: rgba(248,245,238,0.76);
-    margin-bottom: 0.85rem;
+    font-size: 0.87rem; line-height: 1.76;
+    color: rgba(248,245,238,0.76); margin-bottom: 0.85rem;
 }
-
 .ctrl-list {
-    margin: 1.2rem 0 0;
-    padding: 0.9rem 1rem;
+    margin: 1.2rem 0 0; padding: 0.9rem 1rem;
     border: 1px solid rgba(255,255,255,0.11);
     background: rgba(255,255,255,0.04);
 }
-
 .ctrl-list-heading {
-    font-size: 0.57rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(248,245,238,0.38);
-    margin-bottom: 0.6rem;
-    display: block;
+    font-size: 0.57rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(248,245,238,0.38); margin-bottom: 0.6rem; display: block;
 }
-
 .ctrl-row { display: flex; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.42rem; }
-
 .ctrl-key {
-    flex-shrink: 0;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 2px;
-    padding: 0.07rem 0.38rem;
-    font-family: 'Courier New', monospace;
-    font-size: 0.66rem;
-    color: rgba(248,245,238,0.8);
-    min-width: 2rem;
-    text-align: center;
+    flex-shrink: 0; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 2px;
+    padding: 0.07rem 0.38rem; font-family: 'Courier New', monospace;
+    font-size: 0.66rem; color: rgba(248,245,238,0.8);
+    min-width: 2rem; text-align: center;
 }
-
 .ctrl-desc { font-size: 0.71rem; color: rgba(248,245,238,0.52); line-height: 1.45; }
-
 .modal-begin {
-    display: block;
-    width: 100%;
-    margin-top: 1.75rem;
-    padding: 0.65rem;
-    background: none;
-    border: 1px solid rgba(248,245,238,0.42);
-    color: #f8f5ee;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 0.82rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.18s, color 0.18s;
+    display: block; width: 100%; margin-top: 1.75rem; padding: 0.65rem;
+    background: none; border: 1px solid rgba(248,245,238,0.42);
+    color: #f8f5ee; font-family: 'Times New Roman', Times, serif;
+    font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: background 0.18s, color 0.18s;
 }
-
 .modal-begin:hover, .modal-begin:focus-visible { background: #f8f5ee; color: #0a0a0a; outline: none; }
-
 .modal-tap-hint {
-    display: none;
-    text-align: center;
-    font-size: 0.68rem;
-    color: rgba(248,245,238,0.35);
-    margin-top: 0.6rem;
-    font-style: italic;
-    font-family: 'Times New Roman', Times, Georgia, serif;
+    display: none; text-align: center; font-size: 0.68rem;
+    color: rgba(248,245,238,0.35); margin-top: 0.6rem;
+    font-style: italic; font-family: 'Times New Roman', Times, Georgia, serif;
 }
-
 @media screen and (max-width: 768px) { .modal-tap-hint { display: block; } }
 
 /* ============================================================
    LIGHTBOX
    ============================================================ */
 #lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(10,10,10,0.76);
-    z-index: 1500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    backdrop-filter: blur(1px);
+    position: fixed; inset: 0; background: rgba(10,10,10,0.76);
+    z-index: 1500; display: flex; align-items: center; justify-content: center;
+    padding: 2rem; backdrop-filter: blur(1px);
 }
-
 #lightbox.hidden { display: none; }
 
 .lb-inner {
-    position: relative;
-    background: #ffffff;
-    border: 1px solid #0a0a0a;
-    max-width: 1012px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    display: grid;
-    grid-template-columns: 1fr 1.25fr;
+    position: relative; background: #ffffff; border: 1px solid #0a0a0a;
+    max-width: 1012px; width: 100%; max-height: 90vh; overflow-y: auto;
+    display: grid; grid-template-columns: 1fr 1.25fr;
     box-shadow: 5px 5px 0 #444, 10px 10px 22px rgba(0,0,0,0.38);
 }
-
 @media screen and (max-width: 660px) { .lb-inner { grid-template-columns: 1fr; } }
 
 .lb-close {
-    position: sticky;
-    top: 0.7rem;
-    right: 0.7rem;
-    float: right;
-    background: none;
-    border: 1px solid #0a0a0a;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 0.9rem;
-    width: 1.75rem; height: 1.75rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: sticky; top: 0.7rem; right: 0.7rem; float: right;
+    background: none; border: 1px solid #0a0a0a;
+    font-family: 'Times New Roman', Times, serif; font-size: 0.9rem;
+    width: 1.75rem; height: 1.75rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
     margin: 0.7rem 0.7rem 0 auto;
-    transition: background 0.15s, color 0.15s;
-    z-index: 10;
+    transition: background 0.15s, color 0.15s; z-index: 10;
 }
-
 .lb-close:hover, .lb-close:focus-visible { background: #0a0a0a; color: #ffffff; outline: none; }
 
-/* Image column: no caption, image fills space */
+/* Image column — no title overlay; image fills available space */
 .lb-image-col {
-    border-right: 1px solid #0a0a0a;
-    padding: 1.25rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    min-height: 300px;
+    border-right: 1px solid #0a0a0a; padding: 1.25rem 1rem;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #ffffff; min-height: 300px;
 }
-
 .lb-image-col img {
-    max-width: 96%;
-    max-height: 440px;
+    max-width: 96%; max-height: 440px;
     object-fit: contain;
-    filter: grayscale(100%) contrast(1.1);
-    display: block;
+    filter: grayscale(100%) contrast(1.1); display: block;
 }
-
 .lb-no-image { flex: 1; min-height: 120px; }
 
-.lb-text-col {
-    padding: 1.75rem;
-    display: flex;
-    flex-direction: column;
-}
-
+/* Text column */
+.lb-text-col { padding: 1.75rem; display: flex; flex-direction: column; }
 .lb-eyebrow {
-    font-size: 0.58rem;
-    letter-spacing: 0.17em;
-    text-transform: uppercase;
-    color: #999;
-    margin-bottom: 0.6rem;
+    font-size: 0.58rem; letter-spacing: 0.17em; text-transform: uppercase;
+    color: #999; margin-bottom: 0.6rem;
 }
-
 .lb-text-col h3 {
-    font-size: 1.1rem;
-    font-weight: bold;
-    line-height: 1.3;
-    margin-bottom: 0.9rem;
-    padding-bottom: 0.7rem;
-    border-bottom: 1px solid #0a0a0a;
-    color: #0a0a0a;
+    font-size: 1.1rem; font-weight: bold; line-height: 1.3;
+    margin-bottom: 0.9rem; padding-bottom: 0.7rem;
+    border-bottom: 1px solid #0a0a0a; color: #0a0a0a;
 }
 
-/* Stats list — replaces body text area */
+/* Stats bullet list */
 .lb-stats-list {
-    list-style: disc;
-    padding-left: 1.1rem;
-    margin: 0 0 0.9rem;
+    list-style: disc; padding-left: 1.1rem; margin: 0 0 0.9rem;
 }
-
 .lb-stats-list li {
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.88rem;
-    line-height: 1.82;
-    color: #111;
+    font-size: 0.88rem; line-height: 1.82; color: #111;
 }
-
 .lb-stats-list li .lb-na { color: #aaa; font-style: italic; }
 
 .lb-body p {
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.9rem;
-    line-height: 1.82;
-    color: #111;
-    margin-bottom: 0.9rem;
+    font-size: 0.9rem; line-height: 1.82; color: #111; margin-bottom: 0.9rem;
 }
-
-.lb-examples {
-    margin-top: auto;
-    padding-top: 0.9rem;
-    border-top: 1px solid #e8e4dc;
-}
-
+.lb-examples { margin-top: auto; padding-top: 0.9rem; border-top: 1px solid #e8e4dc; }
 .lb-examples-label {
-    font-size: 0.57rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #999;
-    margin-bottom: 0.35rem;
-    display: block;
+    font-size: 0.57rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: #999; margin-bottom: 0.35rem; display: block;
 }
-
-.lb-examples-text {
-    font-size: 0.75rem;
-    color: #777;
-    line-height: 1.65;
-    font-style: italic;
-}
+.lb-examples-text { font-size: 0.75rem; color: #777; line-height: 1.65; font-style: italic; }
 </style>
 
-<!-- Skip-navigation link -->
 <a class="skip-to-tiles" href="#first-tile">Skip to visualization</a>
 
 <!-- ============================================================
@@ -893,15 +535,19 @@ layout: default
       <span class="ctrl-list-heading">Controls</span>
       <div class="ctrl-row">
         <span class="ctrl-key">Drag</span>
-        <span class="ctrl-desc">Drag a tile to the framed space above to answer the question</span>
+        <span class="ctrl-desc">Drag a tile to the framed space above to answer the current question</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Tab</span>
-        <span class="ctrl-desc">Move between tiles</span>
+        <span class="ctrl-desc">Move keyboard focus between tiles</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">D</span>
+        <span class="ctrl-desc">When a tile is focused, submit it as your answer to the current question</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Enter</span>
-        <span class="ctrl-desc">Open selected tile's detail view</span>
+        <span class="ctrl-desc">Open the focused tile's detail view</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Esc</span>
@@ -940,15 +586,12 @@ layout: default
 <aside class="scrolly-toc-sidebar" id="interact-toc-sidebar" aria-label="Table of contents">
   <p class="scrolly-toc-heading">Contents</p>
   <ul class="scrolly-toc-list">
-    <li>
-      <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
-    </li>
+    <li><a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a></li>
     {% assign toc_essays = site.essay | sort: 'order' %}
     {% for essay in toc_essays %}
     <li class="toc-chapter-entry">
       <a href="{{ essay.url | prepend: site.baseurl }}"
-         class="scrolly-toc-link"
-         data-toc-chapter="{{ essay.order }}">
+         class="scrolly-toc-link" data-toc-chapter="{{ essay.order }}">
         {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
       </a>
     </li>
@@ -973,64 +616,40 @@ layout: default
 <div id="interact-wrapper">
   <div class="wall-scene">
 
-    <!-- ── Question Bar ──────────────────────────────────────── -->
-    <div class="question-bar" id="question-bar">
-      <div class="question-text-area">
-        <p class="q-label" id="q-label">Question 1 of 4</p>
-        <p class="q-text" id="q-text">—</p>
-        <p class="q-response" id="q-response" style="display:none;"></p>
-      </div>
-
-      <div class="drop-zone" id="drop-zone"
-           role="region"
-           aria-label="Answer drop zone — drag a tile here">
-        <span class="dz-hint" id="dz-hint">drag a tile<br>here</span>
-      </div>
-
-      <div class="question-actions">
-        <button class="q-action-btn" id="btn-skip-next">Skip Question</button>
-        <button class="q-action-btn" id="btn-reveal">Reveal Answer</button>
-      </div>
-    </div>
-
-    <!-- ── Controls Bar ──────────────────────────────────────── -->
-    <div class="face-controls-bar" aria-live="polite">
-      <!-- Face toggles -->
+    <!-- Row 1: Controls (face toggles + sort) -->
+    <div class="controls-bar" aria-live="polite">
       <div class="face-toggle-group">
         <span class="face-toggle-dot filled" id="dot-front"></span>
-        <button class="face-toggle-label active"
-                id="label-front"
-                aria-label="Show Costume Type face"
-                aria-pressed="true">Costume Type</button>
+        <button class="face-toggle-label active" id="label-front"
+                aria-label="Show Costume Type face" aria-pressed="true">Costume Type</button>
         <span class="face-divider-glyph">◆</span>
-        <button class="face-toggle-label"
-                id="label-back"
-                aria-label="Show Ethnic Identity face"
-                aria-pressed="false">Ethnic Identity</button>
+        <button class="face-toggle-label" id="label-back"
+                aria-label="Show Ethnic Identity face" aria-pressed="false">Ethnic Identity</button>
         <span class="face-toggle-dot" id="dot-back"></span>
         <span class="face-f-hint">or press <kbd>F</kbd></span>
       </div>
 
-      <!-- Sort group — front (Costume Type) -->
+      <!-- Sort: Costume Type -->
       <div class="sort-group" id="sort-group-front" aria-label="Sort costume types by">
         <span class="sort-group-prefix">sort by:</span>
         <button class="sort-btn active" data-field="alpha" data-face="front">a–z</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="pct" data-face="front">percent in catalog</button>
+        <button class="sort-btn" data-field="pct"   data-face="front">percent in catalog</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="men" data-face="front">percent of men's costumes</button>
+        <button class="sort-btn" data-field="men"   data-face="front">percent of men's costumes</button>
         <span class="sort-divider">|</span>
         <button class="sort-btn" data-field="women" data-face="front">percent of women's costumes</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="cost" data-face="front">average cost</button>
+        <button class="sort-btn" data-field="cost"  data-face="front">average cost</button>
       </div>
 
-      <!-- Sort group — back (Ethnic Identity) -->
-      <div class="sort-group" id="sort-group-back" style="display:none;" aria-label="Sort ethnic identities by">
+      <!-- Sort: Ethnic Identity (hidden until flip) -->
+      <div class="sort-group" id="sort-group-back" style="display:none;"
+           aria-label="Sort ethnic identities by">
         <span class="sort-group-prefix">sort by:</span>
-        <button class="sort-btn active" data-field="alpha" data-face="back">a–z</button>
+        <button class="sort-btn active" data-field="alpha"    data-face="back">a–z</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="pct" data-face="back">percent in catalog</button>
+        <button class="sort-btn" data-field="pct"     data-face="back">percent in catalog</button>
         <span class="sort-divider">|</span>
         <button class="sort-btn" data-field="pct1910" data-face="back">percent of 1910 state census</button>
         <span class="sort-divider">|</span>
@@ -1040,7 +659,27 @@ layout: default
       </div>
     </div>
 
-    <!-- ── Wall ──────────────────────────────────────────────── -->
+    <!-- Row 2: Question bar -->
+    <div class="question-bar" id="question-bar">
+      <div class="question-text-area">
+        <span class="q-label" id="q-label">Question 1 of 4</span>
+        <p class="q-text" id="q-text">—</p>
+        <p class="q-response" id="q-response"></p>
+      </div>
+
+      <div class="drop-zone" id="drop-zone"
+           role="region"
+           aria-label="Answer drop zone — drag a tile here or focus a tile and press D">
+        <span class="dz-hint" id="dz-hint">drag a tile<br>here</span>
+      </div>
+
+      <div class="question-actions">
+        <button class="q-action-btn" id="btn-skip-next">Skip Question</button>
+        <button class="q-action-btn" id="btn-reveal">Reveal Answer</button>
+      </div>
+    </div>
+
+    <!-- Row 3: Wall -->
     <div class="orb-zone" id="orb-zone">
       <div class="wall-perspective">
         <div class="wall-card" id="wall-card">
@@ -1052,30 +691,30 @@ layout: default
       </div>
     </div>
 
-  </div><!-- /wall-scene -->
-</div><!-- /interact-wrapper -->
+  </div>
+</div>
 
 {% include essay/footer-scrollytelling.html %}
 
 <!-- ============================================================
-     DATA — Jekyll/Liquid injects CSV rows as JSON
+     DATA
      ============================================================ -->
 <script>
 var TYPE_DATA = [
   {% for item in site.data.interact_type %}
   {
-    filename:   {{ item.filename    | jsonify }},
-    title:      {{ item.title       | jsonify }},
-    count:      {{ item.count       | plus: 0 }},
-    percentage: {{ item.percentage  | jsonify }},
-    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0.0 }},
-    examples:   {{ item.examples    | jsonify }},
-    alt_text:   {{ item.alt_text    | jsonify }},
-    description:{{ item.description | jsonify }},
-    full:       {{ item.full        | jsonify }},
-    men:        {{ item.men         | jsonify }},
-    women:      {{ item.women       | jsonify }},
-    cost:       {{ item.cost        | jsonify }}
+    filename:    {{ item.filename    | jsonify }},
+    title:       {{ item.title       | jsonify }},
+    count:       {{ item.count       | plus: 0 }},
+    percentage:  {{ item.percentage  | jsonify }},
+    pct:         {{ item.percentage  | remove: "%" | strip | plus: 0.0 }},
+    women:       {{ item.women       | jsonify }},
+    men:         {{ item.men         | jsonify }},
+    cost:        {{ item.cost        | jsonify }},
+    examples:    {{ item.examples    | jsonify }},
+    alt_text:    {{ item.alt_text    | jsonify }},
+    description: {{ item.description | jsonify }},
+    full:        {{ item.full        | jsonify }}
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
@@ -1083,116 +722,62 @@ var TYPE_DATA = [
 var ETHNIC_DATA = [
   {% for item in site.data.interact_ethnic %}
   {
-    filename:   {{ item.filename    | jsonify }},
-    title:      {{ item.title       | jsonify }},
-    count:      {{ item.count       | plus: 0 }},
-    percentage: {{ item.percentage  | jsonify }},
-    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0.0 }},
-    examples:   {{ item.examples    | jsonify }},
-    alt_text:   {{ item.alt_text    | jsonify }},
-    description:{{ item.description | jsonify }},
-    full:       {{ item.full        | jsonify }},
-    pct1910:    {{ item["1910_percent"] | jsonify }},
-    pct1900:    {{ item["1900_percent"] | jsonify }},
-    distance:   {{ item.distance    | jsonify }}
+    filename:    {{ item.filename    | jsonify }},
+    title:       {{ item.title       | jsonify }},
+    count:       {{ item.count       | plus: 0 }},
+    percentage:  {{ item.percentage  | jsonify }},
+    pct:         {{ item.percentage  | remove: "%" | strip | plus: 0.0 }},
+    women:       {{ item.women       | jsonify }},
+    men:         {{ item.men         | jsonify }},
+    cost:        {{ item.cost        | jsonify }},
+    pct1910:     {{ item["1910_percent"] | jsonify }},
+    pct1900:     {{ item["1900_percent"] | jsonify }},
+    distance:    {{ item.distance    | jsonify }},
+    examples:    {{ item.examples    | jsonify }},
+    alt_text:    {{ item.alt_text    | jsonify }},
+    description: {{ item.description | jsonify }},
+    full:        {{ item.full        | jsonify }}
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
 
-/* Image paths */
 var IMG_BASE  = "{{ site.baseurl }}/objects/interact/";
 var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
 </script>
 
 <!-- ============================================================
-     QUESTION + RESPONSE DATA
+     QUESTION / RESPONSE DATA
      ============================================================ -->
 <script>
-/* Question definitions for each face */
-var TYPE_QUESTIONS = [
-  {
-    text:     'Which type appeared most frequently in the catalog?',
-    field:    'pct',
-    labelFn:  function(item) {
-      var v = item.pct;
-      return (v !== null && v !== undefined && v !== '') ? formatCatPct(v) + ' of catalog' : 'n/a';
-    }
-  },
-  {
-    text:     'Which type had the highest percentage of women\'s costumes?',
-    field:    'women',
-    labelFn:  function(item) {
-      var v = parseNumeric(item.women);
-      return v !== null ? formatCatPct(v) + ' of costumes under women\'s sections' : 'n/a';
-    }
-  },
-  {
-    text:     'Which type had the highest percentage of men\'s costumes?',
-    field:    'men',
-    labelFn:  function(item) {
-      var v = parseNumeric(item.men);
-      return v !== null ? formatCatPct(v) + ' of costumes under men\'s sections' : 'n/a';
-    }
-  },
-  {
-    text:     'Which costume type had the highest average cost?',
-    field:    'cost',
-    labelFn:  function(item) {
-      var v = item.cost;
-      return (v !== null && v !== undefined && String(v).trim() !== '') ? esc(String(v).trim()) + ': average cost' : 'n/a';
-    }
-  }
+/* Defined after utilities are available in the controller IIFE.
+   We declare these in global scope so Jekyll can inject them cleanly. */
+
+var TYPE_QUESTIONS_DEF = [
+  { text: 'Which type appeared most frequently in the catalog?',          field: 'pct'   },
+  { text: 'Which type had the highest percentage of women\'s costumes?',  field: 'women' },
+  { text: 'Which type had the highest percentage of men\'s costumes?',    field: 'men'   },
+  { text: 'Which costume type had the highest average cost?',             field: 'cost'  }
 ];
 
-var ETHNIC_QUESTIONS = [
-  {
-    text:     'Which group appeared most frequently in the catalog?',
-    field:    'pct',
-    labelFn:  function(item) {
-      var v = item.pct;
-      return (v !== null && v !== undefined && v !== '') ? formatCatPct(v) + ' of catalog' : 'n/a';
-    }
-  },
-  {
-    text:     'In 1910, which group had the highest population in Washington State?',
-    field:    'pct1910',
-    labelFn:  function(item) {
-      var v = formatPopPct(item.pct1910);
-      return v ? v + ' of 1910 census' : 'n/a';
-    }
-  },
-  {
-    text:     'In 1900, which group had the highest population in Washington State?',
-    field:    'pct1900',
-    labelFn:  function(item) {
-      var v = formatPopPct(item.pct1900);
-      return v ? v + ' of 1900 census' : 'n/a';
-    }
-  },
-  {
-    text:     'If associated with a nation, which group is the greatest distance from Spokane?',
-    field:    'distance',
-    labelFn:  function(item) {
-      var v = formatDistance(item.distance);
-      return v ? v : 'n/a';
-    }
-  }
+var ETHNIC_QUESTIONS_DEF = [
+  { text: 'Which group appeared most frequently in the catalog?',                        field: 'pct'      },
+  { text: 'In 1910, which group had the highest population in Washington State?',        field: 'pct1910'  },
+  { text: 'In 1900, which group had the highest population in Washington State?',        field: 'pct1900'  },
+  { text: 'If associated with a nation, which group is the greatest distance from Spokane?', field: 'distance' }
 ];
 
-/* Response messages — 3 sentences of Lorem ipsum each.
-   Index matches question index (0–3 per face). */
 var TYPE_RESPONSES = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur.',
-  'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti. Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident similique sunt in culpa. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat.',
-  'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint. Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.'
+  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur.',
+  'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti. Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident similique sunt in culpa qui officia. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.',
+  'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae. Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.'
 ];
 
 var ETHNIC_RESPONSES = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  'Nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst. Venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada.',
-  'Morbi non arcu risus quis varius quam quisque id diam vel quam elementum pulvinar etiam non quam. Consequat semper viverra nam libero justo laoreet sit amet cursus sit amet dictum sit amet justo donec. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat semper viverra nam libero.',
-  'Feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet consectetur. Congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit.'
+  'Nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst. Venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada fames.',
+  'Morbi non arcu risus quis varius quam quisque id diam vel quam elementum pulvinar etiam non quam lacus. Consequat semper viverra nam libero justo laoreet sit amet cursus sit amet dictum sit amet justo donec enim. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat semper viverra.',
+  'Feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet consectetur. Congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus et netus. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet.'
 ];
 </script>
 
@@ -1208,39 +793,47 @@ var ETHNIC_RESPONSES = [
   ---------------------------------------------------------- */
   function esc(str) {
     return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  /**
+   * Parse a numeric value from strings like "36.5%", "$8.31", "4859", "0.44"
+   * Strips $, %, commas and whitespace before parsing.
+   */
   function parseNumeric(val) {
     if (val === null || val === undefined || val === '' || val === false) return null;
-    var s = String(val).replace(/[$,\s]/g, '');
+    var s = String(val).replace(/[$,%\s]/g, '');
     var n = parseFloat(s);
     return isNaN(n) ? null : n;
   }
 
+  /** Format a catalog percentage number: 17.1 → "17.1%", 9 → "9%" */
   function formatCatPct(num) {
-    if (num === null || num === undefined || num === '') return null;
     var n = parseFloat(num);
     if (isNaN(n)) return null;
     return (n % 1 === 0 ? n.toFixed(0) : String(n)) + '%';
   }
 
+  /** Format a population percentage stored as decimal: 0.44 → ".44%" */
   function formatPopPct(val) {
-    if (val === null || val === undefined || val === '' || val === false) return null;
-    var n = parseFloat(val);
-    if (isNaN(n) || n === 0) return null;
+    var n = parseNumeric(val);
+    if (n === null || n === 0) return null;
     var s = n.toString().replace(/^0\./, '.');
     return s + '%';
   }
 
+  /** Format distance: 4859 → "4,859 miles from Spokane" */
   function formatDistance(val) {
-    if (val === null || val === undefined || val === '' || val === false) return null;
-    var n = parseInt(val, 10);
-    if (isNaN(n) || n === 0) return null;
-    return n.toLocaleString('en-US') + ' miles from Spokane';
+    var n = parseNumeric(val);
+    if (n === null || n === 0) return null;
+    return Math.round(n).toLocaleString('en-US') + ' miles from Spokane';
+  }
+
+  /** Format cost: 8.31 → "$8.31" */
+  function formatCost(val) {
+    var n = parseNumeric(val);
+    return n !== null ? '$' + n.toFixed(2) : null;
   }
 
   function thumbSrc(filename) {
@@ -1248,42 +841,91 @@ var ETHNIC_RESPONSES = [
     return IMG_SMALL + filename.trim().replace(/\.(png|gif|webp|jpeg)$/i, '.jpg');
   }
 
-  function alphaSort(a, b) {
-    return a.title.localeCompare(b.title);
+  /* ----------------------------------------------------------
+     LABEL FUNCTIONS (per question, per face)
+     Called with an item, return the display metric string.
+  ---------------------------------------------------------- */
+  function makeTypeLabelFns() {
+    return [
+      function(item) { // pct of catalog
+        var v = parseFloat(item.pct);
+        return (!isNaN(v) && v > 0) ? formatCatPct(v) + ' of catalog' : 'n/a';
+      },
+      function(item) { // women
+        var v = parseNumeric(item.women);
+        return v !== null ? formatCatPct(v) + ' of costumes under women\'s sections' : 'n/a';
+      },
+      function(item) { // men
+        var v = parseNumeric(item.men);
+        return v !== null ? formatCatPct(v) + ' of costumes under men\'s sections' : 'n/a';
+      },
+      function(item) { // cost
+        var v = formatCost(item.cost);
+        return v ? v + ': average cost' : 'n/a';
+      }
+    ];
   }
 
-  function numericSortDesc(field) {
+  function makeEthnicLabelFns() {
+    return [
+      function(item) { // pct of catalog
+        var v = parseFloat(item.pct);
+        return (!isNaN(v) && v > 0) ? formatCatPct(v) + ' of catalog' : 'n/a';
+      },
+      function(item) { // 1910 census
+        var v = formatPopPct(item.pct1910);
+        return v ? v + ' of 1910 census' : 'n/a';
+      },
+      function(item) { // 1900 census
+        var v = formatPopPct(item.pct1900);
+        return v ? v + ' of 1900 census' : 'n/a';
+      },
+      function(item) { // distance
+        var v = formatDistance(item.distance);
+        return v ? v : 'n/a';
+      }
+    ];
+  }
+
+  var TYPE_LABEL_FNS   = makeTypeLabelFns();
+  var ETHNIC_LABEL_FNS = makeEthnicLabelFns();
+
+  /* Augment question definitions with label functions */
+  var TYPE_QUESTIONS   = TYPE_QUESTIONS_DEF.map(function(q, i) {
+    return { text: q.text, field: q.field, labelFn: TYPE_LABEL_FNS[i] };
+  });
+  var ETHNIC_QUESTIONS = ETHNIC_QUESTIONS_DEF.map(function(q, i) {
+    return { text: q.text, field: q.field, labelFn: ETHNIC_LABEL_FNS[i] };
+  });
+
+  /* ----------------------------------------------------------
+     SORTING
+  ---------------------------------------------------------- */
+  function sortAlpha(a, b) { return a.title.localeCompare(b.title); }
+
+  function sortNumericDesc(field) {
     return function(a, b) {
-      var va = parseNumeric(a[field]);
-      var vb = parseNumeric(b[field]);
+      var va = (field === 'pct') ? parseFloat(a.pct) : parseNumeric(a[field]);
+      var vb = (field === 'pct') ? parseFloat(b.pct) : parseNumeric(b[field]);
+      if (isNaN(va)) va = null; if (isNaN(vb)) vb = null;
       if (va === null && vb === null) return 0;
-      if (va === null) return 1;
+      if (va === null) return  1;   /* nulls to end */
       if (vb === null) return -1;
-      return vb - va;
+      return vb - va;              /* highest first */
     };
   }
 
   function sortData(data, field) {
-    if (!field || field === 'alpha') {
-      return data.slice().sort(alphaSort);
-    }
-    return data.slice().sort(numericSortDesc(field));
+    if (!field || field === 'alpha') return data.slice().sort(sortAlpha);
+    return data.slice().sort(sortNumericDesc(field));
   }
 
-  function getCorrectAnswerItem(data, field) {
-    var best = null;
-    var bestVal = -Infinity;
+  /** Return the item with the highest numeric value for field */
+  function getCorrectItem(data, field) {
+    var best = null, bestVal = -Infinity;
     data.forEach(function(item) {
-      var v;
-      if (field === 'pct') {
-        v = parseFloat(item.pct) || null;
-      } else {
-        v = parseNumeric(item[field]);
-      }
-      if (v !== null && v > bestVal) {
-        bestVal = v;
-        best = item;
-      }
+      var v = (field === 'pct') ? parseFloat(item.pct) : parseNumeric(item[field]);
+      if (v !== null && !isNaN(v) && v > bestVal) { bestVal = v; best = item; }
     });
     return best;
   }
@@ -1291,34 +933,21 @@ var ETHNIC_RESPONSES = [
   /* ----------------------------------------------------------
      STATE
   ---------------------------------------------------------- */
-  var currentFace   = 'front';
-  var isFlipping    = false;
+  var currentFace = 'front';
+  var isFlipping  = false;
 
-  /* Sorted working copies */
-  var currentTypeData   = sortData(TYPE_DATA, 'alpha');
+  var currentTypeData   = sortData(TYPE_DATA,   'alpha');
   var currentEthnicData = sortData(ETHNIC_DATA, 'alpha');
+  var activeSortField   = { front: 'alpha', back: 'alpha' };
 
-  /* Active sort fields per face */
-  var activeSortField = { front: 'alpha', back: 'alpha' };
+  var activeLabelFn = null;   /* non-null when tile metrics are visible */
 
-  /* Active caption label function (null = no captions shown) */
-  var activeLabelFn = null;
+  var qIdx      = 0;
+  var qAnswered = false;
+  var qFlipMode = false;
 
-  /* Question state */
-  var qIdx      = 0;      /* 0–3 */
-  var qAnswered = false;  /* current question answered */
-  var qFlipMode = false;  /* past end of cycle, showing Flip button */
-
-  /* Drag state */
-  var drag = {
-    active: false,
-    item: null,
-    sourceTileRect: null,
-    ghost: null,
-    pointerId: null,
-    offsetX: 0,
-    offsetY: 0
-  };
+  /* Drag */
+  var drag = { active: false, item: null, srcRect: null, ghost: null, offsetX: 0, offsetY: 0 };
 
   /* ----------------------------------------------------------
      DOM REFS
@@ -1347,42 +976,30 @@ var ETHNIC_RESPONSES = [
   var qResponse   = document.getElementById('q-response');
   var btnSkipNext = document.getElementById('btn-skip-next');
   var btnReveal   = document.getElementById('btn-reveal');
-  var sortGroupFront = document.getElementById('sort-group-front');
-  var sortGroupBack  = document.getElementById('sort-group-back');
+  var sgFront     = document.getElementById('sort-group-front');
+  var sgBack      = document.getElementById('sort-group-back');
 
   /* ----------------------------------------------------------
-     CURRENT DATA HELPERS
+     ACCESSORS
   ---------------------------------------------------------- */
-  function currentData() {
-    return currentFace === 'front' ? currentTypeData : currentEthnicData;
-  }
-
-  function currentQuestions() {
-    return currentFace === 'front' ? TYPE_QUESTIONS : ETHNIC_QUESTIONS;
-  }
-
-  function currentQ() {
-    return currentQuestions()[qIdx];
-  }
-
-  function currentResponses() {
-    return currentFace === 'front' ? TYPE_RESPONSES : ETHNIC_RESPONSES;
-  }
+  function currentData()      { return currentFace === 'front' ? currentTypeData   : currentEthnicData;  }
+  function currentRawData()   { return currentFace === 'front' ? TYPE_DATA         : ETHNIC_DATA;         }
+  function currentQs()        { return currentFace === 'front' ? TYPE_QUESTIONS    : ETHNIC_QUESTIONS;    }
+  function currentQ()         { return currentQs()[qIdx]; }
+  function currentResponses() { return currentFace === 'front' ? TYPE_RESPONSES    : ETHNIC_RESPONSES;    }
 
   /* ----------------------------------------------------------
-     QUESTION BAR UI
+     QUESTION BAR
   ---------------------------------------------------------- */
   function updateQuestionBar() {
-    var qs = currentQuestions();
-    var total = qs.length;
+    var qs = currentQs(), total = qs.length;
 
     if (qFlipMode) {
-      /* End-of-cycle state */
-      qLabel.textContent = 'End of cycle';
-      qText.textContent  = 'You have completed all ' + total + ' questions. Flip to the other face.';
+      qLabel.textContent      = 'End of cycle';
+      qText.textContent       = 'You have completed all ' + total + ' questions. Flip to the other face.';
       qResponse.style.display = 'none';
       btnSkipNext.textContent = 'Flip';
-      btnReveal.disabled = true;
+      btnReveal.disabled      = true;
       return;
     }
 
@@ -1390,69 +1007,71 @@ var ETHNIC_RESPONSES = [
     qText.textContent  = qs[qIdx].text;
 
     if (qAnswered) {
-      qResponse.textContent  = currentResponses()[qIdx];
+      qResponse.textContent   = currentResponses()[qIdx];
       qResponse.style.display = '';
       btnSkipNext.textContent = (qIdx === total - 1) ? 'Flip' : 'Next Question';
-      btnReveal.disabled = true;
+      btnReveal.disabled      = true;
     } else {
       qResponse.style.display = 'none';
       btnSkipNext.textContent = 'Skip Question';
-      btnReveal.disabled = false;
+      btnReveal.disabled      = false;
     }
   }
 
   /* ----------------------------------------------------------
-     SORT BUTTONS
+     SORT BUTTON SYNC
   ---------------------------------------------------------- */
   function updateSortButtons() {
     var face  = currentFace;
     var field = activeSortField[face];
-    var group = face === 'front' ? sortGroupFront : sortGroupBack;
-    group.querySelectorAll('.sort-btn').forEach(function(btn) {
-      btn.classList.toggle('active', btn.dataset.field === field);
+    var group = face === 'front' ? sgFront : sgBack;
+    group.querySelectorAll('.sort-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.field === field);
     });
   }
 
   function showSortGroups() {
-    sortGroupFront.style.display = (currentFace === 'front') ? '' : 'none';
-    sortGroupBack.style.display  = (currentFace === 'back')  ? '' : 'none';
+    sgFront.style.display = (currentFace === 'front') ? '' : 'none';
+    sgBack.style.display  = (currentFace === 'back')  ? '' : 'none';
   }
 
+  /**
+   * Apply a sort, re-render, optionally mark question as answered.
+   * triggerAnswered=true when initiated by the reader (sort btn / reveal btn / correct drop).
+   */
   function applySort(field, triggerAnswered) {
     activeSortField[currentFace] = field;
-    var data = sortData(
-      currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA,
-      field
-    );
-    if (currentFace === 'front') currentTypeData = data;
-    else currentEthnicData = data;
 
-    if (triggerAnswered && !qAnswered && !qFlipMode) {
-      /* Sorting reveals data — treat as answered */
-      qAnswered   = true;
+    var sorted = sortData(currentRawData(), field);
+    if (currentFace === 'front') currentTypeData   = sorted;
+    else                         currentEthnicData = sorted;
+
+    /* Non-alpha sort with triggerAnswered → reveal answer */
+    if (triggerAnswered && field !== 'alpha' && !qAnswered && !qFlipMode) {
+      qAnswered     = true;
       activeLabelFn = currentQ().labelFn;
-      /* Show correct answer in drop zone */
-      var correct = getCorrectAnswerItem(data, currentQ().field);
+      var correct   = getCorrectItem(currentRawData(), currentQ().field);
       if (correct) showCorrectInDropZone(correct);
       updateQuestionBar();
     }
 
-    renderTiles(data, currentFace);
-    if (activeLabelFn) tilesGrid.classList.add('show-captions');
+    renderTiles(sorted, currentFace);
     updateSortButtons();
   }
+
+  /* Sort-button click */
+  document.querySelectorAll('.sort-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      if (btn.dataset.face !== currentFace) return;
+      applySort(btn.dataset.field, true);
+    });
+  });
 
   /* ----------------------------------------------------------
      RENDER TILES
   ---------------------------------------------------------- */
   function renderTiles(data, faceName) {
     tilesGrid.innerHTML = '';
-    tilesGrid.setAttribute('aria-label',
-      faceName === 'front'
-        ? 'Costume types sorted alphabetically'
-        : 'Imitated ethnic identities sorted alphabetically'
-    );
-
     var frag = document.createDocumentFragment();
 
     data.forEach(function(item, index) {
@@ -1463,9 +1082,7 @@ var ETHNIC_RESPONSES = [
 
       var metricLabel = activeLabelFn ? activeLabelFn(item) : '';
       btn.setAttribute('aria-label',
-        item.title + (metricLabel ? ' — ' + metricLabel : '')
-      );
-
+        item.title + (metricLabel ? ' — ' + metricLabel : ''));
       if (index === 0) btn.id = 'first-tile';
 
       /* Image */
@@ -1474,14 +1091,14 @@ var ETHNIC_RESPONSES = [
       var src = thumbSrc(item.filename);
       if (src) {
         var img = document.createElement('img');
-        img.src     = src;
-        img.alt     = (item.alt_text && item.alt_text.trim()) ? item.alt_text.trim() : item.title;
+        img.src = src;
+        img.alt = (item.alt_text && item.alt_text.trim()) ? item.alt_text.trim() : item.title;
         img.loading = 'lazy';
         imgWrap.appendChild(img);
       }
       btn.appendChild(imgWrap);
 
-      /* Caption (title + metric, hidden by default via CSS) */
+      /* Caption: title always shown; metric shown only when show-captions */
       var cap = document.createElement('div');
       cap.className = 'tile-caption';
       cap.setAttribute('aria-hidden', 'true');
@@ -1490,33 +1107,37 @@ var ETHNIC_RESPONSES = [
         '<span class="tile-metric">' + esc(metricLabel) + '</span>';
       btn.appendChild(cap);
 
-      /* Click → lightbox */
-      btn.addEventListener('click', function() { openLightbox(item, faceName); });
+      /* Keyboard: Enter/Space → lightbox; D → submit as answer */
       btn.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(item, faceName); }
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(item, faceName);
+        }
+        if ((e.key === 'd' || e.key === 'D') &&
+            !qAnswered && !qFlipMode &&
+            lightbox.classList.contains('hidden')) {
+          e.preventDefault();
+          handleDrop(item, btn.getBoundingClientRect());
+        }
       });
 
-      /* Drag (pointer events) */
+      /* Click → lightbox */
+      btn.addEventListener('click', function() { openLightbox(item, faceName); });
+
+      /* Pointer drag */
       btn.addEventListener('pointerdown', onPointerDown);
 
       frag.appendChild(btn);
     });
 
     tilesGrid.appendChild(frag);
-
-    /* Maintain caption visibility state */
-    if (activeLabelFn) {
-      tilesGrid.classList.add('show-captions');
-    } else {
-      tilesGrid.classList.remove('show-captions');
-    }
+    tilesGrid.classList.toggle('show-captions', !!activeLabelFn);
   }
 
   /* ----------------------------------------------------------
      DROP ZONE
   ---------------------------------------------------------- */
   function clearDropZone() {
-    /* Remove any dz-card, keep the hint */
     var card = dropZone.querySelector('.dz-card');
     if (card) card.remove();
     if (dzHint) dzHint.style.display = '';
@@ -1524,46 +1145,39 @@ var ETHNIC_RESPONSES = [
 
   function showCorrectInDropZone(item) {
     clearDropZone();
-    if (dzHint) dzHint.style.display = 'none';
-    var card = buildDzCard(item, 'correct');
-    dropZone.appendChild(card);
+    dzHint.style.display = 'none';
+    dropZone.appendChild(buildDzCard(item, 'correct'));
   }
 
-  function showWrongInDropZone(item, sourceTileRect) {
+  function showWrongInDropZone(item, srcRect) {
     clearDropZone();
-    if (dzHint) dzHint.style.display = 'none';
+    dzHint.style.display = 'none';
     var card = buildDzCard(item, null);
     dropZone.appendChild(card);
 
-    /* Flash red tint */
+    /* Flash red */
     var tint = card.querySelector('.dz-tint');
-    if (tint) {
-      tint.className = 'dz-tint wrong-anim';
-    }
+    if (tint) tint.className = 'dz-tint wrong-anim';
 
-    /* After flash, animate card back toward original tile position */
     var dzRect = dropZone.getBoundingClientRect();
-
     setTimeout(function() {
       clearDropZone();
-
-      /* Fly-back element */
-      if (sourceTileRect) {
+      if (srcRect) {
+        /* Fly-back animation */
         var fly = document.createElement('div');
         fly.className = 'drag-ghost';
         fly.style.cssText =
-          'width:' + dzRect.width + 'px;' +
-          'height:' + dzRect.height + 'px;' +
-          'left:' + dzRect.left + 'px;' +
-          'top:' + dzRect.top + 'px;' +
-          'opacity:0.7;background:rgba(200,30,30,0.18);border:1px solid #aaa;' +
-          'transition:left 0.45s ease-in-out,top 0.45s ease-in-out,width 0.45s ease-in-out,height 0.45s ease-in-out,opacity 0.45s ease-in-out;';
+          'width:' + dzRect.width + 'px;height:' + dzRect.height + 'px;' +
+          'left:' + dzRect.left + 'px;top:' + dzRect.top + 'px;opacity:0.7;' +
+          'background:rgba(200,30,30,0.18);border:1px solid #aaa;' +
+          'transition:left .45s ease-in-out,top .45s ease-in-out,' +
+                      'width .45s ease-in-out,height .45s ease-in-out,opacity .45s ease-in-out;';
         document.body.appendChild(fly);
         void fly.offsetWidth;
-        fly.style.left    = sourceTileRect.left + 'px';
-        fly.style.top     = sourceTileRect.top  + 'px';
-        fly.style.width   = sourceTileRect.width  + 'px';
-        fly.style.height  = sourceTileRect.height + 'px';
+        fly.style.left    = srcRect.left   + 'px';
+        fly.style.top     = srcRect.top    + 'px';
+        fly.style.width   = srcRect.width  + 'px';
+        fly.style.height  = srcRect.height + 'px';
         fly.style.opacity = '0';
         setTimeout(function() { if (fly.parentNode) fly.parentNode.removeChild(fly); }, 500);
       }
@@ -1574,21 +1188,20 @@ var ETHNIC_RESPONSES = [
     var card = document.createElement('div');
     card.className = 'dz-card';
 
-    var imgWrap = document.createElement('div');
-    imgWrap.className = 'dz-card-img';
+    var iw = document.createElement('div');
+    iw.className = 'dz-card-img';
     var src = thumbSrc(item.filename);
     if (src) {
       var img = document.createElement('img');
-      img.src = src;
-      img.alt = item.title;
-      imgWrap.appendChild(img);
+      img.src = src; img.alt = item.title;
+      iw.appendChild(img);
     }
-    card.appendChild(imgWrap);
+    card.appendChild(iw);
 
-    var titleEl = document.createElement('div');
-    titleEl.className = 'dz-card-title';
-    titleEl.textContent = item.title;
-    card.appendChild(titleEl);
+    var t = document.createElement('div');
+    t.className   = 'dz-card-title';
+    t.textContent = item.title;
+    card.appendChild(t);
 
     var tint = document.createElement('div');
     tint.className = 'dz-tint' + (tintType ? ' ' + tintType : '');
@@ -1600,73 +1213,46 @@ var ETHNIC_RESPONSES = [
   /* ----------------------------------------------------------
      ANSWER CHECKING
   ---------------------------------------------------------- */
-  function handleDrop(item, sourceTileRect) {
+  function handleDrop(item, srcRect) {
     if (qAnswered || qFlipMode) return;
-
-    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
-    var correct = getCorrectAnswerItem(rawData, currentQ().field);
+    var correct = getCorrectItem(currentRawData(), currentQ().field);
     if (!correct) return;
 
     if (item.title === correct.title) {
-      /* ✓ Correct */
-      qAnswered    = true;
+      qAnswered     = true;
       activeLabelFn = currentQ().labelFn;
       showCorrectInDropZone(item);
-
-      /* Sort by question's metric */
-      applySort(currentQ().field, false);
+      applySort(currentQ().field, false);   /* sort without re-triggering answered state */
       tilesGrid.classList.add('show-captions');
       updateQuestionBar();
     } else {
-      /* ✗ Wrong */
-      showWrongInDropZone(item, sourceTileRect);
+      showWrongInDropZone(item, srcRect);
     }
   }
 
   /* ----------------------------------------------------------
-     SKIP / NEXT / FLIP  BUTTON
+     SKIP / NEXT / FLIP BUTTON
   ---------------------------------------------------------- */
   btnSkipNext.addEventListener('click', function() {
-    var text = btnSkipNext.textContent.trim();
+    if (btnSkipNext.textContent.trim() === 'Flip') { flipWall(); return; }
 
-    if (text === 'Flip') {
-      flipWall();
-      return;
-    }
+    /* Advance */
+    if (qIdx < currentQs().length - 1) { qIdx++; } else { qFlipMode = true; }
+    qAnswered = false;
 
-    /* Clear current display */
+    /* Reset display */
     clearDropZone();
     activeLabelFn = null;
     tilesGrid.classList.remove('show-captions');
     qResponse.style.display = 'none';
 
-    /* Reset sort to alpha */
-    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
-    var sorted  = sortData(rawData, 'alpha');
-    if (currentFace === 'front') currentTypeData = sorted;
-    else currentEthnicData = sorted;
+    /* Return to alpha */
+    var sorted = sortData(currentRawData(), 'alpha');
+    if (currentFace === 'front') currentTypeData   = sorted;
+    else                         currentEthnicData = sorted;
     activeSortField[currentFace] = 'alpha';
     renderTiles(sorted, currentFace);
     updateSortButtons();
-
-    /* Advance */
-    if (text === 'Next Question') {
-      qAnswered = false;
-      if (qIdx < 3) {
-        qIdx++;
-      } else {
-        qFlipMode = true;
-      }
-    } else {
-      /* Skip Question */
-      qAnswered = false;
-      if (qIdx < 3) {
-        qIdx++;
-      } else {
-        qFlipMode = true;
-      }
-    }
-
     updateQuestionBar();
   });
 
@@ -1675,12 +1261,10 @@ var ETHNIC_RESPONSES = [
   ---------------------------------------------------------- */
   btnReveal.addEventListener('click', function() {
     if (qAnswered || qFlipMode) return;
-
-    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
-    var correct = getCorrectAnswerItem(rawData, currentQ().field);
+    var correct = getCorrectItem(currentRawData(), currentQ().field);
     if (!correct) return;
 
-    qAnswered    = true;
+    qAnswered     = true;
     activeLabelFn = currentQ().labelFn;
     showCorrectInDropZone(correct);
     applySort(currentQ().field, false);
@@ -1689,58 +1273,42 @@ var ETHNIC_RESPONSES = [
   });
 
   /* ----------------------------------------------------------
-     SORT BUTTONS
-  ---------------------------------------------------------- */
-  document.querySelectorAll('.sort-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      if (btn.dataset.face !== currentFace) return;
-      var field = btn.dataset.field;
-      applySort(field, true /* triggers answered state if asking */);
-    });
-  });
-
-  /* ----------------------------------------------------------
      POINTER DRAG
   ---------------------------------------------------------- */
   function onPointerDown(e) {
-    if (e.button !== undefined && e.button !== 0) return; /* left click / touch only */
+    if (e.button !== undefined && e.button !== 0) return;
     if (qAnswered || qFlipMode) return;
     if (!lightbox.classList.contains('hidden')) return;
 
     var tile = e.currentTarget;
-    var idx  = parseInt(tile.dataset.itemIndex);
-    var data = currentData();
-    var item = data[idx];
+    var idx  = parseInt(tile.dataset.itemIndex, 10);
+    var item = currentData()[idx];
     if (!item) return;
 
     e.preventDefault();
     tile.setPointerCapture(e.pointerId);
 
-    var rect = tile.getBoundingClientRect();
-    drag.active       = true;
-    drag.item         = item;
-    drag.sourceTileRect = rect;
-    drag.pointerId    = e.pointerId;
-    drag.offsetX      = e.clientX - rect.left;
-    drag.offsetY      = e.clientY - rect.top;
+    var rect    = tile.getBoundingClientRect();
+    drag.active = true;
+    drag.item   = item;
+    drag.srcRect = rect;
+    drag.offsetX = e.clientX - rect.left;
+    drag.offsetY = e.clientY - rect.top;
 
-    /* Build ghost */
     var ghost = document.createElement('div');
     ghost.className = 'drag-ghost';
     ghost.style.cssText =
       'width:' + rect.width + 'px;height:' + rect.height + 'px;' +
       'left:' + (e.clientX - drag.offsetX) + 'px;' +
       'top:'  + (e.clientY - drag.offsetY) + 'px;';
-
-    /* Clone tile content */
-    var tileClone = tile.cloneNode(true);
-    tileClone.style.cssText = 'position:absolute;inset:0;border:none;box-shadow:none;pointer-events:none;';
-    ghost.appendChild(tileClone);
+    var clone = tile.cloneNode(true);
+    clone.style.cssText = 'position:absolute;inset:0;border:none;box-shadow:none;pointer-events:none;';
+    ghost.appendChild(clone);
     document.body.appendChild(ghost);
     drag.ghost = ghost;
 
-    tile.addEventListener('pointermove', onPointerMove);
-    tile.addEventListener('pointerup',   onPointerUp);
+    tile.addEventListener('pointermove',   onPointerMove);
+    tile.addEventListener('pointerup',     onPointerUp);
     tile.addEventListener('pointercancel', onPointerCancel);
   }
 
@@ -1748,60 +1316,40 @@ var ETHNIC_RESPONSES = [
     if (!drag.active || !drag.ghost) return;
     drag.ghost.style.left = (e.clientX - drag.offsetX) + 'px';
     drag.ghost.style.top  = (e.clientY - drag.offsetY) + 'px';
-
-    /* Highlight drop zone */
-    var dzRect = dropZone.getBoundingClientRect();
-    var over = (
-      e.clientX >= dzRect.left && e.clientX <= dzRect.right &&
-      e.clientY >= dzRect.top  && e.clientY <= dzRect.bottom
-    );
-    dropZone.classList.toggle('drag-over', over);
+    var dz = dropZone.getBoundingClientRect();
+    dropZone.classList.toggle('drag-over',
+      e.clientX >= dz.left && e.clientX <= dz.right &&
+      e.clientY >= dz.top  && e.clientY <= dz.bottom);
   }
 
   function onPointerUp(e) {
     if (!drag.active) return;
-
     dropZone.classList.remove('drag-over');
-
-    /* Check if released over drop zone */
-    var dzRect = dropZone.getBoundingClientRect();
-    var dropped = (
-      e.clientX >= dzRect.left && e.clientX <= dzRect.right &&
-      e.clientY >= dzRect.top  && e.clientY <= dzRect.bottom
-    );
-
-    endDrag();
-
-    if (dropped) {
-      handleDrop(drag.item, drag.sourceTileRect);
-    }
-
-    drag.item = null;
-    drag.sourceTileRect = null;
+    var dz = dropZone.getBoundingClientRect();
+    var dropped = e.clientX >= dz.left && e.clientX <= dz.right &&
+                  e.clientY >= dz.top  && e.clientY <= dz.bottom;
+    var savedItem = drag.item, savedRect = drag.srcRect;
+    endDrag(e.currentTarget);
+    if (dropped) handleDrop(savedItem, savedRect);
   }
 
   function onPointerCancel(e) {
     dropZone.classList.remove('drag-over');
-    endDrag();
-    drag.item = null;
-    drag.sourceTileRect = null;
+    endDrag(e.currentTarget);
   }
 
-  function endDrag() {
+  function endDrag(tile) {
     if (drag.ghost && drag.ghost.parentNode) drag.ghost.parentNode.removeChild(drag.ghost);
-    drag.ghost  = null;
-    drag.active = false;
-
-    /* Remove listeners from all tiles */
-    tilesGrid.querySelectorAll('.tile').forEach(function(tile) {
-      tile.removeEventListener('pointermove', onPointerMove);
-      tile.removeEventListener('pointerup',   onPointerUp);
+    drag.ghost = null; drag.active = false; drag.item = null; drag.srcRect = null;
+    if (tile) {
+      tile.removeEventListener('pointermove',   onPointerMove);
+      tile.removeEventListener('pointerup',     onPointerUp);
       tile.removeEventListener('pointercancel', onPointerCancel);
-    });
+    }
   }
 
   /* ----------------------------------------------------------
-     FLIP ANIMATION
+     FLIP
   ---------------------------------------------------------- */
   function flipWall() {
     if (isFlipping) return;
@@ -1830,21 +1378,13 @@ var ETHNIC_RESPONSES = [
   }
 
   function resetForFace() {
-    /* Reset question state */
-    qIdx      = 0;
-    qAnswered = false;
-    qFlipMode = false;
-
-    /* Clear display */
-    activeLabelFn = null;
-    tilesGrid.classList.remove('show-captions');
+    qIdx = 0; qAnswered = false; qFlipMode = false; activeLabelFn = null;
     clearDropZone();
+    tilesGrid.classList.remove('show-captions');
 
-    /* Reset sort to alpha */
-    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
-    var sorted  = sortData(rawData, 'alpha');
-    if (currentFace === 'front') currentTypeData = sorted;
-    else currentEthnicData = sorted;
+    var sorted = sortData(currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA, 'alpha');
+    if (currentFace === 'front') currentTypeData   = sorted;
+    else                         currentEthnicData = sorted;
     activeSortField[currentFace] = 'alpha';
 
     renderTiles(sorted, currentFace);
@@ -1854,13 +1394,8 @@ var ETHNIC_RESPONSES = [
     updateQuestionBar();
   }
 
-  function flipToFace(target) {
-    if (currentFace !== target) flipWall();
-  }
+  function flipToFace(target) { if (currentFace !== target) flipWall(); }
 
-  /* ----------------------------------------------------------
-     FACE LABELS & DOTS
-  ---------------------------------------------------------- */
   function updateLabels() {
     var front = (currentFace === 'front');
     labelFront.className = 'face-toggle-label' + (front ? ' active' : '');
@@ -1875,8 +1410,8 @@ var ETHNIC_RESPONSES = [
      LIGHTBOX
   ---------------------------------------------------------- */
   function openLightbox(item, faceName) {
-    /* Image column */
     lbImageCol.innerHTML = '';
+
     if (item.filename && item.filename.trim()) {
       var img = document.createElement('img');
       img.src = IMG_BASE + item.filename.trim();
@@ -1888,28 +1423,28 @@ var ETHNIC_RESPONSES = [
       lbImageCol.appendChild(blank);
     }
 
-    /* Text column */
     lbEyebrow.textContent = (faceName === 'front') ? 'Costume Type' : 'Ethnic Identity';
     lbTitle.textContent   = item.title;
 
     /* Stats list */
     lbStatsList.innerHTML = '';
-    var statsData = buildStatsList(item, faceName);
-    statsData.forEach(function(entry) {
+    buildLbStats(item, faceName).forEach(function(entry) {
       var li = document.createElement('li');
-      if (entry === 'n/a') {
-        li.innerHTML = '<span class="lb-na">n/a</span>';
+      if (!entry || entry === 'n/a') {
+        var sp = document.createElement('span');
+        sp.className = 'lb-na'; sp.textContent = 'n/a';
+        li.appendChild(sp);
       } else {
         li.textContent = entry;
       }
       lbStatsList.appendChild(li);
     });
 
-    /* Body (description) */
-    var raw   = (item.description || '').trim();
-    var paras = raw.split(/\n+/).filter(function(p) { return p.trim().length > 0; }).slice(0, 3);
+    /* Description */
+    var raw = (item.description || '').trim();
+    var paras = raw.split(/\n+/).filter(function(p){ return p.trim().length > 0; }).slice(0,3);
     if (!paras.length && raw) paras = [raw];
-    lbBody.innerHTML = paras.map(function(p) { return '<p>' + esc(p.trim()) + '</p>'; }).join('');
+    lbBody.innerHTML = paras.map(function(p){ return '<p>' + esc(p.trim()) + '</p>'; }).join('');
 
     /* Examples */
     var exText = (item.full || '').trim();
@@ -1924,34 +1459,30 @@ var ETHNIC_RESPONSES = [
     document.addEventListener('keydown', lbKeyHandler);
   }
 
-  function buildStatsList(item, faceName) {
-    var list = [];
+  function buildLbStats(item, faceName) {
     if (faceName === 'front') {
-      /* 1. percent of catalog */
-      list.push(item.pct ? (formatCatPct(item.pct) + ' of catalog') : 'n/a');
-      /* 2. women's */
-      var w = parseNumeric(item.women);
-      list.push(w !== null ? formatCatPct(w) + ' of costumes under women\'s sections' : 'n/a');
-      /* 3. men's */
-      var m = parseNumeric(item.men);
-      list.push(m !== null ? formatCatPct(m) + ' of costumes under men\'s sections' : 'n/a');
-      /* 4. avg cost */
-      var c = item.cost;
-      list.push((c !== null && c !== undefined && String(c).trim() !== '') ? String(c).trim() + ': average cost' : 'n/a');
+      var cp = parseFloat(item.pct);
+      var wv = parseNumeric(item.women);
+      var mv = parseNumeric(item.men);
+      var cv = formatCost(item.cost);
+      return [
+        (!isNaN(cp) && cp > 0) ? formatCatPct(cp) + ' of catalog'                             : 'n/a',
+        wv !== null             ? formatCatPct(wv) + ' of costumes under women\'s sections'    : 'n/a',
+        mv !== null             ? formatCatPct(mv) + ' of costumes under men\'s sections'      : 'n/a',
+        cv                      ? cv + ': average cost'                                         : 'n/a'
+      ];
     } else {
-      /* 1. percent of catalog */
-      list.push(item.pct ? (formatCatPct(item.pct) + ' of catalog') : 'n/a');
-      /* 2. 1910 census */
+      var ep  = parseFloat(item.pct);
       var p10 = formatPopPct(item.pct1910);
-      list.push(p10 ? p10 + ' of 1910 census' : 'n/a');
-      /* 3. 1900 census */
       var p00 = formatPopPct(item.pct1900);
-      list.push(p00 ? p00 + ' of 1900 census' : 'n/a');
-      /* 4. distance */
-      var dist = formatDistance(item.distance);
-      list.push(dist ? dist : 'n/a');
+      var dst = formatDistance(item.distance);
+      return [
+        (!isNaN(ep) && ep > 0) ? formatCatPct(ep) + ' of catalog' : 'n/a',
+        p10  ? p10  + ' of 1910 census'    : 'n/a',
+        p00  ? p00  + ' of 1900 census'    : 'n/a',
+        dst  ? dst                         : 'n/a'
+      ];
     }
-    return list;
   }
 
   function closeLightbox() {
@@ -1971,10 +1502,7 @@ var ETHNIC_RESPONSES = [
     introModal.classList.add('hidden');
     introModal.setAttribute('aria-hidden', 'true');
   }
-
-  introModal.addEventListener('click', function(e) {
-    if (e.target === introModal) closeModal();
-  });
+  introModal.addEventListener('click', function(e) { if (e.target === introModal) closeModal(); });
 
   /* ----------------------------------------------------------
      GLOBAL KEYBOARD SHORTCUTS
@@ -1984,24 +1512,23 @@ var ETHNIC_RESPONSES = [
     if (e.key === 'Escape') {
       if (!introModal.classList.contains('hidden')) closeModal();
     } else if ((e.key === 'f' || e.key === 'F') &&
-               e.target.tagName !== 'INPUT' &&
-               e.target.tagName !== 'TEXTAREA') {
-      e.preventDefault();
-      flipWall();
+               e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault(); flipWall();
     }
+    /* D key is handled per-tile in keydown listeners */
   });
 
   /* ----------------------------------------------------------
-     TAB ORDER — remove TOC from tab sequence
+     TOC TAB ORDER
   ---------------------------------------------------------- */
   function removeTocFromTabOrder() {
-    var sidebar = document.getElementById('interact-toc-sidebar');
-    if (!sidebar) return;
-    sidebar.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach(function(el) {
+    var sb = document.getElementById('interact-toc-sidebar');
+    if (!sb) return;
+    sb.querySelectorAll('a,button,input,select,textarea,[tabindex]').forEach(function(el) {
       el.setAttribute('tabindex', '-1');
     });
-    var heading = sidebar.querySelector('.scrolly-toc-heading');
-    if (heading) heading.setAttribute('aria-hidden', 'true');
+    var h = sb.querySelector('.scrolly-toc-heading');
+    if (h) h.setAttribute('aria-hidden', 'true');
   }
 
   /* ----------------------------------------------------------
@@ -2009,7 +1536,6 @@ var ETHNIC_RESPONSES = [
   ---------------------------------------------------------- */
   labelFront.addEventListener('click', function() { flipToFace('front'); });
   labelBack.addEventListener('click',  function() { flipToFace('back');  });
-
   [labelFront, labelBack].forEach(function(el) {
     el.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
@@ -2019,19 +1545,15 @@ var ETHNIC_RESPONSES = [
   modalClose.addEventListener('click', closeModal);
   modalBegin.addEventListener('click', closeModal);
   lbClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', function(e) {
-    if (e.target === lightbox) closeLightbox();
-  });
+  lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
 
   /* ----------------------------------------------------------
      INIT
   ---------------------------------------------------------- */
   function init() {
     renderTiles(currentTypeData, 'front');
-    updateLabels();
-    showSortGroups();
-    updateSortButtons();
-    updateQuestionBar();
+    updateLabels(); showSortGroups();
+    updateSortButtons(); updateQuestionBar();
     removeTocFromTabOrder();
   }
 
