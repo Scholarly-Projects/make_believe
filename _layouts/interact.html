@@ -12,18 +12,14 @@ layout: default
    ============================================================ */
 .skip-to-tiles {
     position: absolute;
-    left: -9999px; top: auto;
-    width: 1px; height: 1px;
+    left: -9999px; top: auto; width: 1px; height: 1px;
     overflow: hidden; z-index: 9999;
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.85rem;
+    font-family: 'Times New Roman', Times, Georgia, serif; font-size: 0.85rem;
 }
 .skip-to-tiles:focus {
-    left: 1rem; top: 1rem;
-    width: auto; height: auto; overflow: visible;
+    left: 1rem; top: 1rem; width: auto; height: auto; overflow: visible;
     background: #0a0a0a; color: #fff;
-    padding: 0.4rem 0.8rem;
-    outline: 2px solid #fff; outline-offset: 2px;
+    padding: 0.4rem 0.8rem; outline: 2px solid #fff; outline-offset: 2px;
 }
 
 /* ============================================================
@@ -34,23 +30,22 @@ layout: default
     scrollbar-color: rgba(0,0,0,0.15) transparent;
 }
 #interact-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.15); }
-#interact-toc-sidebar .scrolly-toc-heading { color: #000000; }
+#interact-toc-sidebar .scrolly-toc-heading { color: #000; }
 #interact-toc-sidebar .scrolly-toc-link    { color: #353535; }
 #interact-toc-sidebar .scrolly-toc-link:hover { color: #1B1B1B; background-color: rgba(0,0,0,0.05); }
-#interact-toc-sidebar .scrolly-toc-link.toc-active { color: #000000; font-weight: 600; }
-#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link       { color: #353535; }
+#interact-toc-sidebar .scrolly-toc-link.toc-active { color: #000; font-weight: 600; }
+#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link { color: #353535; }
 #interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover { color: #1B1B1B; }
-#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
-#interact-toc-sidebar .toc-section-rule         { background-color: rgba(0,0,0,0.22); }
-#interact-toc-sidebar .toc-section-rule:hover   { background-color: rgba(0,0,0,0.55); }
+#interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000; }
+#interact-toc-sidebar .toc-section-rule { background-color: rgba(0,0,0,0.22); }
+#interact-toc-sidebar .toc-section-rule:hover { background-color: rgba(0,0,0,0.55); }
 #interact-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(0,0,0,0.48); }
 
 /* ============================================================
    WRAPPER
    ============================================================ */
 #interact-wrapper {
-    margin-left: 14%;
-    padding-top: 140px; padding-bottom: 6rem;
+    margin-left: 14%; padding-top: 140px; padding-bottom: 6rem;
     font-family: 'Times New Roman', Times, Georgia, serif;
     display: flex; flex-direction: column; align-items: center;
 }
@@ -58,46 +53,30 @@ layout: default
     #interact-toc-sidebar { display: none !important; }
     #interact-wrapper     { margin-left: 0 !important; }
 }
-@media screen and (max-width: 768px) {
-    #interact-wrapper { padding-top: 110px; padding-bottom: 5rem; }
-}
+@media screen and (max-width: 768px) { #interact-wrapper { padding-top: 110px; padding-bottom: 5rem; } }
 
 /* ============================================================
    WALL SCENE
    ============================================================ */
-.wall-scene {
-    width: 100%; max-width: 1800px;
-    padding: 0 1.5rem; box-sizing: border-box;
-}
+.wall-scene { width: 100%; max-width: 1800px; padding: 0 1.5rem; box-sizing: border-box; }
 
 /* ============================================================
    ROW 1 — Controls bar: face toggles (left) + sort (right)
    ============================================================ */
 .controls-bar {
-    display: flex;
-    align-items: center;
+    display: flex; align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.9rem;
-    width: 100%;
+    flex-wrap: wrap; gap: 0.5rem;
+    margin-bottom: 0.9rem; width: 100%;
 }
 
-.face-toggle-group {
-    display: flex; align-items: center;
-    gap: 0.7rem; flex-shrink: 0;
-}
+.face-toggle-group { display: flex; align-items: center; gap: 0.7rem; flex-shrink: 0; }
 
 .face-toggle-label {
-    font-size: 0.88rem;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: #bbb;
-    transition: color 0.2s;
-    background: none; border: none; padding: 0;
-    cursor: pointer;
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    line-height: 1;
+    font-size: 0.88rem; letter-spacing: 0.13em; text-transform: uppercase;
+    color: #bbb; transition: color 0.2s; background: none; border: none;
+    padding: 0; cursor: pointer;
+    font-family: 'Times New Roman', Times, Georgia, serif; line-height: 1;
 }
 .face-toggle-label:hover  { color: #555; }
 .face-toggle-label.active { color: #0a0a0a; font-weight: bold; }
@@ -108,7 +87,6 @@ layout: default
     display: inline-block; transition: background 0.25s; flex-shrink: 0;
 }
 .face-toggle-dot.filled { background: #0a0a0a; }
-
 .face-divider-glyph { font-size: 0.5rem; color: #c0b8ae; }
 
 .face-f-hint {
@@ -117,32 +95,24 @@ layout: default
     white-space: nowrap; margin-left: 0.35rem;
 }
 .face-f-hint kbd {
-    font-style: normal;
-    font-family: 'Courier New', monospace;
-    font-size: 0.72rem;
-    background: rgba(0,0,0,0.06);
-    border: 1px solid rgba(0,0,0,0.18);
-    border-radius: 2px; padding: 0.05rem 0.32rem; color: #555;
+    font-style: normal; font-family: 'Courier New', monospace;
+    font-size: 0.72rem; background: rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.18); border-radius: 2px;
+    padding: 0.05rem 0.32rem; color: #555;
 }
 @media screen and (max-width: 480px) { .face-f-hint { display: none; } }
 
 /* Sort group */
-.sort-group {
-    display: flex; align-items: center;
-    gap: 0.55rem; flex-wrap: wrap; justify-content: flex-end;
-}
+.sort-group { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; justify-content: flex-end; }
 .sort-group-prefix {
-    font-size: 0.78rem; letter-spacing: 0.1em;
-    text-transform: uppercase; color: #999;
-    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #999; font-family: 'Times New Roman', Times, Georgia, serif;
     font-style: italic; white-space: nowrap;
 }
 .sort-divider { font-size: 0.55rem; color: #c0b8ae; flex-shrink: 0; }
 .sort-btn {
-    font-size: 0.78rem; letter-spacing: 0.1em;
-    text-transform: uppercase; color: #bbb;
-    background: none; border: none; padding: 0;
-    cursor: pointer;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #bbb; background: none; border: none; padding: 0; cursor: pointer;
     font-family: 'Times New Roman', Times, Georgia, serif;
     line-height: 1; transition: color 0.2s; white-space: nowrap;
 }
@@ -156,81 +126,77 @@ layout: default
 @media screen and (max-width: 480px) { .sort-group { display: none; } }
 
 /* ============================================================
-   ROW 2 — Question bar:
-   [question text (flex:1)] [drop zone (fixed)] [buttons (fixed)]
+   ROW 2 — Question bar
+   Three-column grid: [text 1fr] [drop-zone auto] [buttons 1fr]
+   This centres the drop zone exactly in the bar regardless of
+   how wide the text area or buttons column is.
    ============================================================ */
 .question-bar {
-    display: flex; align-items: center;
-    gap: 1.5rem; width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    column-gap: 1.5rem;
+    width: 100%;
+    min-height: 185px;
     margin-bottom: 1.25rem;
-    min-height: 185px; box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-/* Left */
-.question-text-area { flex: 1; min-width: 0; }
+/* Left: question text + response */
+.question-text-area { /* first grid column — naturally left-aligned */ }
 
 .q-label {
-    display: block;
-    font-size: 0.57rem; letter-spacing: 0.18em;
-    text-transform: uppercase; color: #999;
-    margin: 0 0 0.45rem; line-height: 1;
+    display: block; font-size: 0.57rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #999; margin: 0 0 0.45rem; line-height: 1;
 }
 .q-text {
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 1.05rem; line-height: 1.5;
-    color: #0a0a0a; margin: 0; font-weight: bold;
+    font-size: 1.05rem; line-height: 1.5; color: #0a0a0a; margin: 0; font-weight: bold;
 }
 .q-response {
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.85rem; line-height: 1.72;
-    color: #333; margin: 0.55rem 0 0; display: none;
+    font-size: 0.85rem; line-height: 1.72; color: #333; margin: 0.55rem 0 0; display: none;
 }
 
-/* Centre: drop zone */
+/* Centre: drop zone (auto column = centred between the two 1fr sides) */
 .drop-zone {
-    width: 185px; height: 185px; flex-shrink: 0;
+    width: 185px; height: 185px;
     border: 1px dashed #aaa; background: #fafafa;
     box-sizing: border-box; position: relative;
     display: flex; align-items: center; justify-content: center;
     transition: border-color 0.2s, background 0.2s; overflow: hidden;
 }
-.drop-zone.drag-over {
-    border-color: #0a0a0a; border-style: solid; background: rgba(0,0,0,0.03);
-}
+.drop-zone.drag-over { border-color: #0a0a0a; border-style: solid; background: rgba(0,0,0,0.03); }
 
 .dz-hint {
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.7rem; color: #bbb;
-    text-align: center; line-height: 1.5;
-    font-style: italic; pointer-events: none; user-select: none;
+    font-size: 0.7rem; color: #bbb; text-align: center;
+    line-height: 1.5; font-style: italic; pointer-events: none; user-select: none;
 }
 
+/* Card pinned inside drop zone */
 .dz-card {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
+    position: absolute; inset: 0; display: flex; flex-direction: column;
     align-items: center; justify-content: flex-end;
     overflow: hidden; background: #fff; border: 1px solid #0a0a0a;
 }
 .dz-card-img {
-    flex: 1; width: 100%;
-    display: flex; align-items: center; justify-content: center;
+    flex: 1; width: 100%; display: flex; align-items: center; justify-content: center;
     overflow: hidden; padding: 4px 4px 0; box-sizing: border-box; min-height: 0;
 }
 .dz-card-img img {
-    max-width: 88%; max-height: 88%;
-    object-fit: contain; display: block;
+    max-width: 88%; max-height: 88%; object-fit: contain; display: block;
     filter: grayscale(100%) contrast(1.1);
 }
 .dz-card-title {
     flex-shrink: 0; width: 100%;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    padding: 4px 5px 5px;
+    border-top: 1px solid rgba(0,0,0,0.1); padding: 4px 5px 5px;
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.68em; line-height: 1.2;
-    color: #0a0a0a; text-align: center;
-    font-weight: bold; box-sizing: border-box;
+    color: #0a0a0a; text-align: center; font-weight: bold; box-sizing: border-box;
 }
 
+/* Colour tint overlays */
 .dz-tint {
     position: absolute; inset: 0; z-index: 2;
     opacity: 0; transition: opacity 0.2s; pointer-events: none;
@@ -239,27 +205,23 @@ layout: default
 .dz-tint.wrong   { background: rgba(200,30,30,0.5); opacity: 1; }
 
 @keyframes dzWrongFlash {
-    0%  { opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100%{ opacity: 0; }
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
 }
-.dz-tint.wrong-anim {
-    background: rgba(200,30,30,0.5);
-    animation: dzWrongFlash 0.85s ease forwards;
-}
+.dz-tint.wrong-anim { background: rgba(200,30,30,0.5); animation: dzWrongFlash 0.85s ease forwards; }
 
-/* Right: action buttons */
+/* Right: action buttons — aligned left within their 1fr column (flush to drop zone) */
 .question-actions {
-    display: flex; flex-direction: column;
-    align-items: stretch; gap: 0.55rem;
-    flex-shrink: 0; min-width: 130px;
+    justify-self: start;
+    display: flex; flex-direction: column; align-items: stretch;
+    gap: 0.55rem; min-width: 130px;
 }
 .q-action-btn {
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.75rem; letter-spacing: 0.08em;
-    text-transform: uppercase; color: #0a0a0a;
-    background: none; border: 1px solid #0a0a0a;
+    font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #0a0a0a; background: none; border: 1px solid #0a0a0a;
     padding: 0.38rem 0.8rem; cursor: pointer;
     white-space: nowrap; text-align: center; width: 100%;
     transition: background 0.15s, color 0.15s;
@@ -270,10 +232,14 @@ layout: default
 .q-action-btn:disabled:hover { background: none; color: #bbb; }
 
 @media screen and (max-width: 768px) {
-    .question-bar { flex-wrap: wrap; min-height: auto; }
-    .question-text-area { flex-basis: 100%; order: 1; }
-    .drop-zone { order: 2; width: 130px; height: 130px; margin: 0; }
-    .question-actions { order: 3; }
+    .question-bar {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        min-height: auto; row-gap: 1rem;
+    }
+    .question-text-area { grid-column: 1 / -1; }
+    .drop-zone  { grid-column: 1; justify-self: center; width: 130px; height: 130px; }
+    .question-actions { grid-column: 2; justify-self: start; align-self: center; }
 }
 @media screen and (max-width: 480px) { .drop-zone { width: 110px; height: 110px; } }
 
@@ -302,60 +268,61 @@ layout: default
 @media screen and (max-width: 480px)  { .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
 
 /* ============================================================
-   INDIVIDUAL TILE
+   INDIVIDUAL CARD (tile)
    ============================================================ */
 .tile {
     aspect-ratio: 1 / 1;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-end;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
     background: #ffffff; border: 1px solid #0a0a0a;
-    cursor: grab; box-sizing: border-box;
-    padding: 7px 5px 5px; overflow: hidden; position: relative;
+    cursor: grab; box-sizing: border-box; padding: 7px 5px 5px;
+    overflow: hidden; position: relative;
     appearance: none; -webkit-appearance: none;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    text-align: center; outline: none;
-    user-select: none; touch-action: none;
+    text-align: center; outline: none; user-select: none; touch-action: none;
 }
 .tile:active { cursor: grabbing; }
 .tile:hover, .tile:focus, .tile:focus-visible {
-    background: rgba(255,255,255,0.85);
-    box-shadow: inset 0 0 0 2px #0a0a0a; z-index: 4;
+    background: rgba(255,255,255,0.85); box-shadow: inset 0 0 0 2px #0a0a0a; z-index: 4;
 }
 
 .tile-img-wrap {
-    flex: 1; width: 100%;
-    display: flex; align-items: center; justify-content: center;
-    min-height: 0; overflow: hidden;
-    padding: 4px 4px 0; box-sizing: border-box;
+    flex: 1; width: 100%; display: flex; align-items: center; justify-content: center;
+    min-height: 0; overflow: hidden; padding: 4px 4px 0; box-sizing: border-box;
 }
 .tile img {
-    max-width: 88%; max-height: 88%;
-    object-fit: contain; display: block;
-    filter: grayscale(100%) contrast(1.1);
-    pointer-events: none;
+    max-width: 88%; max-height: 88%; object-fit: contain;
+    display: block; filter: grayscale(100%) contrast(1.1); pointer-events: none;
 }
 
-/* Title always visible; metric only when show-captions class is present */
+/*
+ * Caption area: title is always visible.
+ * The metric line is always rendered (takes up space) but
+ * invisible until show-captions is set — this keeps card
+ * height consistent whether or not data is being shown.
+ */
 .tile-caption {
     flex-shrink: 0; width: 100%;
     border-top: 1px solid rgba(0,0,0,0.1);
     margin-top: 4px; padding-top: 4px;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    font-size: 0.72em; line-height: 1.25;
-    color: #0a0a0a; text-align: center;
+    font-size: 0.72em; line-height: 1.25; color: #0a0a0a; text-align: center;
 }
 .tile-caption strong { display: block; font-weight: bold; }
+
+/* metric: always takes space (display:block + min-height), but invisible by default */
 .tile-caption .tile-metric {
-    display: none; color: #666; margin-top: 1px; font-size: 0.9em;
+    display: block;
+    visibility: hidden;
+    color: #666; margin-top: 2px; font-size: 0.9em;
+    min-height: 1.2em; /* reserve space even when empty */
 }
-.tiles-grid.show-captions .tile-caption .tile-metric { display: block; }
+.tiles-grid.show-captions .tile-caption .tile-metric { visibility: visible; }
 
 /* ============================================================
    DRAG GHOST
    ============================================================ */
 .drag-ghost {
-    position: fixed; z-index: 5000; pointer-events: none;
-    opacity: 0.88;
+    position: fixed; z-index: 5000; pointer-events: none; opacity: 0.88;
     box-shadow: 4px 4px 14px rgba(0,0,0,0.32);
     transform: scale(1.06); transform-origin: top left;
     background: #fff; border: 1px solid #0a0a0a; overflow: hidden;
@@ -391,8 +358,7 @@ layout: default
     transition: background 0.15s;
 }
 .modal-close:hover, .modal-close:focus-visible {
-    background: rgba(255,255,255,0.14);
-    outline: 1px solid #f8f5ee; outline-offset: 2px;
+    background: rgba(255,255,255,0.14); outline: 1px solid #f8f5ee; outline-offset: 2px;
 }
 .modal-eyebrow {
     font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -409,8 +375,7 @@ layout: default
 }
 .ctrl-list {
     margin: 1.2rem 0 0; padding: 0.9rem 1rem;
-    border: 1px solid rgba(255,255,255,0.11);
-    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.11); background: rgba(255,255,255,0.04);
 }
 .ctrl-list-heading {
     font-size: 0.57rem; letter-spacing: 0.18em; text-transform: uppercase;
@@ -421,8 +386,7 @@ layout: default
     flex-shrink: 0; background: rgba(255,255,255,0.07);
     border: 1px solid rgba(255,255,255,0.2); border-radius: 2px;
     padding: 0.07rem 0.38rem; font-family: 'Courier New', monospace;
-    font-size: 0.66rem; color: rgba(248,245,238,0.8);
-    min-width: 2rem; text-align: center;
+    font-size: 0.66rem; color: rgba(248,245,238,0.8); min-width: 2rem; text-align: center;
 }
 .ctrl-desc { font-size: 0.71rem; color: rgba(248,245,238,0.52); line-height: 1.45; }
 .modal-begin {
@@ -467,38 +431,28 @@ layout: default
     margin: 0.7rem 0.7rem 0 auto;
     transition: background 0.15s, color 0.15s; z-index: 10;
 }
-.lb-close:hover, .lb-close:focus-visible { background: #0a0a0a; color: #ffffff; outline: none; }
+.lb-close:hover, .lb-close:focus-visible { background: #0a0a0a; color: #fff; outline: none; }
 
-/* Image column — no title overlay; image fills available space */
 .lb-image-col {
     border-right: 1px solid #0a0a0a; padding: 1.25rem 1rem;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     background: #ffffff; min-height: 300px;
 }
 .lb-image-col img {
-    max-width: 96%; max-height: 440px;
-    object-fit: contain;
+    max-width: 96%; max-height: 440px; object-fit: contain;
     filter: grayscale(100%) contrast(1.1); display: block;
 }
 .lb-no-image { flex: 1; min-height: 120px; }
 
-/* Text column */
 .lb-text-col { padding: 1.75rem; display: flex; flex-direction: column; }
-.lb-eyebrow {
-    font-size: 0.58rem; letter-spacing: 0.17em; text-transform: uppercase;
-    color: #999; margin-bottom: 0.6rem;
-}
+.lb-eyebrow { font-size: 0.58rem; letter-spacing: 0.17em; text-transform: uppercase; color: #999; margin-bottom: 0.6rem; }
 .lb-text-col h3 {
     font-size: 1.1rem; font-weight: bold; line-height: 1.3;
     margin-bottom: 0.9rem; padding-bottom: 0.7rem;
     border-bottom: 1px solid #0a0a0a; color: #0a0a0a;
 }
 
-/* Stats bullet list */
-.lb-stats-list {
-    list-style: disc; padding-left: 1.1rem; margin: 0 0 0.9rem;
-}
+.lb-stats-list { list-style: disc; padding-left: 1.1rem; margin: 0 0 0.9rem; }
 .lb-stats-list li {
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.88rem; line-height: 1.82; color: #111;
@@ -520,7 +474,7 @@ layout: default
 <a class="skip-to-tiles" href="#first-tile">Skip to visualization</a>
 
 <!-- ============================================================
-     INTRO MODAL
+     INTRO MODAL  (uses "cards" for individual squares, "wall" for full viz)
      ============================================================ -->
 <div id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-inner">
@@ -528,26 +482,22 @@ layout: default
     <p class="modal-eyebrow">1906 Miller-Dervant Catalog Visualization</p>
     <h2 id="modal-title">Imitative Identities</h2>
     <p>This visualization highlights the materials of the leading costume company in Spokane, Washington from their 1906 catalog.</p>
-    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>: military, theatrical, royal, etc. The reverse organizes the same catalog by <strong>ethnic identity</strong>. Drag any tile into the framed space above the wall to answer each question.</p>
+    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>: military, theatrical, royal, etc. The reverse organizes the same catalog by <strong>ethnic identity</strong>. Each card represents a category — drag a card into the framed space above the wall to answer each question.</p>
     <p>Select <strong>Costume Type</strong> or <strong>Ethnic Identity</strong> at the top of the wall, or press <strong>F</strong> to flip between views.</p>
     <p><strong>Source:</strong> Miller-Dervant Catalog, 1906, Miller-Dervant Company Records, 1896–1955, MsSC 198, Eastern Washington State Historical Society, Northwest Museum of Arts and Culture, Spokane, WA.</p>
     <div class="ctrl-list">
       <span class="ctrl-list-heading">Controls</span>
       <div class="ctrl-row">
-        <span class="ctrl-key">Drag</span>
-        <span class="ctrl-desc">Drag a tile to the framed space above to answer the current question</span>
+        <span class="ctrl-key">D / Drag</span>
+        <span class="ctrl-desc">When a card is selected, press D or drag the card to submit it as your answer</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Tab</span>
-        <span class="ctrl-desc">Move keyboard focus between tiles</span>
-      </div>
-      <div class="ctrl-row">
-        <span class="ctrl-key">D</span>
-        <span class="ctrl-desc">When a tile is focused, submit it as your answer to the current question</span>
+        <span class="ctrl-desc">Move keyboard focus between cards</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Enter</span>
-        <span class="ctrl-desc">Open the focused tile's detail view</span>
+        <span class="ctrl-desc">Open the focused card's detail view</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Esc</span>
@@ -616,7 +566,7 @@ layout: default
 <div id="interact-wrapper">
   <div class="wall-scene">
 
-    <!-- Row 1: Controls (face toggles + sort) -->
+    <!-- Row 1: Controls bar (face toggles left, sort right) -->
     <div class="controls-bar" aria-live="polite">
       <div class="face-toggle-group">
         <span class="face-toggle-dot filled" id="dot-front"></span>
@@ -632,15 +582,15 @@ layout: default
       <!-- Sort: Costume Type -->
       <div class="sort-group" id="sort-group-front" aria-label="Sort costume types by">
         <span class="sort-group-prefix">sort by:</span>
-        <button class="sort-btn active" data-field="alpha" data-face="front">a–z</button>
+        <button class="sort-btn active" data-field="alpha"  data-face="front">a–z</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="pct"   data-face="front">percent in catalog</button>
+        <button class="sort-btn" data-field="pct"    data-face="front">percent in catalog</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="men"   data-face="front">percent of men's costumes</button>
+        <button class="sort-btn" data-field="men"    data-face="front">percent of men's costumes</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="women" data-face="front">percent of women's costumes</button>
+        <button class="sort-btn" data-field="women"  data-face="front">percent of women's costumes</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="cost"  data-face="front">average cost</button>
+        <button class="sort-btn" data-field="cost"   data-face="front">average cost</button>
       </div>
 
       <!-- Sort: Ethnic Identity (hidden until flip) -->
@@ -649,11 +599,11 @@ layout: default
         <span class="sort-group-prefix">sort by:</span>
         <button class="sort-btn active" data-field="alpha"    data-face="back">a–z</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="pct"     data-face="back">percent in catalog</button>
+        <button class="sort-btn" data-field="pct"      data-face="back">percent in catalog</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="pct1910" data-face="back">percent of 1910 state census</button>
+        <button class="sort-btn" data-field="pct1910"  data-face="back">percent of 1910 state census</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="pct1900" data-face="back">percent of 1900 state census</button>
+        <button class="sort-btn" data-field="pct1900"  data-face="back">percent of 1900 state census</button>
         <span class="sort-divider">|</span>
         <button class="sort-btn" data-field="distance" data-face="back">distance from Spokane</button>
       </div>
@@ -669,8 +619,8 @@ layout: default
 
       <div class="drop-zone" id="drop-zone"
            role="region"
-           aria-label="Answer drop zone — drag a tile here or focus a tile and press D">
-        <span class="dz-hint" id="dz-hint">drag a tile<br>here</span>
+           aria-label="Answer drop zone — drag a card here or focus a card and press D">
+        <span class="dz-hint" id="dz-hint">drag a card<br>here</span>
       </div>
 
       <div class="question-actions">
@@ -697,7 +647,7 @@ layout: default
 {% include essay/footer-scrollytelling.html %}
 
 <!-- ============================================================
-     DATA
+     DATA — Jekyll injects CSV rows as JSON
      ============================================================ -->
 <script>
 var TYPE_DATA = [
@@ -746,38 +696,48 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
 </script>
 
 <!-- ============================================================
-     QUESTION / RESPONSE DATA
+     QUESTION + RESPONSE DATA
      ============================================================ -->
 <script>
-/* Defined after utilities are available in the controller IIFE.
-   We declare these in global scope so Jekyll can inject them cleanly. */
+/*
+ * Question definitions (field names match CSV / JS object keys).
+ * field-to-question-index maps drive what the sort buttons reveal.
+ *
+ * TYPE  : pct→Q0, women→Q1, men→Q2, cost→Q3
+ * ETHNIC: pct→Q0, pct1910→Q1, pct1900→Q2, distance→Q3
+ */
+var FIELD_TO_Q = {
+  front: { pct: 0, women: 1, men: 2, cost: 3 },
+  back:  { pct: 0, pct1910: 1, pct1900: 2, distance: 3 }
+};
 
 var TYPE_QUESTIONS_DEF = [
-  { text: 'Which type appeared most frequently in the catalog?',          field: 'pct'   },
-  { text: 'Which type had the highest percentage of women\'s costumes?',  field: 'women' },
-  { text: 'Which type had the highest percentage of men\'s costumes?',    field: 'men'   },
-  { text: 'Which costume type had the highest average cost?',             field: 'cost'  }
+  { text: 'Which type appeared most frequently in the catalog?',         field: 'pct'   },
+  { text: 'Which type had the highest percentage of women\'s costumes?', field: 'women' },
+  { text: 'Which type had the highest percentage of men\'s costumes?',   field: 'men'   },
+  { text: 'Which costume type had the highest average cost?',            field: 'cost'  }
 ];
 
 var ETHNIC_QUESTIONS_DEF = [
-  { text: 'Which group appeared most frequently in the catalog?',                        field: 'pct'      },
-  { text: 'In 1910, which group had the highest population in Washington State?',        field: 'pct1910'  },
-  { text: 'In 1900, which group had the highest population in Washington State?',        field: 'pct1900'  },
+  { text: 'Which group appeared most frequently in the catalog?',                         field: 'pct'      },
+  { text: 'In 1910, which group had the highest population in Washington State?',         field: 'pct1910'  },
+  { text: 'In 1900, which group had the highest population in Washington State?',         field: 'pct1900'  },
   { text: 'If associated with a nation, which group is the greatest distance from Spokane?', field: 'distance' }
 ];
 
+/* Response messages — 3 Lorem ipsum sentences each (8 total) */
 var TYPE_RESPONSES = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur.',
-  'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti. Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident similique sunt in culpa qui officia. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.',
-  'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae. Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.'
+  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores.',
+  'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti. Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident similique sunt in culpa qui officia. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat.',
+  'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae. Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.'
 ];
 
 var ETHNIC_RESPONSES = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  'Nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst. Venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada fames.',
-  'Morbi non arcu risus quis varius quam quisque id diam vel quam elementum pulvinar etiam non quam lacus. Consequat semper viverra nam libero justo laoreet sit amet cursus sit amet dictum sit amet justo donec enim. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat semper viverra.',
-  'Feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet consectetur. Congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus et netus. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet.'
+  'Nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst. Venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada fames ac.',
+  'Morbi non arcu risus quis varius quam quisque id diam vel quam elementum pulvinar etiam non quam lacus. Consequat semper viverra nam libero justo laoreet sit amet cursus sit amet dictum sit amet justo donec enim diam. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat semper viverra nam libero.',
+  'Feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet consectetur adipiscing elit. Congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus et netus. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit.'
 ];
 </script>
 
@@ -789,113 +749,79 @@ var ETHNIC_RESPONSES = [
   'use strict';
 
   /* ----------------------------------------------------------
-     UTILITY
+     UTILITIES
   ---------------------------------------------------------- */
-  function esc(str) {
-    return String(str || '')
+  function esc(s) {
+    return String(s || '')
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   /**
-   * Parse a numeric value from strings like "36.5%", "$8.31", "4859", "0.44"
-   * Strips $, %, commas and whitespace before parsing.
+   * Parse a numeric value, stripping $, %, commas and whitespace.
+   * Returns a Number or null.
    */
-  function parseNumeric(val) {
+  function parseNum(val) {
     if (val === null || val === undefined || val === '' || val === false) return null;
-    var s = String(val).replace(/[$,%\s]/g, '');
-    var n = parseFloat(s);
+    var n = parseFloat(String(val).replace(/[$,%\s]/g, ''));
     return isNaN(n) ? null : n;
   }
 
-  /** Format a catalog percentage number: 17.1 → "17.1%", 9 → "9%" */
-  function formatCatPct(num) {
-    var n = parseFloat(num);
-    if (isNaN(n)) return null;
+  /** Catalog percentage: 17.1 → "17.1%", 9 → "9%" */
+  function fmtCatPct(num) {
+    var n = parseNum(num);
+    if (n === null) return null;
     return (n % 1 === 0 ? n.toFixed(0) : String(n)) + '%';
   }
 
-  /** Format a population percentage stored as decimal: 0.44 → ".44%" */
-  function formatPopPct(val) {
-    var n = parseNumeric(val);
+  /** Population percentage stored as decimal: 0.44 → ".44%" */
+  function fmtPopPct(val) {
+    var n = parseNum(val);
     if (n === null || n === 0) return null;
-    var s = n.toString().replace(/^0\./, '.');
-    return s + '%';
+    return n.toString().replace(/^0\./, '.') + '%';
   }
 
-  /** Format distance: 4859 → "4,859 miles from Spokane" */
-  function formatDistance(val) {
-    var n = parseNumeric(val);
+  /** Distance: 4859 → "4,859 miles from Spokane" */
+  function fmtDist(val) {
+    var n = parseNum(val);
     if (n === null || n === 0) return null;
     return Math.round(n).toLocaleString('en-US') + ' miles from Spokane';
   }
 
-  /** Format cost: 8.31 → "$8.31" */
-  function formatCost(val) {
-    var n = parseNumeric(val);
+  /** Cost: 8.31 → "$8.31" */
+  function fmtCost(val) {
+    var n = parseNum(val);
     return n !== null ? '$' + n.toFixed(2) : null;
   }
 
-  function thumbSrc(filename) {
-    if (!filename || !filename.trim()) return '';
-    return IMG_SMALL + filename.trim().replace(/\.(png|gif|webp|jpeg)$/i, '.jpg');
+  function thumbSrc(fn) {
+    if (!fn || !fn.trim()) return '';
+    return IMG_SMALL + fn.trim().replace(/\.(png|gif|webp|jpeg)$/i, '.jpg');
   }
 
   /* ----------------------------------------------------------
-     LABEL FUNCTIONS (per question, per face)
-     Called with an item, return the display metric string.
+     LABEL FUNCTIONS — return the display metric string per item
   ---------------------------------------------------------- */
-  function makeTypeLabelFns() {
-    return [
-      function(item) { // pct of catalog
-        var v = parseFloat(item.pct);
-        return (!isNaN(v) && v > 0) ? formatCatPct(v) + ' of catalog' : 'n/a';
-      },
-      function(item) { // women
-        var v = parseNumeric(item.women);
-        return v !== null ? formatCatPct(v) + ' of costumes under women\'s sections' : 'n/a';
-      },
-      function(item) { // men
-        var v = parseNumeric(item.men);
-        return v !== null ? formatCatPct(v) + ' of costumes under men\'s sections' : 'n/a';
-      },
-      function(item) { // cost
-        var v = formatCost(item.cost);
-        return v ? v + ': average cost' : 'n/a';
-      }
-    ];
-  }
+  var TYPE_LABEL_FNS = [
+    function(i) { var v = parseNum(i.pct);  return v !== null ? fmtCatPct(v) + ' of catalog' : 'n/a'; },
+    function(i) { var v = parseNum(i.women); return v !== null ? fmtCatPct(v) + ' of costumes under women\'s sections' : 'n/a'; },
+    function(i) { var v = parseNum(i.men);   return v !== null ? fmtCatPct(v) + ' of costumes under men\'s sections' : 'n/a'; },
+    function(i) { var v = fmtCost(i.cost);   return v ? v + ': average cost' : 'n/a'; }
+  ];
 
-  function makeEthnicLabelFns() {
-    return [
-      function(item) { // pct of catalog
-        var v = parseFloat(item.pct);
-        return (!isNaN(v) && v > 0) ? formatCatPct(v) + ' of catalog' : 'n/a';
-      },
-      function(item) { // 1910 census
-        var v = formatPopPct(item.pct1910);
-        return v ? v + ' of 1910 census' : 'n/a';
-      },
-      function(item) { // 1900 census
-        var v = formatPopPct(item.pct1900);
-        return v ? v + ' of 1900 census' : 'n/a';
-      },
-      function(item) { // distance
-        var v = formatDistance(item.distance);
-        return v ? v : 'n/a';
-      }
-    ];
-  }
+  var ETHNIC_LABEL_FNS = [
+    function(i) { var v = parseNum(i.pct);    return v !== null ? fmtCatPct(v) + ' of catalog' : 'n/a'; },
+    function(i) { var v = fmtPopPct(i.pct1910); return v ? v + ' of 1910 census' : 'n/a'; },
+    function(i) { var v = fmtPopPct(i.pct1900); return v ? v + ' of 1900 census' : 'n/a'; },
+    function(i) { var v = fmtDist(i.distance);   return v ? v : 'n/a'; }
+  ];
 
-  var TYPE_LABEL_FNS   = makeTypeLabelFns();
-  var ETHNIC_LABEL_FNS = makeEthnicLabelFns();
-
-  /* Augment question definitions with label functions */
-  var TYPE_QUESTIONS   = TYPE_QUESTIONS_DEF.map(function(q, i) {
-    return { text: q.text, field: q.field, labelFn: TYPE_LABEL_FNS[i] };
+  /* Augment question defs with label functions */
+  var TYPE_QUESTIONS = TYPE_QUESTIONS_DEF.map(function(q, idx) {
+    return { text: q.text, field: q.field, labelFn: TYPE_LABEL_FNS[idx] };
   });
-  var ETHNIC_QUESTIONS = ETHNIC_QUESTIONS_DEF.map(function(q, i) {
-    return { text: q.text, field: q.field, labelFn: ETHNIC_LABEL_FNS[i] };
+  var ETHNIC_QUESTIONS = ETHNIC_QUESTIONS_DEF.map(function(q, idx) {
+    return { text: q.text, field: q.field, labelFn: ETHNIC_LABEL_FNS[idx] };
   });
 
   /* ----------------------------------------------------------
@@ -903,29 +829,27 @@ var ETHNIC_RESPONSES = [
   ---------------------------------------------------------- */
   function sortAlpha(a, b) { return a.title.localeCompare(b.title); }
 
-  function sortNumericDesc(field) {
+  function sortDescBy(field) {
     return function(a, b) {
-      var va = (field === 'pct') ? parseFloat(a.pct) : parseNumeric(a[field]);
-      var vb = (field === 'pct') ? parseFloat(b.pct) : parseNumeric(b[field]);
-      if (isNaN(va)) va = null; if (isNaN(vb)) vb = null;
+      var va = parseNum(a[field]), vb = parseNum(b[field]);
       if (va === null && vb === null) return 0;
-      if (va === null) return  1;   /* nulls to end */
+      if (va === null) return  1;
       if (vb === null) return -1;
-      return vb - va;              /* highest first */
+      return vb - va;
     };
   }
 
   function sortData(data, field) {
     if (!field || field === 'alpha') return data.slice().sort(sortAlpha);
-    return data.slice().sort(sortNumericDesc(field));
+    return data.slice().sort(sortDescBy(field));
   }
 
-  /** Return the item with the highest numeric value for field */
-  function getCorrectItem(data, field) {
+  /** Item with the highest numeric value for a given field */
+  function getTop(data, field) {
     var best = null, bestVal = -Infinity;
     data.forEach(function(item) {
-      var v = (field === 'pct') ? parseFloat(item.pct) : parseNumeric(item[field]);
-      if (v !== null && !isNaN(v) && v > bestVal) { bestVal = v; best = item; }
+      var v = parseNum(item[field]);
+      if (v !== null && v > bestVal) { bestVal = v; best = item; }
     });
     return best;
   }
@@ -936,15 +860,19 @@ var ETHNIC_RESPONSES = [
   var currentFace = 'front';
   var isFlipping  = false;
 
+  /* Working sorted copies */
   var currentTypeData   = sortData(TYPE_DATA,   'alpha');
   var currentEthnicData = sortData(ETHNIC_DATA, 'alpha');
-  var activeSortField   = { front: 'alpha', back: 'alpha' };
 
-  var activeLabelFn = null;   /* non-null when tile metrics are visible */
+  var activeSortField = { front: 'alpha', back: 'alpha' };
 
-  var qIdx      = 0;
-  var qAnswered = false;
-  var qFlipMode = false;
+  /* Non-null when tile metrics are being displayed */
+  var activeLabelFn = null;
+
+  /* Question state */
+  var qIdx      = 0;      /* 0–3 */
+  var qAnswered = false;  /* answered by drag, D, reveal, or sort */
+  var qFlipMode = false;  /* past end of 4-question cycle */
 
   /* Drag */
   var drag = { active: false, item: null, srcRect: null, ghost: null, offsetX: 0, offsetY: 0 };
@@ -982,17 +910,17 @@ var ETHNIC_RESPONSES = [
   /* ----------------------------------------------------------
      ACCESSORS
   ---------------------------------------------------------- */
-  function currentData()      { return currentFace === 'front' ? currentTypeData   : currentEthnicData;  }
-  function currentRawData()   { return currentFace === 'front' ? TYPE_DATA         : ETHNIC_DATA;         }
-  function currentQs()        { return currentFace === 'front' ? TYPE_QUESTIONS    : ETHNIC_QUESTIONS;    }
-  function currentQ()         { return currentQs()[qIdx]; }
-  function currentResponses() { return currentFace === 'front' ? TYPE_RESPONSES    : ETHNIC_RESPONSES;    }
+  function rawData()     { return currentFace === 'front' ? TYPE_DATA         : ETHNIC_DATA;      }
+  function workingData() { return currentFace === 'front' ? currentTypeData   : currentEthnicData; }
+  function questions()   { return currentFace === 'front' ? TYPE_QUESTIONS    : ETHNIC_QUESTIONS;  }
+  function responses()   { return currentFace === 'front' ? TYPE_RESPONSES    : ETHNIC_RESPONSES;  }
+  function curQ()        { return questions()[qIdx]; }
 
   /* ----------------------------------------------------------
-     QUESTION BAR
+     QUESTION BAR RENDER
   ---------------------------------------------------------- */
   function updateQuestionBar() {
-    var qs = currentQs(), total = qs.length;
+    var qs = questions(), total = qs.length;
 
     if (qFlipMode) {
       qLabel.textContent      = 'End of cycle';
@@ -1007,7 +935,7 @@ var ETHNIC_RESPONSES = [
     qText.textContent  = qs[qIdx].text;
 
     if (qAnswered) {
-      qResponse.textContent   = currentResponses()[qIdx];
+      qResponse.textContent   = responses()[qIdx];
       qResponse.style.display = '';
       btnSkipNext.textContent = (qIdx === total - 1) ? 'Flip' : 'Next Question';
       btnReveal.disabled      = true;
@@ -1019,58 +947,93 @@ var ETHNIC_RESPONSES = [
   }
 
   /* ----------------------------------------------------------
-     SORT BUTTON SYNC
+     SORT BUTTON STATE SYNC
   ---------------------------------------------------------- */
-  function updateSortButtons() {
-    var face  = currentFace;
-    var field = activeSortField[face];
-    var group = face === 'front' ? sgFront : sgBack;
+  function syncSortButtons() {
+    var field = activeSortField[currentFace];
+    var group = currentFace === 'front' ? sgFront : sgBack;
     group.querySelectorAll('.sort-btn').forEach(function(b) {
       b.classList.toggle('active', b.dataset.field === field);
     });
   }
 
   function showSortGroups() {
-    sgFront.style.display = (currentFace === 'front') ? '' : 'none';
-    sgBack.style.display  = (currentFace === 'back')  ? '' : 'none';
+    sgFront.style.display = currentFace === 'front' ? '' : 'none';
+    sgBack.style.display  = currentFace === 'back'  ? '' : 'none';
   }
 
-  /**
-   * Apply a sort, re-render, optionally mark question as answered.
-   * triggerAnswered=true when initiated by the reader (sort btn / reveal btn / correct drop).
-   */
-  function applySort(field, triggerAnswered) {
+  /* ----------------------------------------------------------
+     CORE SORT + RE-RENDER
+
+     Called in three contexts:
+       1. Sort button click (triggerReveal=true)
+       2. Correct answer dropped / Reveal pressed (triggerReveal=false —
+          state is already set by the caller, just re-render)
+  ---------------------------------------------------------- */
+  function applySort(field, targetQIdx) {
+    /*
+     * targetQIdx: the question index that this sort corresponds to.
+     *   Pass undefined / null to sort without changing question state.
+     */
     activeSortField[currentFace] = field;
 
-    var sorted = sortData(currentRawData(), field);
+    var sorted = sortData(rawData(), field);
     if (currentFace === 'front') currentTypeData   = sorted;
     else                         currentEthnicData = sorted;
 
-    /* Non-alpha sort with triggerAnswered → reveal answer */
-    if (triggerAnswered && field !== 'alpha' && !qAnswered && !qFlipMode) {
-      qAnswered     = true;
-      activeLabelFn = currentQ().labelFn;
-      var correct   = getCorrectItem(currentRawData(), currentQ().field);
+    if (targetQIdx !== undefined && targetQIdx !== null) {
+      /* A sort button was clicked — reveal the answer for that question */
+      qIdx      = targetQIdx;
+      qAnswered = true;
+      qFlipMode = false;
+      activeLabelFn = questions()[qIdx].labelFn;
+
+      /* Show the correct card for this question's field in the drop zone */
+      var correct = getTop(rawData(), questions()[qIdx].field);
       if (correct) showCorrectInDropZone(correct);
-      updateQuestionBar();
     }
 
-    renderTiles(sorted, currentFace);
-    updateSortButtons();
+    renderTiles(sorted);
+    syncSortButtons();
+    updateQuestionBar();
   }
 
-  /* Sort-button click */
+  /* Sort-button click handler */
   document.querySelectorAll('.sort-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       if (btn.dataset.face !== currentFace) return;
-      applySort(btn.dataset.field, true);
+      var field = btn.dataset.field;
+
+      if (field === 'alpha') {
+        /* Alpha: reset to unanswered, clear captions + drop zone */
+        activeSortField[currentFace] = 'alpha';
+        qAnswered     = false;
+        qFlipMode     = false;
+        activeLabelFn = null;
+        clearDropZone();
+
+        var sorted = sortData(rawData(), 'alpha');
+        if (currentFace === 'front') currentTypeData   = sorted;
+        else                         currentEthnicData = sorted;
+
+        renderTiles(sorted);
+        syncSortButtons();
+        updateQuestionBar();
+      } else {
+        /* Non-alpha: find and reveal the corresponding question */
+        var qMap      = FIELD_TO_Q[currentFace];
+        var targetIdx = qMap[field];
+        if (targetIdx === undefined) return;
+        applySort(field, targetIdx);
+      }
     });
   });
 
   /* ----------------------------------------------------------
      RENDER TILES
   ---------------------------------------------------------- */
-  function renderTiles(data, faceName) {
+  function renderTiles(data) {
+    var faceName = currentFace;
     tilesGrid.innerHTML = '';
     var frag = document.createDocumentFragment();
 
@@ -1078,11 +1041,10 @@ var ETHNIC_RESPONSES = [
       var btn = document.createElement('button');
       btn.className = 'tile';
       btn.setAttribute('role', 'listitem');
-      btn.dataset.itemIndex = index;
+      btn.dataset.itemTitle = item.title; /* store title for key lookup */
 
       var metricLabel = activeLabelFn ? activeLabelFn(item) : '';
-      btn.setAttribute('aria-label',
-        item.title + (metricLabel ? ' — ' + metricLabel : ''));
+      btn.setAttribute('aria-label', item.title + (metricLabel ? ' — ' + metricLabel : ''));
       if (index === 0) btn.id = 'first-tile';
 
       /* Image */
@@ -1098,13 +1060,17 @@ var ETHNIC_RESPONSES = [
       }
       btn.appendChild(imgWrap);
 
-      /* Caption: title always shown; metric shown only when show-captions */
+      /*
+       * Caption: title always visible.
+       * Metric line always present (visibility:hidden by default via CSS),
+       * so the tile height is the same whether data is showing or not.
+       */
       var cap = document.createElement('div');
       cap.className = 'tile-caption';
       cap.setAttribute('aria-hidden', 'true');
       cap.innerHTML =
         '<strong>' + esc(item.title) + '</strong>' +
-        '<span class="tile-metric">' + esc(metricLabel) + '</span>';
+        '<span class="tile-metric">' + esc(metricLabel || '\u00a0') + '</span>';
       btn.appendChild(cap);
 
       /* Keyboard: Enter/Space → lightbox; D → submit as answer */
@@ -1112,16 +1078,18 @@ var ETHNIC_RESPONSES = [
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           openLightbox(item, faceName);
+          return;
         }
-        if ((e.key === 'd' || e.key === 'D') &&
-            !qAnswered && !qFlipMode &&
-            lightbox.classList.contains('hidden')) {
+        if (e.key === 'd' || e.key === 'D') {
           e.preventDefault();
-          handleDrop(item, btn.getBoundingClientRect());
+          /* Only submit if question is active and lightbox is closed */
+          if (!qFlipMode && lightbox.classList.contains('hidden')) {
+            handleAnswer(item, btn.getBoundingClientRect());
+          }
         }
       });
 
-      /* Click → lightbox */
+      /* Click → lightbox (pointer users) */
       btn.addEventListener('click', function() { openLightbox(item, faceName); });
 
       /* Pointer drag */
@@ -1131,16 +1099,18 @@ var ETHNIC_RESPONSES = [
     });
 
     tilesGrid.appendChild(frag);
+
+    /* Sync caption-metric visibility */
     tilesGrid.classList.toggle('show-captions', !!activeLabelFn);
   }
 
   /* ----------------------------------------------------------
-     DROP ZONE
+     DROP ZONE HELPERS
   ---------------------------------------------------------- */
   function clearDropZone() {
     var card = dropZone.querySelector('.dz-card');
     if (card) card.remove();
-    if (dzHint) dzHint.style.display = '';
+    dzHint.style.display = '';
   }
 
   function showCorrectInDropZone(item) {
@@ -1155,15 +1125,15 @@ var ETHNIC_RESPONSES = [
     var card = buildDzCard(item, null);
     dropZone.appendChild(card);
 
-    /* Flash red */
+    /* Animate red flash */
     var tint = card.querySelector('.dz-tint');
     if (tint) tint.className = 'dz-tint wrong-anim';
 
     var dzRect = dropZone.getBoundingClientRect();
     setTimeout(function() {
       clearDropZone();
+      /* Fly-back ghost */
       if (srcRect) {
-        /* Fly-back animation */
         var fly = document.createElement('div');
         fly.className = 'drag-ghost';
         fly.style.cssText =
@@ -1171,7 +1141,7 @@ var ETHNIC_RESPONSES = [
           'left:' + dzRect.left + 'px;top:' + dzRect.top + 'px;opacity:0.7;' +
           'background:rgba(200,30,30,0.18);border:1px solid #aaa;' +
           'transition:left .45s ease-in-out,top .45s ease-in-out,' +
-                      'width .45s ease-in-out,height .45s ease-in-out,opacity .45s ease-in-out;';
+                      'width .45s,height .45s,opacity .45s ease-in-out;';
         document.body.appendChild(fly);
         void fly.offsetWidth;
         fly.style.left    = srcRect.left   + 'px';
@@ -1199,8 +1169,7 @@ var ETHNIC_RESPONSES = [
     card.appendChild(iw);
 
     var t = document.createElement('div');
-    t.className   = 'dz-card-title';
-    t.textContent = item.title;
+    t.className = 'dz-card-title'; t.textContent = item.title;
     card.appendChild(t);
 
     var tint = document.createElement('div');
@@ -1211,24 +1180,61 @@ var ETHNIC_RESPONSES = [
   }
 
   /* ----------------------------------------------------------
-     ANSWER CHECKING
+     ANSWER HANDLING
+     Single entry point used by drag-drop AND D-key.
+     Determines correct/wrong, updates drop zone, sorts wall,
+     and triggers response text via updateQuestionBar().
   ---------------------------------------------------------- */
-  function handleDrop(item, srcRect) {
-    if (qAnswered || qFlipMode) return;
-    var correct = getCorrectItem(currentRawData(), currentQ().field);
+  function handleAnswer(item, srcRect) {
+    if (qFlipMode) return;
+
+    var correct = getTop(rawData(), curQ().field);
     if (!correct) return;
 
     if (item.title === correct.title) {
+      /* ✓ Correct */
       qAnswered     = true;
-      activeLabelFn = currentQ().labelFn;
+      activeLabelFn = curQ().labelFn;
       showCorrectInDropZone(item);
-      applySort(currentQ().field, false);   /* sort without re-triggering answered state */
-      tilesGrid.classList.add('show-captions');
-      updateQuestionBar();
+
+      /* Sort wall by this question's field and show metrics */
+      activeSortField[currentFace] = curQ().field;
+      var sorted = sortData(rawData(), curQ().field);
+      if (currentFace === 'front') currentTypeData   = sorted;
+      else                         currentEthnicData = sorted;
+
+      renderTiles(sorted);
+      syncSortButtons();
+      updateQuestionBar();   /* ← shows response text */
     } else {
+      /* ✗ Wrong — flash and return */
       showWrongInDropZone(item, srcRect);
+      /* question state unchanged — reader can try again */
     }
   }
+
+  /* ----------------------------------------------------------
+     REVEAL ANSWER BUTTON
+  ---------------------------------------------------------- */
+  btnReveal.addEventListener('click', function() {
+    if (qFlipMode) return;
+    /* Works whether or not qAnswered (lets reader re-reveal current question) */
+    var correct = getTop(rawData(), curQ().field);
+    if (!correct) return;
+
+    qAnswered     = true;
+    activeLabelFn = curQ().labelFn;
+    showCorrectInDropZone(correct);
+
+    activeSortField[currentFace] = curQ().field;
+    var sorted = sortData(rawData(), curQ().field);
+    if (currentFace === 'front') currentTypeData   = sorted;
+    else                         currentEthnicData = sorted;
+
+    renderTiles(sorted);
+    syncSortButtons();
+    updateQuestionBar();   /* ← shows response text */
+  });
 
   /* ----------------------------------------------------------
      SKIP / NEXT / FLIP BUTTON
@@ -1236,53 +1242,41 @@ var ETHNIC_RESPONSES = [
   btnSkipNext.addEventListener('click', function() {
     if (btnSkipNext.textContent.trim() === 'Flip') { flipWall(); return; }
 
-    /* Advance */
-    if (qIdx < currentQs().length - 1) { qIdx++; } else { qFlipMode = true; }
-    qAnswered = false;
+    /* Advance question index */
+    if (qIdx < questions().length - 1) { qIdx++; } else { qFlipMode = true; }
+    qAnswered     = false;
+    activeLabelFn = null;
 
     /* Reset display */
     clearDropZone();
-    activeLabelFn = null;
     tilesGrid.classList.remove('show-captions');
     qResponse.style.display = 'none';
 
-    /* Return to alpha */
-    var sorted = sortData(currentRawData(), 'alpha');
+    /* Return to alpha sort */
+    activeSortField[currentFace] = 'alpha';
+    var sorted = sortData(rawData(), 'alpha');
     if (currentFace === 'front') currentTypeData   = sorted;
     else                         currentEthnicData = sorted;
-    activeSortField[currentFace] = 'alpha';
-    renderTiles(sorted, currentFace);
-    updateSortButtons();
+
+    renderTiles(sorted);
+    syncSortButtons();
     updateQuestionBar();
   });
 
   /* ----------------------------------------------------------
-     REVEAL ANSWER BUTTON
-  ---------------------------------------------------------- */
-  btnReveal.addEventListener('click', function() {
-    if (qAnswered || qFlipMode) return;
-    var correct = getCorrectItem(currentRawData(), currentQ().field);
-    if (!correct) return;
-
-    qAnswered     = true;
-    activeLabelFn = currentQ().labelFn;
-    showCorrectInDropZone(correct);
-    applySort(currentQ().field, false);
-    tilesGrid.classList.add('show-captions');
-    updateQuestionBar();
-  });
-
-  /* ----------------------------------------------------------
-     POINTER DRAG
+     POINTER DRAG — full lifecycle
   ---------------------------------------------------------- */
   function onPointerDown(e) {
-    if (e.button !== undefined && e.button !== 0) return;
-    if (qAnswered || qFlipMode) return;
+    if (e.button !== undefined && e.button !== 0) return; /* left only */
+    if (qFlipMode) return;
     if (!lightbox.classList.contains('hidden')) return;
 
     var tile = e.currentTarget;
-    var idx  = parseInt(tile.dataset.itemIndex, 10);
-    var item = currentData()[idx];
+    /* Find item by stored title key — robust against re-renders */
+    var title   = tile.dataset.itemTitle;
+    var wd      = workingData();
+    var item    = null;
+    for (var i = 0; i < wd.length; i++) { if (wd[i].title === title) { item = wd[i]; break; } }
     if (!item) return;
 
     e.preventDefault();
@@ -1295,6 +1289,7 @@ var ETHNIC_RESPONSES = [
     drag.offsetX = e.clientX - rect.left;
     drag.offsetY = e.clientY - rect.top;
 
+    /* Clone as ghost */
     var ghost = document.createElement('div');
     ghost.className = 'drag-ghost';
     ghost.style.cssText =
@@ -1326,11 +1321,12 @@ var ETHNIC_RESPONSES = [
     if (!drag.active) return;
     dropZone.classList.remove('drag-over');
     var dz = dropZone.getBoundingClientRect();
-    var dropped = e.clientX >= dz.left && e.clientX <= dz.right &&
-                  e.clientY >= dz.top  && e.clientY <= dz.bottom;
+    var dropped =
+      e.clientX >= dz.left && e.clientX <= dz.right &&
+      e.clientY >= dz.top  && e.clientY <= dz.bottom;
     var savedItem = drag.item, savedRect = drag.srcRect;
     endDrag(e.currentTarget);
-    if (dropped) handleDrop(savedItem, savedRect);
+    if (dropped) handleAnswer(savedItem, savedRect);
   }
 
   function onPointerCancel(e) {
@@ -1381,23 +1377,23 @@ var ETHNIC_RESPONSES = [
     qIdx = 0; qAnswered = false; qFlipMode = false; activeLabelFn = null;
     clearDropZone();
     tilesGrid.classList.remove('show-captions');
-
-    var sorted = sortData(currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA, 'alpha');
-    if (currentFace === 'front') currentTypeData   = sorted;
-    else                         currentEthnicData = sorted;
     activeSortField[currentFace] = 'alpha';
 
-    renderTiles(sorted, currentFace);
-    updateLabels();
+    var sorted = sortData(rawData(), 'alpha');
+    if (currentFace === 'front') currentTypeData   = sorted;
+    else                         currentEthnicData = sorted;
+
+    renderTiles(sorted);
+    updateFaceLabels();
     showSortGroups();
-    updateSortButtons();
+    syncSortButtons();
     updateQuestionBar();
   }
 
   function flipToFace(target) { if (currentFace !== target) flipWall(); }
 
-  function updateLabels() {
-    var front = (currentFace === 'front');
+  function updateFaceLabels() {
+    var front = currentFace === 'front';
     labelFront.className = 'face-toggle-label' + (front ? ' active' : '');
     labelBack.className  = 'face-toggle-label' + (front ? '' : ' active');
     dotFront.className   = 'face-toggle-dot'   + (front ? ' filled' : '');
@@ -1411,19 +1407,17 @@ var ETHNIC_RESPONSES = [
   ---------------------------------------------------------- */
   function openLightbox(item, faceName) {
     lbImageCol.innerHTML = '';
-
     if (item.filename && item.filename.trim()) {
       var img = document.createElement('img');
       img.src = IMG_BASE + item.filename.trim();
       img.alt = (item.alt_text && item.alt_text.trim()) ? item.alt_text.trim() : item.title;
       lbImageCol.appendChild(img);
     } else {
-      var blank = document.createElement('div');
-      blank.className = 'lb-no-image';
+      var blank = document.createElement('div'); blank.className = 'lb-no-image';
       lbImageCol.appendChild(blank);
     }
 
-    lbEyebrow.textContent = (faceName === 'front') ? 'Costume Type' : 'Ethnic Identity';
+    lbEyebrow.textContent = faceName === 'front' ? 'Costume Type' : 'Ethnic Identity';
     lbTitle.textContent   = item.title;
 
     /* Stats list */
@@ -1431,12 +1425,9 @@ var ETHNIC_RESPONSES = [
     buildLbStats(item, faceName).forEach(function(entry) {
       var li = document.createElement('li');
       if (!entry || entry === 'n/a') {
-        var sp = document.createElement('span');
-        sp.className = 'lb-na'; sp.textContent = 'n/a';
+        var sp = document.createElement('span'); sp.className = 'lb-na'; sp.textContent = 'n/a';
         li.appendChild(sp);
-      } else {
-        li.textContent = entry;
-      }
+      } else { li.textContent = entry; }
       lbStatsList.appendChild(li);
     });
 
@@ -1461,107 +1452,85 @@ var ETHNIC_RESPONSES = [
 
   function buildLbStats(item, faceName) {
     if (faceName === 'front') {
-      var cp = parseFloat(item.pct);
-      var wv = parseNumeric(item.women);
-      var mv = parseNumeric(item.men);
-      var cv = formatCost(item.cost);
       return [
-        (!isNaN(cp) && cp > 0) ? formatCatPct(cp) + ' of catalog'                             : 'n/a',
-        wv !== null             ? formatCatPct(wv) + ' of costumes under women\'s sections'    : 'n/a',
-        mv !== null             ? formatCatPct(mv) + ' of costumes under men\'s sections'      : 'n/a',
-        cv                      ? cv + ': average cost'                                         : 'n/a'
+        (parseNum(item.pct) !== null)  ? fmtCatPct(parseNum(item.pct)) + ' of catalog'                           : 'n/a',
+        (parseNum(item.women) !== null) ? fmtCatPct(parseNum(item.women)) + ' of costumes under women\'s sections' : 'n/a',
+        (parseNum(item.men)   !== null) ? fmtCatPct(parseNum(item.men))   + ' of costumes under men\'s sections'   : 'n/a',
+        fmtCost(item.cost) ? fmtCost(item.cost) + ': average cost' : 'n/a'
       ];
     } else {
-      var ep  = parseFloat(item.pct);
-      var p10 = formatPopPct(item.pct1910);
-      var p00 = formatPopPct(item.pct1900);
-      var dst = formatDistance(item.distance);
       return [
-        (!isNaN(ep) && ep > 0) ? formatCatPct(ep) + ' of catalog' : 'n/a',
-        p10  ? p10  + ' of 1910 census'    : 'n/a',
-        p00  ? p00  + ' of 1900 census'    : 'n/a',
-        dst  ? dst                         : 'n/a'
+        (parseNum(item.pct) !== null)    ? fmtCatPct(parseNum(item.pct))  + ' of catalog'    : 'n/a',
+        fmtPopPct(item.pct1910)  ? fmtPopPct(item.pct1910)  + ' of 1910 census' : 'n/a',
+        fmtPopPct(item.pct1900)  ? fmtPopPct(item.pct1900)  + ' of 1900 census' : 'n/a',
+        fmtDist(item.distance)   ? fmtDist(item.distance)                        : 'n/a'
       ];
     }
   }
 
   function closeLightbox() {
-    lightbox.classList.add('hidden');
-    lightbox.setAttribute('aria-hidden', 'true');
+    lightbox.classList.add('hidden'); lightbox.setAttribute('aria-hidden', 'true');
     document.removeEventListener('keydown', lbKeyHandler);
   }
-
-  function lbKeyHandler(e) {
-    if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); }
-  }
+  function lbKeyHandler(e) { if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); } }
 
   /* ----------------------------------------------------------
      MODAL
   ---------------------------------------------------------- */
-  function closeModal() {
-    introModal.classList.add('hidden');
-    introModal.setAttribute('aria-hidden', 'true');
-  }
-  introModal.addEventListener('click', function(e) { if (e.target === introModal) closeModal(); });
+  function closeModal() { introModal.classList.add('hidden'); introModal.setAttribute('aria-hidden','true'); }
+  introModal.addEventListener('click', function(e){ if (e.target === introModal) closeModal(); });
 
   /* ----------------------------------------------------------
      GLOBAL KEYBOARD SHORTCUTS
   ---------------------------------------------------------- */
   document.addEventListener('keydown', function(e) {
     if (!lightbox.classList.contains('hidden')) return;
-    if (e.key === 'Escape') {
-      if (!introModal.classList.contains('hidden')) closeModal();
-    } else if ((e.key === 'f' || e.key === 'F') &&
-               e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+    if (e.key === 'Escape' && !introModal.classList.contains('hidden')) closeModal();
+    if ((e.key === 'f' || e.key === 'F') &&
+        e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
       e.preventDefault(); flipWall();
     }
-    /* D key is handled per-tile in keydown listeners */
+    /* D key handled per-tile via keydown listeners in renderTiles */
   });
 
   /* ----------------------------------------------------------
-     TOC TAB ORDER
+     TOC — remove from tab order
   ---------------------------------------------------------- */
   function removeTocFromTabOrder() {
     var sb = document.getElementById('interact-toc-sidebar');
     if (!sb) return;
-    sb.querySelectorAll('a,button,input,select,textarea,[tabindex]').forEach(function(el) {
-      el.setAttribute('tabindex', '-1');
-    });
+    sb.querySelectorAll('a,button,input,select,textarea,[tabindex]').forEach(function(el){ el.setAttribute('tabindex','-1'); });
     var h = sb.querySelector('.scrolly-toc-heading');
-    if (h) h.setAttribute('aria-hidden', 'true');
+    if (h) h.setAttribute('aria-hidden','true');
   }
 
   /* ----------------------------------------------------------
      BINDINGS
   ---------------------------------------------------------- */
-  labelFront.addEventListener('click', function() { flipToFace('front'); });
-  labelBack.addEventListener('click',  function() { flipToFace('back');  });
-  [labelFront, labelBack].forEach(function(el) {
-    el.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+  labelFront.addEventListener('click', function(){ flipToFace('front'); });
+  labelBack.addEventListener('click',  function(){ flipToFace('back');  });
+  [labelFront, labelBack].forEach(function(el){
+    el.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); el.click(); }
     });
   });
 
   modalClose.addEventListener('click', closeModal);
   modalBegin.addEventListener('click', closeModal);
   lbClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
+  lightbox.addEventListener('click', function(e){ if (e.target === lightbox) closeLightbox(); });
 
   /* ----------------------------------------------------------
      INIT
   ---------------------------------------------------------- */
   function init() {
-    renderTiles(currentTypeData, 'front');
-    updateLabels(); showSortGroups();
-    updateSortButtons(); updateQuestionBar();
+    renderTiles(currentTypeData);
+    updateFaceLabels(); showSortGroups(); syncSortButtons(); updateQuestionBar();
     removeTocFromTabOrder();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }
+  else { init(); }
 
 }());
 </script>
