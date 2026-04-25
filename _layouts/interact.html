@@ -8,7 +8,7 @@ layout: default
 
 <style>
 /* ============================================================
-   SKIP LINK — keyboard users jump directly to first tile
+   SKIP LINK
    ============================================================ */
 .skip-to-tiles {
     position: absolute;
@@ -21,89 +21,278 @@ layout: default
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.85rem;
 }
-
 .skip-to-tiles:focus {
-    left: 1rem;
-    top: 1rem;
-    width: auto;
-    height: auto;
+    left: 1rem; top: 1rem;
+    width: auto; height: auto;
     overflow: visible;
-    background: #0a0a0a;
-    color: #fff;
+    background: #0a0a0a; color: #fff;
     padding: 0.4rem 0.8rem;
     outline: 2px solid #fff;
     outline-offset: 2px;
 }
 
 /* ============================================================
-   TOC SIDEBAR — light-mode overrides, mirrored from browse.html
+   TOC SIDEBAR
    ============================================================ */
 #interact-toc-sidebar.scrolly-toc-sidebar {
     background-color: #ffffff;
-    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    scrollbar-color: rgba(0,0,0,0.15) transparent;
 }
-#interact-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.15);
-}
+#interact-toc-sidebar.scrolly-toc-sidebar::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.15); }
 #interact-toc-sidebar .scrolly-toc-heading { color: #000000; }
 #interact-toc-sidebar .scrolly-toc-link    { color: #353535; }
-#interact-toc-sidebar .scrolly-toc-link:hover {
-    color: #1B1B1B;
-    background-color: rgba(0, 0, 0, 0.05);
-}
-#interact-toc-sidebar .scrolly-toc-link.toc-active {
-    color: #000000;
-    font-weight: 600;
-}
+#interact-toc-sidebar .scrolly-toc-link:hover { color: #1B1B1B; background-color: rgba(0,0,0,0.05); }
+#interact-toc-sidebar .scrolly-toc-link.toc-active { color: #000000; font-weight: 600; }
 #interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link       { color: #353535; }
 #interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link:hover { color: #1B1B1B; }
 #interact-toc-sidebar .toc-chapter-entry > .scrolly-toc-link.toc-active { color: #000000; }
-#interact-toc-sidebar .toc-section-rule         { background-color: rgba(0, 0, 0, 0.22); }
-#interact-toc-sidebar .toc-section-rule:hover   { background-color: rgba(0, 0, 0, 0.55); }
-#interact-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(0, 0, 0, 0.48); }
+#interact-toc-sidebar .toc-section-rule         { background-color: rgba(0,0,0,0.22); }
+#interact-toc-sidebar .toc-section-rule:hover   { background-color: rgba(0,0,0,0.55); }
+#interact-toc-sidebar .toc-section-rule.toc-section-active { background-color: rgba(0,0,0,0.48); }
 
 /* ============================================================
    WRAPPER
-   Matches browse.html margin-left / padding-top / padding-bottom.
-   Reduced top padding now that the header block is removed.
    ============================================================ */
 #interact-wrapper {
     margin-left: 14%;
-    padding-top: 140px;        
+    padding-top: 140px;
     padding-bottom: 6rem;
     font-family: 'Times New Roman', Times, Georgia, serif;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-
 @media screen and (max-width: 992px) {
     #interact-toc-sidebar { display: none !important; }
     #interact-wrapper     { margin-left: 0 !important; }
 }
-
 @media screen and (max-width: 768px) {
-    #interact-wrapper {
-        padding-top: 110px;
-        padding-bottom: 5rem;
-    }
+    #interact-wrapper { padding-top: 110px; padding-bottom: 5rem; }
 }
 
 /* ============================================================
    WALL SCENE
-   No fixed max-width cap — fills the available column so the
-   grid uses every pixel on wide monitors (1920 px+).
    ============================================================ */
 .wall-scene {
     width: 100%;
-    max-width: 1800px;        /* raised from 1400 px */
+    max-width: 1800px;
     padding: 0 1.5rem;
     box-sizing: border-box;
 }
 
 /* ============================================================
-   FACE TOGGLE BAR  (label buttons + press-F hint — all left)
-   Flip button has been removed; F-key is the sole flip control.
+   QUESTION BAR  (above the wall)
+   ============================================================ */
+.question-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    min-height: 185px;
+    box-sizing: border-box;
+}
+
+.question-text-area {
+    flex: 1;
+    min-width: 0;
+    padding-right: 0.5rem;
+}
+
+.q-label {
+    font-size: 0.57rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #999;
+    margin: 0 0 0.45rem;
+    line-height: 1;
+}
+
+.q-text {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #0a0a0a;
+    margin: 0 0 0;
+    font-weight: bold;
+}
+
+.q-response {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.85rem;
+    line-height: 1.72;
+    color: #333;
+    margin: 0.55rem 0 0;
+}
+
+/* ============================================================
+   DROP ZONE
+   ============================================================ */
+.drop-zone {
+    width: 185px;
+    height: 185px;
+    flex-shrink: 0;
+    border: 1px dashed #aaa;
+    background: #fafafa;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, background 0.2s;
+    overflow: hidden;
+}
+
+.drop-zone.drag-over {
+    border-color: #0a0a0a;
+    border-style: solid;
+    background: rgba(0,0,0,0.03);
+}
+
+.dz-hint {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.7rem;
+    color: #bbb;
+    text-align: center;
+    line-height: 1.5;
+    font-style: italic;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Card displayed inside the drop zone */
+.dz-card {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #0a0a0a;
+}
+
+.dz-card-img {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 4px 4px 0;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+.dz-card-img img {
+    max-width: 88%;
+    max-height: 88%;
+    object-fit: contain;
+    display: block;
+    filter: grayscale(100%) contrast(1.1);
+}
+
+.dz-card-title {
+    flex-shrink: 0;
+    width: 100%;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding: 4px 5px 5px;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.68em;
+    line-height: 1.2;
+    color: #0a0a0a;
+    text-align: center;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+/* Tint overlay */
+.dz-tint {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.dz-tint.correct  { background: rgba(0, 150, 80, 0.5);  opacity: 1; }
+.dz-tint.wrong    { background: rgba(200, 30,  30, 0.5); opacity: 1; }
+
+@keyframes dzWrongFlash {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.dz-tint.wrong-anim {
+    background: rgba(200, 30, 30, 0.5);
+    animation: dzWrongFlash 0.85s ease forwards;
+}
+
+/* ============================================================
+   QUESTION ACTION BUTTONS
+   ============================================================ */
+.question-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+    flex-shrink: 0;
+}
+
+.q-action-btn {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0a0a0a;
+    background: none;
+    border: 1px solid #0a0a0a;
+    padding: 0.38rem 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.q-action-btn:hover,
+.q-action-btn:focus-visible {
+    background: #0a0a0a;
+    color: #fff;
+    outline: none;
+}
+
+.q-action-btn:disabled,
+.q-action-btn[disabled] {
+    color: #bbb;
+    border-color: #ccc;
+    cursor: default;
+    background: none;
+}
+
+.q-action-btn:disabled:hover { background: none; color: #bbb; }
+
+@media screen and (max-width: 768px) {
+    .question-bar {
+        flex-wrap: wrap;
+        min-height: auto;
+    }
+    .question-text-area { flex-basis: 100%; order: 1; }
+    .drop-zone { order: 2; width: 130px; height: 130px; }
+    .question-actions { order: 3; flex-direction: column; }
+}
+
+@media screen and (max-width: 480px) {
+    .drop-zone { width: 110px; height: 110px; }
+}
+
+/* ============================================================
+   FACE TOGGLE BAR
    ============================================================ */
 .face-controls-bar {
     display: flex;
@@ -158,7 +347,6 @@ layout: default
     color: #c0b8ae;
 }
 
-/* "or press F" inline hint */
 .face-f-hint {
     font-size: 0.75rem;
     color: #aaa;
@@ -179,36 +367,68 @@ layout: default
     color: #555;
 }
 
-@media screen and (max-width: 480px) {
-    .face-f-hint { display: none; }
-}
+@media screen and (max-width: 480px) { .face-f-hint { display: none; } }
 
-/* Source / citation note — right side of controls bar */
-.face-source-note {
-    font-size: 0.75rem;
-    color: #aaa;
-    font-style: italic;
-    font-family: 'Times New Roman', Times, Georgia, serif;
-    line-height: 1.45;
+/* ============================================================
+   SORT GROUP  (replaces immigration note, right side of bar)
+   ============================================================ */
+.sort-group {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
     margin-left: auto;
-    text-align: right;
-    max-width: 340px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-@media screen and (max-width: 768px) {
-    .face-source-note {
-        margin-left: 0;
-        text-align: left;
-        max-width: 100%;
-    }
+.sort-group-prefix {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #999;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+.sort-divider {
+    font-size: 0.55rem;
+    color: #c0b8ae;
+    flex-shrink: 0;
+}
+
+.sort-btn {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #bbb;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    line-height: 1;
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+
+.sort-btn:hover { color: #555; }
+
+.sort-btn.active {
+    color: #0a0a0a;
+    font-weight: bold;
+}
+
+@media screen and (max-width: 900px) {
+    .sort-group { margin-left: 0; justify-content: flex-start; }
 }
 
 @media screen and (max-width: 480px) {
-    .face-source-note { display: none; }
+    .sort-group { display: none; }
 }
 
 /* ============================================================
-   WALL WRAPPER — passive container only
+   WALL WRAPPER
    ============================================================ */
 .orb-zone {
     position: relative;
@@ -217,9 +437,6 @@ layout: default
     box-sizing: border-box;
 }
 
-/* ============================================================
-   3D PERSPECTIVE + CARD
-   ============================================================ */
 .wall-perspective {
     perspective: 2200px;
     perspective-origin: 50% 35%;
@@ -232,16 +449,13 @@ layout: default
     width: 100%;
 }
 
-/* ============================================================
-   WALL FACE
-   ============================================================ */
 .wall-face {
     background: #ffffff;
     border: 1px solid #0a0a0a;
     box-shadow:
         4px 4px 0 #666,
         8px 8px 0 #aaa,
-        11px 11px 16px rgba(0, 0, 0, 0.13);
+        11px 11px 16px rgba(0,0,0,0.13);
     padding: 2px;
     width: 100%;
     box-sizing: border-box;
@@ -249,9 +463,6 @@ layout: default
 
 /* ============================================================
    TILES GRID
-   Base: 185 px min — same as before.
-   Wide-screen bump: 220 px+ at ≥1400 px, 260 px+ at ≥1800 px.
-   auto-fill means columns grow naturally as space opens up.
    ============================================================ */
 .tiles-grid {
     display: grid;
@@ -262,21 +473,15 @@ layout: default
 }
 
 @media screen and (min-width: 1400px) {
-    .tiles-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    }
+    .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 }
 
 @media screen and (min-width: 1800px) {
-    .tiles-grid {
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    }
+    .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 }
 
 @media screen and (max-width: 480px) {
-    .tiles-grid {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    }
+    .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
 
 /* ============================================================
@@ -290,7 +495,7 @@ layout: default
     justify-content: flex-end;
     background: #ffffff;
     border: 1px solid #0a0a0a;
-    cursor: pointer;
+    cursor: grab;
     box-sizing: border-box;
     padding: 7px 5px 5px;
     overflow: hidden;
@@ -300,7 +505,11 @@ layout: default
     font-family: 'Times New Roman', Times, Georgia, serif;
     text-align: center;
     outline: none;
+    user-select: none;
+    touch-action: none;
 }
+
+.tile:active { cursor: grabbing; }
 
 .tile:hover,
 .tile:focus,
@@ -328,12 +537,15 @@ layout: default
     object-fit: contain;
     display: block;
     filter: grayscale(100%) contrast(1.1);
+    pointer-events: none;
 }
 
+/* Caption: hidden by default, shown when grid has show-captions class */
 .tile-caption {
+    display: none;
     flex-shrink: 0;
     width: 100%;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(0,0,0,0.1);
     margin-top: 4px;
     padding-top: 4px;
     font-family: 'Times New Roman', Times, Georgia, serif;
@@ -343,12 +555,11 @@ layout: default
     text-align: center;
 }
 
-.tile-caption strong {
-    display: block;
-    font-weight: bold;
-}
+.tiles-grid.show-captions .tile-caption { display: block; }
 
-.tile-caption .tile-pct {
+.tile-caption strong { display: block; font-weight: bold; }
+
+.tile-caption .tile-metric {
     display: block;
     color: #666;
     margin-top: 1px;
@@ -356,20 +567,34 @@ layout: default
 }
 
 /* ============================================================
+   DRAG GHOST (pointer-based)
+   ============================================================ */
+.drag-ghost {
+    position: fixed;
+    z-index: 5000;
+    pointer-events: none;
+    opacity: 0.88;
+    box-shadow: 4px 4px 14px rgba(0,0,0,0.32);
+    transform: scale(1.06);
+    transform-origin: top left;
+    background: #fff;
+    border: 1px solid #0a0a0a;
+    overflow: hidden;
+}
+
+/* ============================================================
    INTRO MODAL
-   Anchored to the top of the viewport so it is always reachable
-   without scrolling. Scrolls internally if content is tall.
    ============================================================ */
 #intro-modal {
     position: fixed;
     inset: 0;
-    background: rgba(10, 10, 10, 0.86);
+    background: rgba(10,10,10,0.86);
     z-index: 2000;
     display: flex;
-    align-items: flex-start;       /* anchor to top */
+    align-items: flex-start;
     justify-content: center;
-    padding: 3.5rem 2rem 2rem;     /* top breathing room below nav */
-    overflow-y: auto;              /* scroll if modal is taller than viewport */
+    padding: 3.5rem 2rem 2rem;
+    overflow-y: auto;
     backdrop-filter: blur(2px);
     -webkit-overflow-scrolling: touch;
 }
@@ -381,9 +606,8 @@ layout: default
     max-width: 560px;
     width: 100%;
     padding: 2.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255,255,255,0.22);
     color: #f8f5ee;
-    /* Allow the card to scroll into view cleanly on very small screens */
     margin-bottom: 2rem;
 }
 
@@ -391,21 +615,19 @@ layout: default
     content: '';
     position: absolute;
     top: 6px; left: 6px; right: -6px; bottom: -6px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255,255,255,0.08);
     pointer-events: none;
 }
 
 .modal-close {
     position: absolute;
-    top: 0.9rem;
-    right: 0.9rem;
+    top: 0.9rem; right: 0.9rem;
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255,255,255,0.28);
     color: #f8f5ee;
     font-family: 'Times New Roman', Times, serif;
     font-size: 1rem;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.75rem; height: 1.75rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -413,9 +635,8 @@ layout: default
     transition: background 0.15s;
 }
 
-.modal-close:hover,
-.modal-close:focus-visible {
-    background: rgba(255, 255, 255, 0.14);
+.modal-close:hover, .modal-close:focus-visible {
+    background: rgba(255,255,255,0.14);
     outline: 1px solid #f8f5ee;
     outline-offset: 2px;
 }
@@ -424,7 +645,7 @@ layout: default
     font-size: 0.6rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: rgba(248, 245, 238, 0.42);
+    color: rgba(248,245,238,0.42);
     margin-bottom: 0.85rem;
 }
 
@@ -434,57 +655,48 @@ layout: default
     line-height: 1.3;
     margin-bottom: 1.2rem;
     padding-bottom: 0.9rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    border-bottom: 1px solid rgba(255,255,255,0.16);
 }
 
 .modal-inner p {
     font-size: 0.87rem;
     line-height: 1.76;
-    color: rgba(248, 245, 238, 0.76);
+    color: rgba(248,245,238,0.76);
     margin-bottom: 0.85rem;
 }
 
 .ctrl-list {
     margin: 1.2rem 0 0;
     padding: 0.9rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.11);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255,255,255,0.11);
+    background: rgba(255,255,255,0.04);
 }
 
 .ctrl-list-heading {
     font-size: 0.57rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(248, 245, 238, 0.38);
+    color: rgba(248,245,238,0.38);
     margin-bottom: 0.6rem;
     display: block;
 }
 
-.ctrl-row {
-    display: flex;
-    gap: 0.6rem;
-    align-items: flex-start;
-    margin-bottom: 0.42rem;
-}
+.ctrl-row { display: flex; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.42rem; }
 
 .ctrl-key {
     flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 2px;
     padding: 0.07rem 0.38rem;
     font-family: 'Courier New', monospace;
     font-size: 0.66rem;
-    color: rgba(248, 245, 238, 0.8);
+    color: rgba(248,245,238,0.8);
     min-width: 2rem;
     text-align: center;
 }
 
-.ctrl-desc {
-    font-size: 0.71rem;
-    color: rgba(248, 245, 238, 0.52);
-    line-height: 1.45;
-}
+.ctrl-desc { font-size: 0.71rem; color: rgba(248,245,238,0.52); line-height: 1.45; }
 
 .modal-begin {
     display: block;
@@ -492,7 +704,7 @@ layout: default
     margin-top: 1.75rem;
     padding: 0.65rem;
     background: none;
-    border: 1px solid rgba(248, 245, 238, 0.42);
+    border: 1px solid rgba(248,245,238,0.42);
     color: #f8f5ee;
     font-family: 'Times New Roman', Times, serif;
     font-size: 0.82rem;
@@ -502,27 +714,19 @@ layout: default
     transition: background 0.18s, color 0.18s;
 }
 
-.modal-begin:hover,
-.modal-begin:focus-visible {
-    background: #f8f5ee;
-    color: #0a0a0a;
-    outline: none;
-}
+.modal-begin:hover, .modal-begin:focus-visible { background: #f8f5ee; color: #0a0a0a; outline: none; }
 
-/* Tap-outside hint on mobile */
 .modal-tap-hint {
     display: none;
     text-align: center;
     font-size: 0.68rem;
-    color: rgba(248, 245, 238, 0.35);
+    color: rgba(248,245,238,0.35);
     margin-top: 0.6rem;
     font-style: italic;
     font-family: 'Times New Roman', Times, Georgia, serif;
 }
 
-@media screen and (max-width: 768px) {
-    .modal-tap-hint { display: block; }
-}
+@media screen and (max-width: 768px) { .modal-tap-hint { display: block; } }
 
 /* ============================================================
    LIGHTBOX
@@ -530,7 +734,7 @@ layout: default
 #lightbox {
     position: fixed;
     inset: 0;
-    background: rgba(10, 10, 10, 0.76);
+    background: rgba(10,10,10,0.76);
     z-index: 1500;
     display: flex;
     align-items: center;
@@ -551,12 +755,10 @@ layout: default
     overflow-y: auto;
     display: grid;
     grid-template-columns: 1fr 1.25fr;
-    box-shadow: 5px 5px 0 #444, 10px 10px 22px rgba(0, 0, 0, 0.38);
+    box-shadow: 5px 5px 0 #444, 10px 10px 22px rgba(0,0,0,0.38);
 }
 
-@media screen and (max-width: 660px) {
-    .lb-inner { grid-template-columns: 1fr; }
-}
+@media screen and (max-width: 660px) { .lb-inner { grid-template-columns: 1fr; } }
 
 .lb-close {
     position: sticky;
@@ -567,8 +769,7 @@ layout: default
     border: 1px solid #0a0a0a;
     font-family: 'Times New Roman', Times, serif;
     font-size: 0.9rem;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.75rem; height: 1.75rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -578,13 +779,9 @@ layout: default
     z-index: 10;
 }
 
-.lb-close:hover,
-.lb-close:focus-visible {
-    background: #0a0a0a;
-    color: #ffffff;
-    outline: none;
-}
+.lb-close:hover, .lb-close:focus-visible { background: #0a0a0a; color: #ffffff; outline: none; }
 
+/* Image column: no caption, image fills space */
 .lb-image-col {
     border-right: 1px solid #0a0a0a;
     padding: 1.25rem 1rem;
@@ -596,58 +793,15 @@ layout: default
     min-height: 300px;
 }
 
-/* Lightbox image — full-resolution from /objects/interact/ */
 .lb-image-col img {
     max-width: 96%;
-    max-height: 360px;
+    max-height: 440px;
     object-fit: contain;
     filter: grayscale(100%) contrast(1.1);
     display: block;
-    margin-bottom: 0.9rem;
 }
 
 .lb-no-image { flex: 1; min-height: 120px; }
-
-.lb-caption {
-    text-align: center;
-    font-family: 'Times New Roman', Times, serif;
-    width: 100%;
-}
-
-.lb-caption-title {
-    font-weight: bold;
-    font-size: 0.97rem;
-    line-height: 1.3;
-    color: #0a0a0a;
-    display: block;
-}
-
-.lb-caption-pct {
-    font-size: 0.82rem;
-    color: #777;
-    font-style: italic;
-    display: block;
-    margin-top: 0.15rem;
-    line-height: 1.6;
-}
-
-/* Stats line for ethnic identity detail view */
-.lb-stats-line {
-    font-size: 0.79rem;
-    color: #777;
-    font-style: italic;
-    display: block;
-    margin-top: 0.2rem;
-    line-height: 1.7;
-    text-align: center;
-    padding: 0 0.25rem;
-}
-
-.lb-stats-line .lb-stats-sep {
-    color: #c0b8ae;
-    font-style: normal;
-    margin: 0 0.2em;
-}
 
 .lb-text-col {
     padding: 1.75rem;
@@ -672,6 +826,22 @@ layout: default
     border-bottom: 1px solid #0a0a0a;
     color: #0a0a0a;
 }
+
+/* Stats list — replaces body text area */
+.lb-stats-list {
+    list-style: disc;
+    padding-left: 1.1rem;
+    margin: 0 0 0.9rem;
+}
+
+.lb-stats-list li {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 0.88rem;
+    line-height: 1.82;
+    color: #111;
+}
+
+.lb-stats-list li .lb-na { color: #aaa; font-style: italic; }
 
 .lb-body p {
     font-family: 'Times New Roman', Times, Georgia, serif;
@@ -708,7 +878,7 @@ layout: default
 <a class="skip-to-tiles" href="#first-tile">Skip to visualization</a>
 
 <!-- ============================================================
-     INTRO MODAL  (anchored to viewport top; scrollable on mobile)
+     INTRO MODAL
      ============================================================ -->
 <div id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-inner">
@@ -716,14 +886,18 @@ layout: default
     <p class="modal-eyebrow">1906 Miller-Dervant Catalog Visualization</p>
     <h2 id="modal-title">Imitative Identities</h2>
     <p>This visualization highlights the materials of the leading costume company in Spokane, Washington from their 1906 catalog.</p>
-    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>: military, theatrical, royal, etc. The reverse organizes the same catalog by <strong>ethnic identity</strong>. Entries are sorted in order of frequency. Select any tile to read more.</p>
+    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>: military, theatrical, royal, etc. The reverse organizes the same catalog by <strong>ethnic identity</strong>. Drag any tile into the framed space above the wall to answer each question.</p>
     <p>Select <strong>Costume Type</strong> or <strong>Ethnic Identity</strong> at the top of the wall, or press <strong>F</strong> to flip between views.</p>
     <p><strong>Source:</strong> Miller-Dervant Catalog, 1906, Miller-Dervant Company Records, 1896–1955, MsSC 198, Eastern Washington State Historical Society, Northwest Museum of Arts and Culture, Spokane, WA.</p>
     <div class="ctrl-list">
       <span class="ctrl-list-heading">Controls</span>
       <div class="ctrl-row">
+        <span class="ctrl-key">Drag</span>
+        <span class="ctrl-desc">Drag a tile to the framed space above to answer the question</span>
+      </div>
+      <div class="ctrl-row">
         <span class="ctrl-key">Tab</span>
-        <span class="ctrl-desc">Move between tiles, from most to least frequent</span>
+        <span class="ctrl-desc">Move between tiles</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Enter</span>
@@ -753,6 +927,7 @@ layout: default
       <button class="lb-close" id="lb-close-btn" aria-label="Close detail view">×</button>
       <p class="lb-eyebrow" id="lb-eyebrow">Costume Category</p>
       <h3 id="lb-title">—</h3>
+      <ul class="lb-stats-list" id="lb-stats-list"></ul>
       <div class="lb-body" id="lb-body"></div>
       <div class="lb-examples" id="lb-examples"></div>
     </div>
@@ -796,12 +971,31 @@ layout: default
      MAIN WRAPPER
      ============================================================ -->
 <div id="interact-wrapper">
-
-  <!-- Wall scene — no page header above it -->
   <div class="wall-scene">
 
-    <!-- Single bar: face indicators + inline F-key hint (left) + source note (right) -->
+    <!-- ── Question Bar ──────────────────────────────────────── -->
+    <div class="question-bar" id="question-bar">
+      <div class="question-text-area">
+        <p class="q-label" id="q-label">Question 1 of 4</p>
+        <p class="q-text" id="q-text">—</p>
+        <p class="q-response" id="q-response" style="display:none;"></p>
+      </div>
+
+      <div class="drop-zone" id="drop-zone"
+           role="region"
+           aria-label="Answer drop zone — drag a tile here">
+        <span class="dz-hint" id="dz-hint">drag a tile<br>here</span>
+      </div>
+
+      <div class="question-actions">
+        <button class="q-action-btn" id="btn-skip-next">Skip Question</button>
+        <button class="q-action-btn" id="btn-reveal">Reveal Answer</button>
+      </div>
+    </div>
+
+    <!-- ── Controls Bar ──────────────────────────────────────── -->
     <div class="face-controls-bar" aria-live="polite">
+      <!-- Face toggles -->
       <div class="face-toggle-group">
         <span class="face-toggle-dot filled" id="dot-front"></span>
         <button class="face-toggle-label active"
@@ -816,23 +1010,49 @@ layout: default
         <span class="face-toggle-dot" id="dot-back"></span>
         <span class="face-f-hint">or press <kbd>F</kbd></span>
       </div>
-      <span class="face-source-note" aria-label="Data source">Immigration data from the 1910 Abstract of the Thirteenth Census, Supplement for Washington State.</span>
+
+      <!-- Sort group — front (Costume Type) -->
+      <div class="sort-group" id="sort-group-front" aria-label="Sort costume types by">
+        <span class="sort-group-prefix">sort by:</span>
+        <button class="sort-btn active" data-field="alpha" data-face="front">a–z</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="pct" data-face="front">percent in catalog</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="men" data-face="front">percent of men's costumes</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="women" data-face="front">percent of women's costumes</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="cost" data-face="front">average cost</button>
+      </div>
+
+      <!-- Sort group — back (Ethnic Identity) -->
+      <div class="sort-group" id="sort-group-back" style="display:none;" aria-label="Sort ethnic identities by">
+        <span class="sort-group-prefix">sort by:</span>
+        <button class="sort-btn active" data-field="alpha" data-face="back">a–z</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="pct" data-face="back">percent in catalog</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="pct1910" data-face="back">percent of 1910 state census</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="pct1900" data-face="back">percent of 1900 state census</button>
+        <span class="sort-divider">|</span>
+        <button class="sort-btn" data-field="distance" data-face="back">distance from Spokane</button>
+      </div>
     </div>
 
-    <!-- Wall wrapper -->
+    <!-- ── Wall ──────────────────────────────────────────────── -->
     <div class="orb-zone" id="orb-zone">
       <div class="wall-perspective">
         <div class="wall-card" id="wall-card">
           <div class="wall-face">
             <div class="tiles-grid" id="tiles-grid" role="list"
-                 aria-label="Costume categories ordered by frequency"></div>
+                 aria-label="Costume categories"></div>
           </div>
         </div>
       </div>
-    </div><!-- /orb-zone -->
+    </div>
 
   </div><!-- /wall-scene -->
-
 </div><!-- /interact-wrapper -->
 
 {% include essay/footer-scrollytelling.html %}
@@ -848,11 +1068,14 @@ var TYPE_DATA = [
     title:      {{ item.title       | jsonify }},
     count:      {{ item.count       | plus: 0 }},
     percentage: {{ item.percentage  | jsonify }},
-    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0 }},
+    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0.0 }},
     examples:   {{ item.examples    | jsonify }},
     alt_text:   {{ item.alt_text    | jsonify }},
     description:{{ item.description | jsonify }},
-    full:       {{ item.full        | jsonify }}
+    full:       {{ item.full        | jsonify }},
+    men:        {{ item.men         | jsonify }},
+    women:      {{ item.women       | jsonify }},
+    cost:       {{ item.cost        | jsonify }}
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
@@ -864,7 +1087,7 @@ var ETHNIC_DATA = [
     title:      {{ item.title       | jsonify }},
     count:      {{ item.count       | plus: 0 }},
     percentage: {{ item.percentage  | jsonify }},
-    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0 }},
+    pct:        {{ item.percentage  | remove: "%" | strip | plus: 0.0 }},
     examples:   {{ item.examples    | jsonify }},
     alt_text:   {{ item.alt_text    | jsonify }},
     description:{{ item.description | jsonify }},
@@ -876,10 +1099,101 @@ var ETHNIC_DATA = [
   {% endfor %}
 ];
 
-/* Full-resolution images — lightbox detail view */
+/* Image paths */
 var IMG_BASE  = "{{ site.baseurl }}/objects/interact/";
-/* Thumbnail images (max 300 PPI JPG) — wall tiles */
 var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
+</script>
+
+<!-- ============================================================
+     QUESTION + RESPONSE DATA
+     ============================================================ -->
+<script>
+/* Question definitions for each face */
+var TYPE_QUESTIONS = [
+  {
+    text:     'Which type appeared most frequently in the catalog?',
+    field:    'pct',
+    labelFn:  function(item) {
+      var v = item.pct;
+      return (v !== null && v !== undefined && v !== '') ? formatCatPct(v) + ' of catalog' : 'n/a';
+    }
+  },
+  {
+    text:     'Which type had the highest percentage of women\'s costumes?',
+    field:    'women',
+    labelFn:  function(item) {
+      var v = parseNumeric(item.women);
+      return v !== null ? formatCatPct(v) + ' of costumes under women\'s sections' : 'n/a';
+    }
+  },
+  {
+    text:     'Which type had the highest percentage of men\'s costumes?',
+    field:    'men',
+    labelFn:  function(item) {
+      var v = parseNumeric(item.men);
+      return v !== null ? formatCatPct(v) + ' of costumes under men\'s sections' : 'n/a';
+    }
+  },
+  {
+    text:     'Which costume type had the highest average cost?',
+    field:    'cost',
+    labelFn:  function(item) {
+      var v = item.cost;
+      return (v !== null && v !== undefined && String(v).trim() !== '') ? esc(String(v).trim()) + ': average cost' : 'n/a';
+    }
+  }
+];
+
+var ETHNIC_QUESTIONS = [
+  {
+    text:     'Which group appeared most frequently in the catalog?',
+    field:    'pct',
+    labelFn:  function(item) {
+      var v = item.pct;
+      return (v !== null && v !== undefined && v !== '') ? formatCatPct(v) + ' of catalog' : 'n/a';
+    }
+  },
+  {
+    text:     'In 1910, which group had the highest population in Washington State?',
+    field:    'pct1910',
+    labelFn:  function(item) {
+      var v = formatPopPct(item.pct1910);
+      return v ? v + ' of 1910 census' : 'n/a';
+    }
+  },
+  {
+    text:     'In 1900, which group had the highest population in Washington State?',
+    field:    'pct1900',
+    labelFn:  function(item) {
+      var v = formatPopPct(item.pct1900);
+      return v ? v + ' of 1900 census' : 'n/a';
+    }
+  },
+  {
+    text:     'If associated with a nation, which group is the greatest distance from Spokane?',
+    field:    'distance',
+    labelFn:  function(item) {
+      var v = formatDistance(item.distance);
+      return v ? v : 'n/a';
+    }
+  }
+];
+
+/* Response messages — 3 sentences of Lorem ipsum each.
+   Index matches question index (0–3 per face). */
+var TYPE_RESPONSES = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur.',
+  'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti. Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident similique sunt in culpa. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat.',
+  'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint. Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.'
+];
+
+var ETHNIC_RESPONSES = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+  'Nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst. Venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada.',
+  'Morbi non arcu risus quis varius quam quisque id diam vel quam elementum pulvinar etiam non quam. Consequat semper viverra nam libero justo laoreet sit amet cursus sit amet dictum sit amet justo donec. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat semper viverra nam libero.',
+  'Feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet consectetur. Congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit.'
+];
 </script>
 
 <!-- ============================================================
@@ -890,48 +1204,23 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
   'use strict';
 
   /* ----------------------------------------------------------
-     STATE
+     UTILITY
   ---------------------------------------------------------- */
-  var currentFace = 'front';
-  var isFlipping  = false;
-  var isMobile    = window.innerWidth < 768;
-
-  /* ----------------------------------------------------------
-     DOM REFS
-  ---------------------------------------------------------- */
-  var introModal = document.getElementById('intro-modal');
-  var modalClose = document.getElementById('modal-close-btn');
-  var modalBegin = document.getElementById('modal-begin-btn');
-  var lightbox   = document.getElementById('lightbox');
-  var lbClose    = document.getElementById('lb-close-btn');
-  var lbImageCol = document.getElementById('lb-image-col');
-  var lbEyebrow  = document.getElementById('lb-eyebrow');
-  var lbTitle    = document.getElementById('lb-title');
-  var lbBody     = document.getElementById('lb-body');
-  var lbExamples = document.getElementById('lb-examples');
-  var wallCard   = document.getElementById('wall-card');
-  var tilesGrid  = document.getElementById('tiles-grid');
-  var labelFront = document.getElementById('label-front');
-  var labelBack  = document.getElementById('label-back');
-  var dotFront   = document.getElementById('dot-front');
-  var dotBack    = document.getElementById('dot-back');
-
-  /* ----------------------------------------------------------
-     THUMBNAIL SOURCE HELPER
-     Wall tiles use the small/JPG versions for faster loading.
-     Strips any existing image extension and appends .jpg.
-  ---------------------------------------------------------- */
-  function thumbSrc(filename) {
-    if (!filename || !filename.trim()) return '';
-    return IMG_SMALL + filename.trim().replace(/\.(png|gif|webp|jpeg)$/i, '.jpg');
+  function esc(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
-  /* ----------------------------------------------------------
-     STAT FORMATTING HELPERS
-  ---------------------------------------------------------- */
+  function parseNumeric(val) {
+    if (val === null || val === undefined || val === '' || val === false) return null;
+    var s = String(val).replace(/[$,\s]/g, '');
+    var n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  }
 
-  /* Category percentage — strips unnecessary decimals.
-     e.g. 9.0 → "9%", 10.8 → "10.8%" */
   function formatCatPct(num) {
     if (num === null || num === undefined || num === '') return null;
     var n = parseFloat(num);
@@ -939,8 +1228,6 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
     return (n % 1 === 0 ? n.toFixed(0) : String(n)) + '%';
   }
 
-  /* Population percentage — strips leading zero before decimal.
-     e.g. 0.44 → ".44%", 0.5 → ".5%" */
   function formatPopPct(val) {
     if (val === null || val === undefined || val === '' || val === false) return null;
     var n = parseFloat(val);
@@ -949,8 +1236,6 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
     return s + '%';
   }
 
-  /* Distance — adds thousands comma and appends label.
-     e.g. 4859 → "4,859 miles from Spokane" */
   function formatDistance(val) {
     if (val === null || val === undefined || val === '' || val === false) return null;
     var n = parseInt(val, 10);
@@ -958,73 +1243,561 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
     return n.toLocaleString('en-US') + ' miles from Spokane';
   }
 
+  function thumbSrc(filename) {
+    if (!filename || !filename.trim()) return '';
+    return IMG_SMALL + filename.trim().replace(/\.(png|gif|webp|jpeg)$/i, '.jpg');
+  }
+
+  function alphaSort(a, b) {
+    return a.title.localeCompare(b.title);
+  }
+
+  function numericSortDesc(field) {
+    return function(a, b) {
+      var va = parseNumeric(a[field]);
+      var vb = parseNumeric(b[field]);
+      if (va === null && vb === null) return 0;
+      if (va === null) return 1;
+      if (vb === null) return -1;
+      return vb - va;
+    };
+  }
+
+  function sortData(data, field) {
+    if (!field || field === 'alpha') {
+      return data.slice().sort(alphaSort);
+    }
+    return data.slice().sort(numericSortDesc(field));
+  }
+
+  function getCorrectAnswerItem(data, field) {
+    var best = null;
+    var bestVal = -Infinity;
+    data.forEach(function(item) {
+      var v;
+      if (field === 'pct') {
+        v = parseFloat(item.pct) || null;
+      } else {
+        v = parseNumeric(item[field]);
+      }
+      if (v !== null && v > bestVal) {
+        bestVal = v;
+        best = item;
+      }
+    });
+    return best;
+  }
+
+  /* ----------------------------------------------------------
+     STATE
+  ---------------------------------------------------------- */
+  var currentFace   = 'front';
+  var isFlipping    = false;
+
+  /* Sorted working copies */
+  var currentTypeData   = sortData(TYPE_DATA, 'alpha');
+  var currentEthnicData = sortData(ETHNIC_DATA, 'alpha');
+
+  /* Active sort fields per face */
+  var activeSortField = { front: 'alpha', back: 'alpha' };
+
+  /* Active caption label function (null = no captions shown) */
+  var activeLabelFn = null;
+
+  /* Question state */
+  var qIdx      = 0;      /* 0–3 */
+  var qAnswered = false;  /* current question answered */
+  var qFlipMode = false;  /* past end of cycle, showing Flip button */
+
+  /* Drag state */
+  var drag = {
+    active: false,
+    item: null,
+    sourceTileRect: null,
+    ghost: null,
+    pointerId: null,
+    offsetX: 0,
+    offsetY: 0
+  };
+
+  /* ----------------------------------------------------------
+     DOM REFS
+  ---------------------------------------------------------- */
+  var introModal  = document.getElementById('intro-modal');
+  var modalClose  = document.getElementById('modal-close-btn');
+  var modalBegin  = document.getElementById('modal-begin-btn');
+  var lightbox    = document.getElementById('lightbox');
+  var lbClose     = document.getElementById('lb-close-btn');
+  var lbImageCol  = document.getElementById('lb-image-col');
+  var lbEyebrow   = document.getElementById('lb-eyebrow');
+  var lbTitle     = document.getElementById('lb-title');
+  var lbStatsList = document.getElementById('lb-stats-list');
+  var lbBody      = document.getElementById('lb-body');
+  var lbExamples  = document.getElementById('lb-examples');
+  var wallCard    = document.getElementById('wall-card');
+  var tilesGrid   = document.getElementById('tiles-grid');
+  var labelFront  = document.getElementById('label-front');
+  var labelBack   = document.getElementById('label-back');
+  var dotFront    = document.getElementById('dot-front');
+  var dotBack     = document.getElementById('dot-back');
+  var dropZone    = document.getElementById('drop-zone');
+  var dzHint      = document.getElementById('dz-hint');
+  var qLabel      = document.getElementById('q-label');
+  var qText       = document.getElementById('q-text');
+  var qResponse   = document.getElementById('q-response');
+  var btnSkipNext = document.getElementById('btn-skip-next');
+  var btnReveal   = document.getElementById('btn-reveal');
+  var sortGroupFront = document.getElementById('sort-group-front');
+  var sortGroupBack  = document.getElementById('sort-group-back');
+
+  /* ----------------------------------------------------------
+     CURRENT DATA HELPERS
+  ---------------------------------------------------------- */
+  function currentData() {
+    return currentFace === 'front' ? currentTypeData : currentEthnicData;
+  }
+
+  function currentQuestions() {
+    return currentFace === 'front' ? TYPE_QUESTIONS : ETHNIC_QUESTIONS;
+  }
+
+  function currentQ() {
+    return currentQuestions()[qIdx];
+  }
+
+  function currentResponses() {
+    return currentFace === 'front' ? TYPE_RESPONSES : ETHNIC_RESPONSES;
+  }
+
+  /* ----------------------------------------------------------
+     QUESTION BAR UI
+  ---------------------------------------------------------- */
+  function updateQuestionBar() {
+    var qs = currentQuestions();
+    var total = qs.length;
+
+    if (qFlipMode) {
+      /* End-of-cycle state */
+      qLabel.textContent = 'End of cycle';
+      qText.textContent  = 'You have completed all ' + total + ' questions. Flip to the other face.';
+      qResponse.style.display = 'none';
+      btnSkipNext.textContent = 'Flip';
+      btnReveal.disabled = true;
+      return;
+    }
+
+    qLabel.textContent = 'Question ' + (qIdx + 1) + ' of ' + total;
+    qText.textContent  = qs[qIdx].text;
+
+    if (qAnswered) {
+      qResponse.textContent  = currentResponses()[qIdx];
+      qResponse.style.display = '';
+      btnSkipNext.textContent = (qIdx === total - 1) ? 'Flip' : 'Next Question';
+      btnReveal.disabled = true;
+    } else {
+      qResponse.style.display = 'none';
+      btnSkipNext.textContent = 'Skip Question';
+      btnReveal.disabled = false;
+    }
+  }
+
+  /* ----------------------------------------------------------
+     SORT BUTTONS
+  ---------------------------------------------------------- */
+  function updateSortButtons() {
+    var face  = currentFace;
+    var field = activeSortField[face];
+    var group = face === 'front' ? sortGroupFront : sortGroupBack;
+    group.querySelectorAll('.sort-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.field === field);
+    });
+  }
+
+  function showSortGroups() {
+    sortGroupFront.style.display = (currentFace === 'front') ? '' : 'none';
+    sortGroupBack.style.display  = (currentFace === 'back')  ? '' : 'none';
+  }
+
+  function applySort(field, triggerAnswered) {
+    activeSortField[currentFace] = field;
+    var data = sortData(
+      currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA,
+      field
+    );
+    if (currentFace === 'front') currentTypeData = data;
+    else currentEthnicData = data;
+
+    if (triggerAnswered && !qAnswered && !qFlipMode) {
+      /* Sorting reveals data — treat as answered */
+      qAnswered   = true;
+      activeLabelFn = currentQ().labelFn;
+      /* Show correct answer in drop zone */
+      var correct = getCorrectAnswerItem(data, currentQ().field);
+      if (correct) showCorrectInDropZone(correct);
+      updateQuestionBar();
+    }
+
+    renderTiles(data, currentFace);
+    if (activeLabelFn) tilesGrid.classList.add('show-captions');
+    updateSortButtons();
+  }
+
   /* ----------------------------------------------------------
      RENDER TILES
-     Tiles load the small/ thumbnail; lightbox loads full-res.
   ---------------------------------------------------------- */
   function renderTiles(data, faceName) {
     tilesGrid.innerHTML = '';
     tilesGrid.setAttribute('aria-label',
       faceName === 'front'
-        ? 'Costume types ordered by frequency'
-        : 'Imitated ethnic identities ordered by frequency'
+        ? 'Costume types sorted alphabetically'
+        : 'Imitated ethnic identities sorted alphabetically'
     );
 
     var frag = document.createDocumentFragment();
 
-    data.forEach(function (item, index) {
+    data.forEach(function(item, index) {
       var btn = document.createElement('button');
       btn.className = 'tile';
       btn.setAttribute('role', 'listitem');
+      btn.dataset.itemIndex = index;
+
+      var metricLabel = activeLabelFn ? activeLabelFn(item) : '';
       btn.setAttribute('aria-label',
-        item.title + ' — ' + item.percentage +
-        (faceName === 'back' ? ' of category' : ' of catalog')
+        item.title + (metricLabel ? ' — ' + metricLabel : '')
       );
 
-      if (index === 0) {
-        btn.id = 'first-tile';
-      }
+      if (index === 0) btn.id = 'first-tile';
 
-      /* Image area — thumbnail from /small/ */
+      /* Image */
       var imgWrap = document.createElement('div');
       imgWrap.className = 'tile-img-wrap';
-
       var src = thumbSrc(item.filename);
       if (src) {
         var img = document.createElement('img');
         img.src     = src;
-        img.alt     = (item.alt_text && item.alt_text.trim() !== '')
-                      ? item.alt_text.trim()
-                      : item.title;
+        img.alt     = (item.alt_text && item.alt_text.trim()) ? item.alt_text.trim() : item.title;
         img.loading = 'lazy';
         imgWrap.appendChild(img);
       }
-
       btn.appendChild(imgWrap);
 
-      /* Caption */
+      /* Caption (title + metric, hidden by default via CSS) */
       var cap = document.createElement('div');
       cap.className = 'tile-caption';
       cap.setAttribute('aria-hidden', 'true');
       cap.innerHTML =
         '<strong>' + esc(item.title) + '</strong>' +
-        '<span class="tile-pct">' + esc(item.percentage) + '</span>';
+        '<span class="tile-metric">' + esc(metricLabel) + '</span>';
       btn.appendChild(cap);
 
-      btn.addEventListener('click', function () {
-        openLightbox(item, faceName);
+      /* Click → lightbox */
+      btn.addEventListener('click', function() { openLightbox(item, faceName); });
+      btn.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(item, faceName); }
       });
-      btn.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openLightbox(item, faceName);
-        }
-      });
+
+      /* Drag (pointer events) */
+      btn.addEventListener('pointerdown', onPointerDown);
 
       frag.appendChild(btn);
     });
 
     tilesGrid.appendChild(frag);
+
+    /* Maintain caption visibility state */
+    if (activeLabelFn) {
+      tilesGrid.classList.add('show-captions');
+    } else {
+      tilesGrid.classList.remove('show-captions');
+    }
+  }
+
+  /* ----------------------------------------------------------
+     DROP ZONE
+  ---------------------------------------------------------- */
+  function clearDropZone() {
+    /* Remove any dz-card, keep the hint */
+    var card = dropZone.querySelector('.dz-card');
+    if (card) card.remove();
+    if (dzHint) dzHint.style.display = '';
+  }
+
+  function showCorrectInDropZone(item) {
+    clearDropZone();
+    if (dzHint) dzHint.style.display = 'none';
+    var card = buildDzCard(item, 'correct');
+    dropZone.appendChild(card);
+  }
+
+  function showWrongInDropZone(item, sourceTileRect) {
+    clearDropZone();
+    if (dzHint) dzHint.style.display = 'none';
+    var card = buildDzCard(item, null);
+    dropZone.appendChild(card);
+
+    /* Flash red tint */
+    var tint = card.querySelector('.dz-tint');
+    if (tint) {
+      tint.className = 'dz-tint wrong-anim';
+    }
+
+    /* After flash, animate card back toward original tile position */
+    var dzRect = dropZone.getBoundingClientRect();
+
+    setTimeout(function() {
+      clearDropZone();
+
+      /* Fly-back element */
+      if (sourceTileRect) {
+        var fly = document.createElement('div');
+        fly.className = 'drag-ghost';
+        fly.style.cssText =
+          'width:' + dzRect.width + 'px;' +
+          'height:' + dzRect.height + 'px;' +
+          'left:' + dzRect.left + 'px;' +
+          'top:' + dzRect.top + 'px;' +
+          'opacity:0.7;background:rgba(200,30,30,0.18);border:1px solid #aaa;' +
+          'transition:left 0.45s ease-in-out,top 0.45s ease-in-out,width 0.45s ease-in-out,height 0.45s ease-in-out,opacity 0.45s ease-in-out;';
+        document.body.appendChild(fly);
+        void fly.offsetWidth;
+        fly.style.left    = sourceTileRect.left + 'px';
+        fly.style.top     = sourceTileRect.top  + 'px';
+        fly.style.width   = sourceTileRect.width  + 'px';
+        fly.style.height  = sourceTileRect.height + 'px';
+        fly.style.opacity = '0';
+        setTimeout(function() { if (fly.parentNode) fly.parentNode.removeChild(fly); }, 500);
+      }
+    }, 900);
+  }
+
+  function buildDzCard(item, tintType) {
+    var card = document.createElement('div');
+    card.className = 'dz-card';
+
+    var imgWrap = document.createElement('div');
+    imgWrap.className = 'dz-card-img';
+    var src = thumbSrc(item.filename);
+    if (src) {
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = item.title;
+      imgWrap.appendChild(img);
+    }
+    card.appendChild(imgWrap);
+
+    var titleEl = document.createElement('div');
+    titleEl.className = 'dz-card-title';
+    titleEl.textContent = item.title;
+    card.appendChild(titleEl);
+
+    var tint = document.createElement('div');
+    tint.className = 'dz-tint' + (tintType ? ' ' + tintType : '');
+    card.appendChild(tint);
+
+    return card;
+  }
+
+  /* ----------------------------------------------------------
+     ANSWER CHECKING
+  ---------------------------------------------------------- */
+  function handleDrop(item, sourceTileRect) {
+    if (qAnswered || qFlipMode) return;
+
+    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
+    var correct = getCorrectAnswerItem(rawData, currentQ().field);
+    if (!correct) return;
+
+    if (item.title === correct.title) {
+      /* ✓ Correct */
+      qAnswered    = true;
+      activeLabelFn = currentQ().labelFn;
+      showCorrectInDropZone(item);
+
+      /* Sort by question's metric */
+      applySort(currentQ().field, false);
+      tilesGrid.classList.add('show-captions');
+      updateQuestionBar();
+    } else {
+      /* ✗ Wrong */
+      showWrongInDropZone(item, sourceTileRect);
+    }
+  }
+
+  /* ----------------------------------------------------------
+     SKIP / NEXT / FLIP  BUTTON
+  ---------------------------------------------------------- */
+  btnSkipNext.addEventListener('click', function() {
+    var text = btnSkipNext.textContent.trim();
+
+    if (text === 'Flip') {
+      flipWall();
+      return;
+    }
+
+    /* Clear current display */
+    clearDropZone();
+    activeLabelFn = null;
+    tilesGrid.classList.remove('show-captions');
+    qResponse.style.display = 'none';
+
+    /* Reset sort to alpha */
+    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
+    var sorted  = sortData(rawData, 'alpha');
+    if (currentFace === 'front') currentTypeData = sorted;
+    else currentEthnicData = sorted;
+    activeSortField[currentFace] = 'alpha';
+    renderTiles(sorted, currentFace);
+    updateSortButtons();
+
+    /* Advance */
+    if (text === 'Next Question') {
+      qAnswered = false;
+      if (qIdx < 3) {
+        qIdx++;
+      } else {
+        qFlipMode = true;
+      }
+    } else {
+      /* Skip Question */
+      qAnswered = false;
+      if (qIdx < 3) {
+        qIdx++;
+      } else {
+        qFlipMode = true;
+      }
+    }
+
+    updateQuestionBar();
+  });
+
+  /* ----------------------------------------------------------
+     REVEAL ANSWER BUTTON
+  ---------------------------------------------------------- */
+  btnReveal.addEventListener('click', function() {
+    if (qAnswered || qFlipMode) return;
+
+    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
+    var correct = getCorrectAnswerItem(rawData, currentQ().field);
+    if (!correct) return;
+
+    qAnswered    = true;
+    activeLabelFn = currentQ().labelFn;
+    showCorrectInDropZone(correct);
+    applySort(currentQ().field, false);
+    tilesGrid.classList.add('show-captions');
+    updateQuestionBar();
+  });
+
+  /* ----------------------------------------------------------
+     SORT BUTTONS
+  ---------------------------------------------------------- */
+  document.querySelectorAll('.sort-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      if (btn.dataset.face !== currentFace) return;
+      var field = btn.dataset.field;
+      applySort(field, true /* triggers answered state if asking */);
+    });
+  });
+
+  /* ----------------------------------------------------------
+     POINTER DRAG
+  ---------------------------------------------------------- */
+  function onPointerDown(e) {
+    if (e.button !== undefined && e.button !== 0) return; /* left click / touch only */
+    if (qAnswered || qFlipMode) return;
+    if (!lightbox.classList.contains('hidden')) return;
+
+    var tile = e.currentTarget;
+    var idx  = parseInt(tile.dataset.itemIndex);
+    var data = currentData();
+    var item = data[idx];
+    if (!item) return;
+
+    e.preventDefault();
+    tile.setPointerCapture(e.pointerId);
+
+    var rect = tile.getBoundingClientRect();
+    drag.active       = true;
+    drag.item         = item;
+    drag.sourceTileRect = rect;
+    drag.pointerId    = e.pointerId;
+    drag.offsetX      = e.clientX - rect.left;
+    drag.offsetY      = e.clientY - rect.top;
+
+    /* Build ghost */
+    var ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.style.cssText =
+      'width:' + rect.width + 'px;height:' + rect.height + 'px;' +
+      'left:' + (e.clientX - drag.offsetX) + 'px;' +
+      'top:'  + (e.clientY - drag.offsetY) + 'px;';
+
+    /* Clone tile content */
+    var tileClone = tile.cloneNode(true);
+    tileClone.style.cssText = 'position:absolute;inset:0;border:none;box-shadow:none;pointer-events:none;';
+    ghost.appendChild(tileClone);
+    document.body.appendChild(ghost);
+    drag.ghost = ghost;
+
+    tile.addEventListener('pointermove', onPointerMove);
+    tile.addEventListener('pointerup',   onPointerUp);
+    tile.addEventListener('pointercancel', onPointerCancel);
+  }
+
+  function onPointerMove(e) {
+    if (!drag.active || !drag.ghost) return;
+    drag.ghost.style.left = (e.clientX - drag.offsetX) + 'px';
+    drag.ghost.style.top  = (e.clientY - drag.offsetY) + 'px';
+
+    /* Highlight drop zone */
+    var dzRect = dropZone.getBoundingClientRect();
+    var over = (
+      e.clientX >= dzRect.left && e.clientX <= dzRect.right &&
+      e.clientY >= dzRect.top  && e.clientY <= dzRect.bottom
+    );
+    dropZone.classList.toggle('drag-over', over);
+  }
+
+  function onPointerUp(e) {
+    if (!drag.active) return;
+
+    dropZone.classList.remove('drag-over');
+
+    /* Check if released over drop zone */
+    var dzRect = dropZone.getBoundingClientRect();
+    var dropped = (
+      e.clientX >= dzRect.left && e.clientX <= dzRect.right &&
+      e.clientY >= dzRect.top  && e.clientY <= dzRect.bottom
+    );
+
+    endDrag();
+
+    if (dropped) {
+      handleDrop(drag.item, drag.sourceTileRect);
+    }
+
+    drag.item = null;
+    drag.sourceTileRect = null;
+  }
+
+  function onPointerCancel(e) {
+    dropZone.classList.remove('drag-over');
+    endDrag();
+    drag.item = null;
+    drag.sourceTileRect = null;
+  }
+
+  function endDrag() {
+    if (drag.ghost && drag.ghost.parentNode) drag.ghost.parentNode.removeChild(drag.ghost);
+    drag.ghost  = null;
+    drag.active = false;
+
+    /* Remove listeners from all tiles */
+    tilesGrid.querySelectorAll('.tile').forEach(function(tile) {
+      tile.removeEventListener('pointermove', onPointerMove);
+      tile.removeEventListener('pointerup',   onPointerUp);
+      tile.removeEventListener('pointercancel', onPointerCancel);
+    });
   }
 
   /* ----------------------------------------------------------
@@ -1038,29 +1811,47 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
     wallCard.style.transition = 'transform ' + HALF + 'ms ease-in';
     wallCard.style.transform  = 'perspective(2200px) rotateY(90deg)';
 
-    setTimeout(function () {
+    setTimeout(function() {
       currentFace = (currentFace === 'front') ? 'back' : 'front';
-      renderTiles(
-        currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA,
-        currentFace
-      );
-      updateLabels();
+      resetForFace();
 
       wallCard.style.transition = 'none';
       wallCard.style.transform  = 'perspective(2200px) rotateY(-90deg)';
-
       void wallCard.offsetWidth;
-
       wallCard.style.transition = 'transform ' + HALF + 'ms ease-out';
       wallCard.style.transform  = 'perspective(2200px) rotateY(0deg)';
 
-      setTimeout(function () {
+      setTimeout(function() {
         wallCard.style.transform  = '';
         wallCard.style.transition = '';
         isFlipping = false;
       }, HALF);
-
     }, HALF);
+  }
+
+  function resetForFace() {
+    /* Reset question state */
+    qIdx      = 0;
+    qAnswered = false;
+    qFlipMode = false;
+
+    /* Clear display */
+    activeLabelFn = null;
+    tilesGrid.classList.remove('show-captions');
+    clearDropZone();
+
+    /* Reset sort to alpha */
+    var rawData = currentFace === 'front' ? TYPE_DATA : ETHNIC_DATA;
+    var sorted  = sortData(rawData, 'alpha');
+    if (currentFace === 'front') currentTypeData = sorted;
+    else currentEthnicData = sorted;
+    activeSortField[currentFace] = 'alpha';
+
+    renderTiles(sorted, currentFace);
+    updateLabels();
+    showSortGroups();
+    updateSortButtons();
+    updateQuestionBar();
   }
 
   function flipToFace(target) {
@@ -1072,27 +1863,24 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
   ---------------------------------------------------------- */
   function updateLabels() {
     var front = (currentFace === 'front');
-    labelFront.className  = 'face-toggle-label' + (front ? ' active' : '');
-    labelBack.className   = 'face-toggle-label' + (front ? '' : ' active');
-    dotFront.className    = 'face-toggle-dot'   + (front ? ' filled' : '');
-    dotBack.className     = 'face-toggle-dot'   + (front ? '' : ' filled');
+    labelFront.className = 'face-toggle-label' + (front ? ' active' : '');
+    labelBack.className  = 'face-toggle-label' + (front ? '' : ' active');
+    dotFront.className   = 'face-toggle-dot'   + (front ? ' filled' : '');
+    dotBack.className    = 'face-toggle-dot'   + (front ? '' : ' filled');
     labelFront.setAttribute('aria-pressed', front ? 'true' : 'false');
     labelBack.setAttribute('aria-pressed',  front ? 'false' : 'true');
   }
 
   /* ----------------------------------------------------------
-     LIGHTBOX — uses full-resolution images from IMG_BASE
+     LIGHTBOX
   ---------------------------------------------------------- */
   function openLightbox(item, faceName) {
+    /* Image column */
     lbImageCol.innerHTML = '';
-
-    if (item.filename && item.filename.trim() !== '') {
+    if (item.filename && item.filename.trim()) {
       var img = document.createElement('img');
-      /* Full-res image for the detail panel */
       img.src = IMG_BASE + item.filename.trim();
-      img.alt = (item.alt_text && item.alt_text.trim() !== '')
-                ? item.alt_text.trim()
-                : item.title;
+      img.alt = (item.alt_text && item.alt_text.trim()) ? item.alt_text.trim() : item.title;
       lbImageCol.appendChild(img);
     } else {
       var blank = document.createElement('div');
@@ -1100,59 +1888,30 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
       lbImageCol.appendChild(blank);
     }
 
-    /* Caption block */
-    var cap = document.createElement('div');
-    cap.className = 'lb-caption';
-
-    var titleSpan = document.createElement('span');
-    titleSpan.className   = 'lb-caption-title';
-    titleSpan.textContent = item.title;
-    cap.appendChild(titleSpan);
-
-    if (faceName === 'back') {
-      /* Build pipe-separated stats line; skip null/empty values */
-      var SEP = '<span class="lb-stats-sep"> | </span>';
-      var parts = [];
-
-      var catPct = formatCatPct(item.pct);
-      if (catPct) parts.push(esc(catPct) + ' of category');
-
-      var p1910 = formatPopPct(item.pct1910);
-      if (p1910) parts.push(esc(p1910) + ' of 1910 state census');
-
-      var p1900 = formatPopPct(item.pct1900);
-      if (p1900) parts.push(esc(p1900) + ' of 1900 state census');
-
-      var dist = formatDistance(item.distance);
-      if (dist) parts.push(esc(dist));
-
-      if (parts.length) {
-        var statsSpan = document.createElement('span');
-        statsSpan.className = 'lb-stats-line';
-        statsSpan.innerHTML = parts.join(SEP);
-        cap.appendChild(statsSpan);
-      }
-    } else {
-      var pctSpan = document.createElement('span');
-      pctSpan.className   = 'lb-caption-pct';
-      pctSpan.textContent = item.percentage + ' of catalog';
-      cap.appendChild(pctSpan);
-    }
-
-    lbImageCol.appendChild(cap);
-
+    /* Text column */
     lbEyebrow.textContent = (faceName === 'front') ? 'Costume Type' : 'Ethnic Identity';
     lbTitle.textContent   = item.title;
 
-    var raw   = (item.description || '').trim();
-    var paras = raw.split(/\n+/).filter(function (p) {
-      return p.trim().length > 0;
-    }).slice(0, 3);
-    if (!paras.length && raw) paras = [raw];
-    lbBody.innerHTML = paras.map(function (p) {
-      return '<p>' + esc(p.trim()) + '</p>';
-    }).join('');
+    /* Stats list */
+    lbStatsList.innerHTML = '';
+    var statsData = buildStatsList(item, faceName);
+    statsData.forEach(function(entry) {
+      var li = document.createElement('li');
+      if (entry === 'n/a') {
+        li.innerHTML = '<span class="lb-na">n/a</span>';
+      } else {
+        li.textContent = entry;
+      }
+      lbStatsList.appendChild(li);
+    });
 
+    /* Body (description) */
+    var raw   = (item.description || '').trim();
+    var paras = raw.split(/\n+/).filter(function(p) { return p.trim().length > 0; }).slice(0, 3);
+    if (!paras.length && raw) paras = [raw];
+    lbBody.innerHTML = paras.map(function(p) { return '<p>' + esc(p.trim()) + '</p>'; }).join('');
+
+    /* Examples */
     var exText = (item.full || '').trim();
     lbExamples.innerHTML = exText
       ? '<span class="lb-examples-label">Costumes in this category</span>' +
@@ -1163,6 +1922,36 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
     lightbox.removeAttribute('aria-hidden');
     lbClose.focus();
     document.addEventListener('keydown', lbKeyHandler);
+  }
+
+  function buildStatsList(item, faceName) {
+    var list = [];
+    if (faceName === 'front') {
+      /* 1. percent of catalog */
+      list.push(item.pct ? (formatCatPct(item.pct) + ' of catalog') : 'n/a');
+      /* 2. women's */
+      var w = parseNumeric(item.women);
+      list.push(w !== null ? formatCatPct(w) + ' of costumes under women\'s sections' : 'n/a');
+      /* 3. men's */
+      var m = parseNumeric(item.men);
+      list.push(m !== null ? formatCatPct(m) + ' of costumes under men\'s sections' : 'n/a');
+      /* 4. avg cost */
+      var c = item.cost;
+      list.push((c !== null && c !== undefined && String(c).trim() !== '') ? String(c).trim() + ': average cost' : 'n/a');
+    } else {
+      /* 1. percent of catalog */
+      list.push(item.pct ? (formatCatPct(item.pct) + ' of catalog') : 'n/a');
+      /* 2. 1910 census */
+      var p10 = formatPopPct(item.pct1910);
+      list.push(p10 ? p10 + ' of 1910 census' : 'n/a');
+      /* 3. 1900 census */
+      var p00 = formatPopPct(item.pct1900);
+      list.push(p00 ? p00 + ' of 1900 census' : 'n/a');
+      /* 4. distance */
+      var dist = formatDistance(item.distance);
+      list.push(dist ? dist : 'n/a');
+    }
+    return list;
   }
 
   function closeLightbox() {
@@ -1183,15 +1972,14 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
     introModal.setAttribute('aria-hidden', 'true');
   }
 
-  /* Clicking the dark backdrop (outside the card) also closes the modal */
-  introModal.addEventListener('click', function (e) {
+  introModal.addEventListener('click', function(e) {
     if (e.target === introModal) closeModal();
   });
 
   /* ----------------------------------------------------------
      GLOBAL KEYBOARD SHORTCUTS
   ---------------------------------------------------------- */
-  document.addEventListener('keydown', function (e) {
+  document.addEventListener('keydown', function(e) {
     if (!lightbox.classList.contains('hidden')) return;
     if (e.key === 'Escape') {
       if (!introModal.classList.contains('hidden')) closeModal();
@@ -1209,10 +1997,7 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
   function removeTocFromTabOrder() {
     var sidebar = document.getElementById('interact-toc-sidebar');
     if (!sidebar) return;
-    var focusable = sidebar.querySelectorAll(
-      'a, button, input, select, textarea, [tabindex]'
-    );
-    focusable.forEach(function (el) {
+    sidebar.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach(function(el) {
       el.setAttribute('tabindex', '-1');
     });
     var heading = sidebar.querySelector('.scrolly-toc-heading');
@@ -1222,22 +2007,19 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
   /* ----------------------------------------------------------
      BINDINGS
   ---------------------------------------------------------- */
-  labelFront.addEventListener('click', function () { flipToFace('front'); });
-  labelBack.addEventListener('click',  function () { flipToFace('back');  });
+  labelFront.addEventListener('click', function() { flipToFace('front'); });
+  labelBack.addEventListener('click',  function() { flipToFace('back');  });
 
-  [labelFront, labelBack].forEach(function (el) {
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        el.click();
-      }
+  [labelFront, labelBack].forEach(function(el) {
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
     });
   });
 
   modalClose.addEventListener('click', closeModal);
   modalBegin.addEventListener('click', closeModal);
   lbClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', function (e) {
+  lightbox.addEventListener('click', function(e) {
     if (e.target === lightbox) closeLightbox();
   });
 
@@ -1245,35 +2027,18 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
      INIT
   ---------------------------------------------------------- */
   function init() {
-    isMobile = window.innerWidth < 768;
-    renderTiles(TYPE_DATA, 'front');
+    renderTiles(currentTypeData, 'front');
     updateLabels();
+    showSortGroups();
+    updateSortButtons();
+    updateQuestionBar();
     removeTocFromTabOrder();
   }
-
-  var resizeTimer;
-  window.addEventListener('resize', function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () {
-      isMobile = window.innerWidth < 768;
-    }, 200);
-  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
-  }
-
-  /* ----------------------------------------------------------
-     UTILITY
-  ---------------------------------------------------------- */
-  function esc(str) {
-    return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
   }
 
 }());
