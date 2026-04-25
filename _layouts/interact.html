@@ -61,17 +61,13 @@ layout: default
 .wall-scene { width: 100%; max-width: 1800px; padding: 0 1.5rem; box-sizing: border-box; }
 
 /* ============================================================
-   ROW 1 — Controls bar: face toggles (left) + sort (right)
+   ROW 1 — Controls bar
    ============================================================ */
 .controls-bar {
-    display: flex; align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap; gap: 0.5rem;
-    margin-bottom: 0.9rem; width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.9rem; width: 100%;
 }
-
 .face-toggle-group { display: flex; align-items: center; gap: 0.7rem; flex-shrink: 0; }
-
 .face-toggle-label {
     font-size: 0.88rem; letter-spacing: 0.13em; text-transform: uppercase;
     color: #bbb; transition: color 0.2s; background: none; border: none;
@@ -80,7 +76,6 @@ layout: default
 }
 .face-toggle-label:hover  { color: #555; }
 .face-toggle-label.active { color: #0a0a0a; font-weight: bold; }
-
 .face-toggle-dot {
     width: 6px; height: 6px; border-radius: 50%;
     border: 1px solid #0a0a0a; background: #fff;
@@ -88,7 +83,6 @@ layout: default
 }
 .face-toggle-dot.filled { background: #0a0a0a; }
 .face-divider-glyph { font-size: 0.5rem; color: #c0b8ae; }
-
 .face-f-hint {
     font-size: 0.75rem; color: #aaa; font-style: italic;
     font-family: 'Times New Roman', Times, Georgia, serif;
@@ -118,7 +112,6 @@ layout: default
 }
 .sort-btn:hover  { color: #555; }
 .sort-btn.active { color: #0a0a0a; font-weight: bold; }
-
 @media screen and (max-width: 900px) {
     .controls-bar { flex-direction: column; align-items: flex-start; }
     .sort-group   { justify-content: flex-start; }
@@ -128,8 +121,6 @@ layout: default
 /* ============================================================
    ROW 2 — Question bar
    Three-column grid: [text 1fr] [drop-zone auto] [buttons 1fr]
-   This centres the drop zone exactly in the bar regardless of
-   how wide the text area or buttons column is.
    ============================================================ */
 .question-bar {
     display: grid;
@@ -141,10 +132,7 @@ layout: default
     margin-bottom: 1.25rem;
     box-sizing: border-box;
 }
-
-/* Left: question text + response */
-.question-text-area { /* first grid column — naturally left-aligned */ }
-
+.question-text-area { /* first column */ }
 .q-label {
     display: block; font-size: 0.57rem; letter-spacing: 0.18em;
     text-transform: uppercase; color: #999; margin: 0 0 0.45rem; line-height: 1;
@@ -153,12 +141,13 @@ layout: default
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 1.05rem; line-height: 1.5; color: #0a0a0a; margin: 0; font-weight: bold;
 }
+/* response: hidden by default via display:none; shown with display:block by JS */
 .q-response {
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.85rem; line-height: 1.72; color: #333; margin: 0.55rem 0 0; display: none;
 }
 
-/* Centre: drop zone (auto column = centred between the two 1fr sides) */
+/* Centre: drop zone */
 .drop-zone {
     width: 185px; height: 185px;
     border: 1px dashed #aaa; background: #fafafa;
@@ -167,14 +156,11 @@ layout: default
     transition: border-color 0.2s, background 0.2s; overflow: hidden;
 }
 .drop-zone.drag-over { border-color: #0a0a0a; border-style: solid; background: rgba(0,0,0,0.03); }
-
 .dz-hint {
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.7rem; color: #bbb; text-align: center;
     line-height: 1.5; font-style: italic; pointer-events: none; user-select: none;
 }
-
-/* Card pinned inside drop zone */
 .dz-card {
     position: absolute; inset: 0; display: flex; flex-direction: column;
     align-items: center; justify-content: flex-end;
@@ -195,15 +181,12 @@ layout: default
     font-size: 0.68em; line-height: 1.2;
     color: #0a0a0a; text-align: center; font-weight: bold; box-sizing: border-box;
 }
-
-/* Colour tint overlays */
 .dz-tint {
     position: absolute; inset: 0; z-index: 2;
     opacity: 0; transition: opacity 0.2s; pointer-events: none;
 }
 .dz-tint.correct { background: rgba(0,150,80,0.5);  opacity: 1; }
 .dz-tint.wrong   { background: rgba(200,30,30,0.5); opacity: 1; }
-
 @keyframes dzWrongFlash {
     0%   { opacity: 0; }
     20%  { opacity: 1; }
@@ -212,7 +195,7 @@ layout: default
 }
 .dz-tint.wrong-anim { background: rgba(200,30,30,0.5); animation: dzWrongFlash 0.85s ease forwards; }
 
-/* Right: action buttons — aligned left within their 1fr column (flush to drop zone) */
+/* Right: action buttons */
 .question-actions {
     justify-self: start;
     display: flex; flex-direction: column; align-items: stretch;
@@ -226,15 +209,13 @@ layout: default
     white-space: nowrap; text-align: center; width: 100%;
     transition: background 0.15s, color 0.15s;
 }
-.q-action-btn:hover,
-.q-action-btn:focus-visible { background: #0a0a0a; color: #fff; outline: none; }
+.q-action-btn:hover, .q-action-btn:focus-visible { background: #0a0a0a; color: #fff; outline: none; }
 .q-action-btn:disabled { color: #bbb; border-color: #ccc; cursor: default; background: none; }
 .q-action-btn:disabled:hover { background: none; color: #bbb; }
 
 @media screen and (max-width: 768px) {
     .question-bar {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto;
+        grid-template-columns: 1fr 1fr; grid-template-rows: auto auto;
         min-height: auto; row-gap: 1rem;
     }
     .question-text-area { grid-column: 1 / -1; }
@@ -268,7 +249,7 @@ layout: default
 @media screen and (max-width: 480px)  { .tiles-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
 
 /* ============================================================
-   INDIVIDUAL CARD (tile)
+   INDIVIDUAL CARD
    ============================================================ */
 .tile {
     aspect-ratio: 1 / 1;
@@ -278,11 +259,27 @@ layout: default
     overflow: hidden; position: relative;
     appearance: none; -webkit-appearance: none;
     font-family: 'Times New Roman', Times, Georgia, serif;
-    text-align: center; outline: none; user-select: none; touch-action: none;
+    text-align: center; outline: none;
+    user-select: none;
+    /* touch-action: none removed — we handle touch selectively to allow scrolling */
 }
 .tile:active { cursor: grabbing; }
 .tile:hover, .tile:focus, .tile:focus-visible {
     background: rgba(255,255,255,0.85); box-shadow: inset 0 0 0 2px #0a0a0a; z-index: 4;
+}
+
+/* Long-press visual feedback on touch */
+.tile.long-pressing {
+    box-shadow: inset 0 0 0 2px #0a0a0a;
+    background: rgba(0,0,0,0.04);
+}
+
+@keyframes longPressRing {
+    from { box-shadow: inset 0 0 0 0px rgba(10,10,10,0.3); }
+    to   { box-shadow: inset 0 0 0 4px rgba(10,10,10,0.5); }
+}
+.tile.long-pressing {
+    animation: longPressRing 0.6s ease forwards;
 }
 
 .tile-img-wrap {
@@ -295,10 +292,9 @@ layout: default
 }
 
 /*
- * Caption area: title is always visible.
- * The metric line is always rendered (takes up space) but
- * invisible until show-captions is set — this keeps card
- * height consistent whether or not data is being shown.
+ * Caption: title always visible.
+ * Metric line is always in the DOM and always takes up space (via min-height),
+ * but is invisible until show-captions is set — keeps card height consistent.
  */
 .tile-caption {
     flex-shrink: 0; width: 100%;
@@ -308,13 +304,11 @@ layout: default
     font-size: 0.72em; line-height: 1.25; color: #0a0a0a; text-align: center;
 }
 .tile-caption strong { display: block; font-weight: bold; }
-
-/* metric: always takes space (display:block + min-height), but invisible by default */
 .tile-caption .tile-metric {
     display: block;
     visibility: hidden;
     color: #666; margin-top: 2px; font-size: 0.9em;
-    min-height: 1.2em; /* reserve space even when empty */
+    min-height: 1.2em;
 }
 .tiles-grid.show-captions .tile-caption .tile-metric { visibility: visible; }
 
@@ -338,7 +332,6 @@ layout: default
     backdrop-filter: blur(2px); -webkit-overflow-scrolling: touch;
 }
 #intro-modal.hidden { display: none; }
-
 .modal-inner {
     position: relative; max-width: 560px; width: 100%;
     padding: 2.75rem; border: 1px solid rgba(255,255,255,0.22);
@@ -413,7 +406,6 @@ layout: default
     padding: 2rem; backdrop-filter: blur(1px);
 }
 #lightbox.hidden { display: none; }
-
 .lb-inner {
     position: relative; background: #ffffff; border: 1px solid #0a0a0a;
     max-width: 1012px; width: 100%; max-height: 90vh; overflow-y: auto;
@@ -421,7 +413,6 @@ layout: default
     box-shadow: 5px 5px 0 #444, 10px 10px 22px rgba(0,0,0,0.38);
 }
 @media screen and (max-width: 660px) { .lb-inner { grid-template-columns: 1fr; } }
-
 .lb-close {
     position: sticky; top: 0.7rem; right: 0.7rem; float: right;
     background: none; border: 1px solid #0a0a0a;
@@ -432,7 +423,6 @@ layout: default
     transition: background 0.15s, color 0.15s; z-index: 10;
 }
 .lb-close:hover, .lb-close:focus-visible { background: #0a0a0a; color: #fff; outline: none; }
-
 .lb-image-col {
     border-right: 1px solid #0a0a0a; padding: 1.25rem 1rem;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -443,7 +433,6 @@ layout: default
     filter: grayscale(100%) contrast(1.1); display: block;
 }
 .lb-no-image { flex: 1; min-height: 120px; }
-
 .lb-text-col { padding: 1.75rem; display: flex; flex-direction: column; }
 .lb-eyebrow { font-size: 0.58rem; letter-spacing: 0.17em; text-transform: uppercase; color: #999; margin-bottom: 0.6rem; }
 .lb-text-col h3 {
@@ -451,14 +440,12 @@ layout: default
     margin-bottom: 0.9rem; padding-bottom: 0.7rem;
     border-bottom: 1px solid #0a0a0a; color: #0a0a0a;
 }
-
 .lb-stats-list { list-style: disc; padding-left: 1.1rem; margin: 0 0 0.9rem; }
 .lb-stats-list li {
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.88rem; line-height: 1.82; color: #111;
 }
 .lb-stats-list li .lb-na { color: #aaa; font-style: italic; }
-
 .lb-body p {
     font-family: 'Times New Roman', Times, Georgia, serif;
     font-size: 0.9rem; line-height: 1.82; color: #111; margin-bottom: 0.9rem;
@@ -474,7 +461,7 @@ layout: default
 <a class="skip-to-tiles" href="#first-tile">Skip to visualization</a>
 
 <!-- ============================================================
-     INTRO MODAL  (uses "cards" for individual squares, "wall" for full viz)
+     INTRO MODAL
      ============================================================ -->
 <div id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-inner">
@@ -490,6 +477,10 @@ layout: default
       <div class="ctrl-row">
         <span class="ctrl-key">D / Drag</span>
         <span class="ctrl-desc">When a card is selected, press D or drag the card to submit it as your answer</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-key">Long press</span>
+        <span class="ctrl-desc">On touch screens, hold a card to submit it as your answer (short tap opens card detail)</span>
       </div>
       <div class="ctrl-row">
         <span class="ctrl-key">Tab</span>
@@ -566,7 +557,7 @@ layout: default
 <div id="interact-wrapper">
   <div class="wall-scene">
 
-    <!-- Row 1: Controls bar (face toggles left, sort right) -->
+    <!-- Row 1: Controls bar -->
     <div class="controls-bar" aria-live="polite">
       <div class="face-toggle-group">
         <span class="face-toggle-dot filled" id="dot-front"></span>
@@ -579,23 +570,20 @@ layout: default
         <span class="face-f-hint">or press <kbd>F</kbd></span>
       </div>
 
-      <!-- Sort: Costume Type -->
       <div class="sort-group" id="sort-group-front" aria-label="Sort costume types by">
         <span class="sort-group-prefix">sort by:</span>
         <button class="sort-btn active" data-field="alpha"  data-face="front">a–z</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="pct"    data-face="front">percent in catalog</button>
+        <button class="sort-btn" data-field="pct"   data-face="front">percent in catalog</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="men"    data-face="front">percent of men's costumes</button>
+        <button class="sort-btn" data-field="men"   data-face="front">percent of men's costumes</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="women"  data-face="front">percent of women's costumes</button>
+        <button class="sort-btn" data-field="women" data-face="front">percent of women's costumes</button>
         <span class="sort-divider">|</span>
-        <button class="sort-btn" data-field="cost"   data-face="front">average cost</button>
+        <button class="sort-btn" data-field="cost"  data-face="front">average cost</button>
       </div>
 
-      <!-- Sort: Ethnic Identity (hidden until flip) -->
-      <div class="sort-group" id="sort-group-back" style="display:none;"
-           aria-label="Sort ethnic identities by">
+      <div class="sort-group" id="sort-group-back" style="display:none;" aria-label="Sort ethnic identities by">
         <span class="sort-group-prefix">sort by:</span>
         <button class="sort-btn active" data-field="alpha"    data-face="back">a–z</button>
         <span class="sort-divider">|</span>
@@ -617,9 +605,8 @@ layout: default
         <p class="q-response" id="q-response"></p>
       </div>
 
-      <div class="drop-zone" id="drop-zone"
-           role="region"
-           aria-label="Answer drop zone — drag a card here or focus a card and press D">
+      <div class="drop-zone" id="drop-zone" role="region"
+           aria-label="Answer drop zone — drag a card here, or focus a card and press D">
         <span class="dz-hint" id="dz-hint">drag a card<br>here</span>
       </div>
 
@@ -634,8 +621,7 @@ layout: default
       <div class="wall-perspective">
         <div class="wall-card" id="wall-card">
           <div class="wall-face">
-            <div class="tiles-grid" id="tiles-grid" role="list"
-                 aria-label="Costume categories"></div>
+            <div class="tiles-grid" id="tiles-grid" role="list" aria-label="Costume categories"></div>
           </div>
         </div>
       </div>
@@ -700,11 +686,8 @@ var IMG_SMALL = "{{ site.baseurl }}/objects/interact/small/";
      ============================================================ -->
 <script>
 /*
- * Question definitions (field names match CSV / JS object keys).
- * field-to-question-index maps drive what the sort buttons reveal.
- *
- * TYPE  : pct→Q0, women→Q1, men→Q2, cost→Q3
- * ETHNIC: pct→Q0, pct1910→Q1, pct1900→Q2, distance→Q3
+ * Maps a sort-field name to its corresponding question index (per face).
+ * Used so clicking a sort button reveals the matching question + response.
  */
 var FIELD_TO_Q = {
   front: { pct: 0, women: 1, men: 2, cost: 3 },
@@ -725,19 +708,19 @@ var ETHNIC_QUESTIONS_DEF = [
   { text: 'If associated with a nation, which group is the greatest distance from Spokane?', field: 'distance' }
 ];
 
-/* Response messages — 3 Lorem ipsum sentences each (8 total) */
+/* Response messages — Lorem ipsum placeholder, 3 sentences each */
 var TYPE_RESPONSES = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores.',
+  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos.',
   'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti. Quos dolores et quas molestias excepturi sint occaecati cupiditate non provident similique sunt in culpa qui officia. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat.',
-  'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae. Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.'
+  'Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint. Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur vel illum.'
 ];
 
 var ETHNIC_RESPONSES = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  'Nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst. Venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada fames ac.',
-  'Morbi non arcu risus quis varius quam quisque id diam vel quam elementum pulvinar etiam non quam lacus. Consequat semper viverra nam libero justo laoreet sit amet cursus sit amet dictum sit amet justo donec enim diam. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat semper viverra nam libero.',
-  'Feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet consectetur adipiscing elit. Congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus et netus. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit.'
+  'Nunc id cursus metus aliquam eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a scelerisque. Nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst. Venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada fames ac.',
+  'Morbi non arcu risus quis varius quam quisque id diam vel quam elementum pulvinar etiam non quam lacus. Consequat semper viverra nam libero justo laoreet sit amet cursus sit amet dictum sit amet justo donec enim diam. Enim nulla aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat semper viverra nam libero justo.',
+  'Feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet consectetur adipiscing elit. Congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus et netus malesuada. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a molestie lorem ipsum dolor sit amet.'
 ];
 </script>
 
@@ -749,6 +732,12 @@ var ETHNIC_RESPONSES = [
   'use strict';
 
   /* ----------------------------------------------------------
+     CONSTANTS
+  ---------------------------------------------------------- */
+  var LONG_PRESS_MS   = 600;   /* ms before a touch hold becomes an answer submission */
+  var DRAG_THRESHOLD  = 10;    /* px of movement before a touch becomes a drag */
+
+  /* ----------------------------------------------------------
      UTILITIES
   ---------------------------------------------------------- */
   function esc(s) {
@@ -757,38 +746,31 @@ var ETHNIC_RESPONSES = [
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /**
-   * Parse a numeric value, stripping $, %, commas and whitespace.
-   * Returns a Number or null.
-   */
+  /* Strip $, %, commas, whitespace then parseFloat */
   function parseNum(val) {
     if (val === null || val === undefined || val === '' || val === false) return null;
     var n = parseFloat(String(val).replace(/[$,%\s]/g, ''));
     return isNaN(n) ? null : n;
   }
 
-  /** Catalog percentage: 17.1 → "17.1%", 9 → "9%" */
   function fmtCatPct(num) {
     var n = parseNum(num);
     if (n === null) return null;
     return (n % 1 === 0 ? n.toFixed(0) : String(n)) + '%';
   }
 
-  /** Population percentage stored as decimal: 0.44 → ".44%" */
   function fmtPopPct(val) {
     var n = parseNum(val);
     if (n === null || n === 0) return null;
     return n.toString().replace(/^0\./, '.') + '%';
   }
 
-  /** Distance: 4859 → "4,859 miles from Spokane" */
   function fmtDist(val) {
     var n = parseNum(val);
     if (n === null || n === 0) return null;
     return Math.round(n).toLocaleString('en-US') + ' miles from Spokane';
   }
 
-  /** Cost: 8.31 → "$8.31" */
   function fmtCost(val) {
     var n = parseNum(val);
     return n !== null ? '$' + n.toFixed(2) : null;
@@ -800,56 +782,52 @@ var ETHNIC_RESPONSES = [
   }
 
   /* ----------------------------------------------------------
-     LABEL FUNCTIONS — return the display metric string per item
+     LABEL FUNCTIONS
   ---------------------------------------------------------- */
   var TYPE_LABEL_FNS = [
-    function(i) { var v = parseNum(i.pct);  return v !== null ? fmtCatPct(v) + ' of catalog' : 'n/a'; },
-    function(i) { var v = parseNum(i.women); return v !== null ? fmtCatPct(v) + ' of costumes under women\'s sections' : 'n/a'; },
-    function(i) { var v = parseNum(i.men);   return v !== null ? fmtCatPct(v) + ' of costumes under men\'s sections' : 'n/a'; },
-    function(i) { var v = fmtCost(i.cost);   return v ? v + ': average cost' : 'n/a'; }
+    function(i){ var v=parseNum(i.pct);   return v!==null ? fmtCatPct(v)+' of catalog' : 'n/a'; },
+    function(i){ var v=parseNum(i.women); return v!==null ? fmtCatPct(v)+' of costumes under women\'s sections' : 'n/a'; },
+    function(i){ var v=parseNum(i.men);   return v!==null ? fmtCatPct(v)+' of costumes under men\'s sections' : 'n/a'; },
+    function(i){ var v=fmtCost(i.cost);   return v ? v+': average cost' : 'n/a'; }
   ];
 
   var ETHNIC_LABEL_FNS = [
-    function(i) { var v = parseNum(i.pct);    return v !== null ? fmtCatPct(v) + ' of catalog' : 'n/a'; },
-    function(i) { var v = fmtPopPct(i.pct1910); return v ? v + ' of 1910 census' : 'n/a'; },
-    function(i) { var v = fmtPopPct(i.pct1900); return v ? v + ' of 1900 census' : 'n/a'; },
-    function(i) { var v = fmtDist(i.distance);   return v ? v : 'n/a'; }
+    function(i){ var v=parseNum(i.pct);    return v!==null ? fmtCatPct(v)+' of catalog' : 'n/a'; },
+    function(i){ var v=fmtPopPct(i.pct1910); return v ? v+' of 1910 census' : 'n/a'; },
+    function(i){ var v=fmtPopPct(i.pct1900); return v ? v+' of 1900 census' : 'n/a'; },
+    function(i){ var v=fmtDist(i.distance);   return v ? v : 'n/a'; }
   ];
 
-  /* Augment question defs with label functions */
-  var TYPE_QUESTIONS = TYPE_QUESTIONS_DEF.map(function(q, idx) {
-    return { text: q.text, field: q.field, labelFn: TYPE_LABEL_FNS[idx] };
+  /* Attach label functions to question definitions */
+  var TYPE_QUESTIONS = TYPE_QUESTIONS_DEF.map(function(q,i){
+    return { text: q.text, field: q.field, labelFn: TYPE_LABEL_FNS[i] };
   });
-  var ETHNIC_QUESTIONS = ETHNIC_QUESTIONS_DEF.map(function(q, idx) {
-    return { text: q.text, field: q.field, labelFn: ETHNIC_LABEL_FNS[idx] };
+  var ETHNIC_QUESTIONS = ETHNIC_QUESTIONS_DEF.map(function(q,i){
+    return { text: q.text, field: q.field, labelFn: ETHNIC_LABEL_FNS[i] };
   });
 
   /* ----------------------------------------------------------
      SORTING
   ---------------------------------------------------------- */
-  function sortAlpha(a, b) { return a.title.localeCompare(b.title); }
-
-  function sortDescBy(field) {
-    return function(a, b) {
-      var va = parseNum(a[field]), vb = parseNum(b[field]);
-      if (va === null && vb === null) return 0;
-      if (va === null) return  1;
-      if (vb === null) return -1;
-      return vb - va;
+  function sortAlpha(a,b){ return a.title.localeCompare(b.title); }
+  function sortDescBy(field){
+    return function(a,b){
+      var va=parseNum(a[field]), vb=parseNum(b[field]);
+      if(va===null&&vb===null) return 0;
+      if(va===null) return  1;
+      if(vb===null) return -1;
+      return vb-va;
     };
   }
-
-  function sortData(data, field) {
-    if (!field || field === 'alpha') return data.slice().sort(sortAlpha);
+  function sortData(data, field){
+    if(!field||field==='alpha') return data.slice().sort(sortAlpha);
     return data.slice().sort(sortDescBy(field));
   }
-
-  /** Item with the highest numeric value for a given field */
-  function getTop(data, field) {
-    var best = null, bestVal = -Infinity;
-    data.forEach(function(item) {
-      var v = parseNum(item[field]);
-      if (v !== null && v > bestVal) { bestVal = v; best = item; }
+  function getTop(data, field){
+    var best=null, bestVal=-Infinity;
+    data.forEach(function(item){
+      var v=parseNum(item[field]);
+      if(v!==null && v>bestVal){ bestVal=v; best=item; }
     });
     return best;
   }
@@ -860,22 +838,35 @@ var ETHNIC_RESPONSES = [
   var currentFace = 'front';
   var isFlipping  = false;
 
-  /* Working sorted copies */
   var currentTypeData   = sortData(TYPE_DATA,   'alpha');
   var currentEthnicData = sortData(ETHNIC_DATA, 'alpha');
+  var activeSortField   = { front: 'alpha', back: 'alpha' };
+  var activeLabelFn     = null;
 
-  var activeSortField = { front: 'alpha', back: 'alpha' };
+  var qIdx      = 0;
+  var qAnswered = false;
+  var qFlipMode = false;
 
-  /* Non-null when tile metrics are being displayed */
-  var activeLabelFn = null;
-
-  /* Question state */
-  var qIdx      = 0;      /* 0–3 */
-  var qAnswered = false;  /* answered by drag, D, reveal, or sort */
-  var qFlipMode = false;  /* past end of 4-question cycle */
-
-  /* Drag */
-  var drag = { active: false, item: null, srcRect: null, ghost: null, offsetX: 0, offsetY: 0 };
+  /*
+   * Drag / touch state object.
+   * For mouse: starts drag immediately on pointerdown.
+   * For touch: enters a "pending" phase to distinguish tap / drag / long-press.
+   */
+  var drag = {
+    active: false,        /* drag ghost is live */
+    item: null,
+    srcRect: null,
+    ghost: null,
+    offsetX: 0, offsetY: 0,
+    /* pending touch phase */
+    pending: false,
+    pendingItem: null,
+    pendingRect: null,
+    pendingTile: null,
+    pendingPointerId: null,
+    startX: 0, startY: 0,
+    longPressTimer: null
+  };
 
   /* ----------------------------------------------------------
      DOM REFS
@@ -910,24 +901,26 @@ var ETHNIC_RESPONSES = [
   /* ----------------------------------------------------------
      ACCESSORS
   ---------------------------------------------------------- */
-  function rawData()     { return currentFace === 'front' ? TYPE_DATA         : ETHNIC_DATA;      }
-  function workingData() { return currentFace === 'front' ? currentTypeData   : currentEthnicData; }
-  function questions()   { return currentFace === 'front' ? TYPE_QUESTIONS    : ETHNIC_QUESTIONS;  }
-  function responses()   { return currentFace === 'front' ? TYPE_RESPONSES    : ETHNIC_RESPONSES;  }
+  function rawData()     { return currentFace==='front' ? TYPE_DATA         : ETHNIC_DATA;      }
+  function workingData() { return currentFace==='front' ? currentTypeData   : currentEthnicData; }
+  function questions()   { return currentFace==='front' ? TYPE_QUESTIONS    : ETHNIC_QUESTIONS;  }
+  function responses()   { return currentFace==='front' ? TYPE_RESPONSES    : ETHNIC_RESPONSES;  }
   function curQ()        { return questions()[qIdx]; }
 
   /* ----------------------------------------------------------
-     QUESTION BAR RENDER
+     QUESTION BAR
+     FIX #1: was `style.display = ''` which inherits the CSS `display:none`.
+              Now explicitly `display:block` to show the element.
   ---------------------------------------------------------- */
   function updateQuestionBar() {
     var qs = questions(), total = qs.length;
 
     if (qFlipMode) {
-      qLabel.textContent      = 'End of cycle';
-      qText.textContent       = 'You have completed all ' + total + ' questions. Flip to the other face.';
-      qResponse.style.display = 'none';
-      btnSkipNext.textContent = 'Flip';
-      btnReveal.disabled      = true;
+      qLabel.textContent       = 'End of cycle';
+      qText.textContent        = 'You have completed all ' + total + ' questions. Flip to the other face.';
+      qResponse.style.display  = 'none';
+      btnSkipNext.textContent  = 'Flip';
+      btnReveal.disabled       = true;
       return;
     }
 
@@ -935,8 +928,9 @@ var ETHNIC_RESPONSES = [
     qText.textContent  = qs[qIdx].text;
 
     if (qAnswered) {
+      /* FIX #1: must be 'block' not '' to override the CSS default of display:none */
       qResponse.textContent   = responses()[qIdx];
-      qResponse.style.display = '';
+      qResponse.style.display = 'block';
       btnSkipNext.textContent = (qIdx === total - 1) ? 'Flip' : 'Next Question';
       btnReveal.disabled      = true;
     } else {
@@ -947,65 +941,30 @@ var ETHNIC_RESPONSES = [
   }
 
   /* ----------------------------------------------------------
-     SORT BUTTON STATE SYNC
+     SORT SYNC
   ---------------------------------------------------------- */
   function syncSortButtons() {
     var field = activeSortField[currentFace];
-    var group = currentFace === 'front' ? sgFront : sgBack;
-    group.querySelectorAll('.sort-btn').forEach(function(b) {
+    var group = currentFace==='front' ? sgFront : sgBack;
+    group.querySelectorAll('.sort-btn').forEach(function(b){
       b.classList.toggle('active', b.dataset.field === field);
     });
   }
-
   function showSortGroups() {
-    sgFront.style.display = currentFace === 'front' ? '' : 'none';
-    sgBack.style.display  = currentFace === 'back'  ? '' : 'none';
+    sgFront.style.display = currentFace==='front' ? '' : 'none';
+    sgBack.style.display  = currentFace==='back'  ? '' : 'none';
   }
 
   /* ----------------------------------------------------------
-     CORE SORT + RE-RENDER
-
-     Called in three contexts:
-       1. Sort button click (triggerReveal=true)
-       2. Correct answer dropped / Reveal pressed (triggerReveal=false —
-          state is already set by the caller, just re-render)
+     SORT BUTTON CLICK HANDLER
   ---------------------------------------------------------- */
-  function applySort(field, targetQIdx) {
-    /*
-     * targetQIdx: the question index that this sort corresponds to.
-     *   Pass undefined / null to sort without changing question state.
-     */
-    activeSortField[currentFace] = field;
-
-    var sorted = sortData(rawData(), field);
-    if (currentFace === 'front') currentTypeData   = sorted;
-    else                         currentEthnicData = sorted;
-
-    if (targetQIdx !== undefined && targetQIdx !== null) {
-      /* A sort button was clicked — reveal the answer for that question */
-      qIdx      = targetQIdx;
-      qAnswered = true;
-      qFlipMode = false;
-      activeLabelFn = questions()[qIdx].labelFn;
-
-      /* Show the correct card for this question's field in the drop zone */
-      var correct = getTop(rawData(), questions()[qIdx].field);
-      if (correct) showCorrectInDropZone(correct);
-    }
-
-    renderTiles(sorted);
-    syncSortButtons();
-    updateQuestionBar();
-  }
-
-  /* Sort-button click handler */
   document.querySelectorAll('.sort-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       if (btn.dataset.face !== currentFace) return;
       var field = btn.dataset.field;
 
       if (field === 'alpha') {
-        /* Alpha: reset to unanswered, clear captions + drop zone */
+        /* Reset to unanswered state */
         activeSortField[currentFace] = 'alpha';
         qAnswered     = false;
         qFlipMode     = false;
@@ -1013,18 +972,35 @@ var ETHNIC_RESPONSES = [
         clearDropZone();
 
         var sorted = sortData(rawData(), 'alpha');
-        if (currentFace === 'front') currentTypeData   = sorted;
-        else                         currentEthnicData = sorted;
+        if (currentFace==='front') currentTypeData   = sorted;
+        else                       currentEthnicData = sorted;
 
         renderTiles(sorted);
         syncSortButtons();
         updateQuestionBar();
       } else {
-        /* Non-alpha: find and reveal the corresponding question */
+        /* Reveal the question that matches this sort field */
         var qMap      = FIELD_TO_Q[currentFace];
         var targetIdx = qMap[field];
         if (targetIdx === undefined) return;
-        applySort(field, targetIdx);
+
+        activeSortField[currentFace] = field;
+        qIdx          = targetIdx;
+        qAnswered     = true;
+        qFlipMode     = false;
+        activeLabelFn = questions()[qIdx].labelFn;
+
+        /* Show correct card in drop zone */
+        var correct = getTop(rawData(), questions()[qIdx].field);
+        if (correct) showCorrectInDropZone(correct);
+
+        var sorted = sortData(rawData(), field);
+        if (currentFace==='front') currentTypeData   = sorted;
+        else                       currentEthnicData = sorted;
+
+        renderTiles(sorted);
+        syncSortButtons();
+        updateQuestionBar(); /* shows response text */
       }
     });
   });
@@ -1041,7 +1017,7 @@ var ETHNIC_RESPONSES = [
       var btn = document.createElement('button');
       btn.className = 'tile';
       btn.setAttribute('role', 'listitem');
-      btn.dataset.itemTitle = item.title; /* store title for key lookup */
+      btn.dataset.itemTitle = item.title;
 
       var metricLabel = activeLabelFn ? activeLabelFn(item) : '';
       btn.setAttribute('aria-label', item.title + (metricLabel ? ' — ' + metricLabel : ''));
@@ -1061,9 +1037,8 @@ var ETHNIC_RESPONSES = [
       btn.appendChild(imgWrap);
 
       /*
-       * Caption: title always visible.
-       * Metric line always present (visibility:hidden by default via CSS),
-       * so the tile height is the same whether data is showing or not.
+       * Caption: title always visible; metric always occupies space
+       * but is invisible until show-captions is applied.
        */
       var cap = document.createElement('div');
       cap.className = 'tile-caption';
@@ -1073,36 +1048,129 @@ var ETHNIC_RESPONSES = [
         '<span class="tile-metric">' + esc(metricLabel || '\u00a0') + '</span>';
       btn.appendChild(cap);
 
-      /* Keyboard: Enter/Space → lightbox; D → submit as answer */
+      /*
+       * Keyboard:
+       *   Enter / Space → open lightbox
+       *   D             → submit as answer (same result as dragging to drop zone)
+       *
+       * FIX #2: D-key wrong answers now also open the lightbox (same as drag wrong).
+       */
       btn.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           openLightbox(item, faceName);
           return;
         }
-        if (e.key === 'd' || e.key === 'D') {
+        if ((e.key === 'd' || e.key === 'D') &&
+            !qFlipMode &&
+            lightbox.classList.contains('hidden')) {
           e.preventDefault();
-          /* Only submit if question is active and lightbox is closed */
-          if (!qFlipMode && lightbox.classList.contains('hidden')) {
-            handleAnswer(item, btn.getBoundingClientRect());
-          }
+          handleAnswer(item, btn.getBoundingClientRect(), faceName);
         }
       });
 
-      /* Click → lightbox (pointer users) */
-      btn.addEventListener('click', function() { openLightbox(item, faceName); });
+      /* Pointer down — branches for mouse vs touch */
+      btn.addEventListener('pointerdown', function(e) {
+        onPointerDown(e, item, faceName);
+      });
 
-      /* Pointer drag */
-      btn.addEventListener('pointerdown', onPointerDown);
+      /* Click (mouse / tap that wasn't captured as a drag) → lightbox */
+      btn.addEventListener('click', function() {
+        /* Suppress click if a drag just ended on this tile */
+        if (drag._suppressNextClick) { drag._suppressNextClick = false; return; }
+        openLightbox(item, faceName);
+      });
 
       frag.appendChild(btn);
     });
 
     tilesGrid.appendChild(frag);
-
-    /* Sync caption-metric visibility */
     tilesGrid.classList.toggle('show-captions', !!activeLabelFn);
   }
+
+  /* ----------------------------------------------------------
+     ANSWER HANDLING — single entry point for drag, D key, and long press
+     FIX #2: wrong answer always opens lightbox (consistent across all input methods)
+  ---------------------------------------------------------- */
+  function handleAnswer(item, srcRect, faceName) {
+    if (qFlipMode) return;
+
+    var correct = getTop(rawData(), curQ().field);
+    if (!correct) return;
+
+    if (item.title === correct.title) {
+      /* ✓ CORRECT — show green, sort wall, display response text */
+      qAnswered     = true;
+      activeLabelFn = curQ().labelFn;
+      showCorrectInDropZone(item);
+
+      activeSortField[currentFace] = curQ().field;
+      var sorted = sortData(rawData(), curQ().field);
+      if (currentFace==='front') currentTypeData   = sorted;
+      else                       currentEthnicData = sorted;
+
+      renderTiles(sorted);
+      syncSortButtons();
+      updateQuestionBar(); /* ← shows response text */
+
+    } else {
+      /* ✗ WRONG — flash red in drop zone, then open the card's detail view */
+      showWrongInDropZone(item, srcRect);
+      /* Brief delay so the red flash is visible before lightbox appears */
+      var capturedFace = faceName || currentFace;
+      setTimeout(function() {
+        if (lightbox.classList.contains('hidden')) {
+          openLightbox(item, capturedFace);
+        }
+      }, 300);
+    }
+  }
+
+  /* ----------------------------------------------------------
+     REVEAL ANSWER BUTTON
+  ---------------------------------------------------------- */
+  btnReveal.addEventListener('click', function() {
+    if (qFlipMode) return;
+    var correct = getTop(rawData(), curQ().field);
+    if (!correct) return;
+
+    qAnswered     = true;
+    activeLabelFn = curQ().labelFn;
+    showCorrectInDropZone(correct);
+
+    activeSortField[currentFace] = curQ().field;
+    var sorted = sortData(rawData(), curQ().field);
+    if (currentFace==='front') currentTypeData   = sorted;
+    else                       currentEthnicData = sorted;
+
+    renderTiles(sorted);
+    syncSortButtons();
+    updateQuestionBar(); /* ← shows response text */
+  });
+
+  /* ----------------------------------------------------------
+     SKIP / NEXT / FLIP BUTTON
+  ---------------------------------------------------------- */
+  btnSkipNext.addEventListener('click', function() {
+    if (btnSkipNext.textContent.trim() === 'Flip') { flipWall(); return; }
+
+    if (qIdx < questions().length - 1) { qIdx++; } else { qFlipMode = true; }
+    qAnswered     = false;
+    activeLabelFn = null;
+
+    clearDropZone();
+    tilesGrid.classList.remove('show-captions');
+    qResponse.style.display = 'none';
+
+    activeSortField[currentFace] = 'alpha';
+    var sorted = sortData(rawData(), 'alpha');
+    if (currentFace==='front') currentTypeData   = sorted;
+    else                       currentEthnicData = sorted;
+
+    renderTiles(sorted);
+    syncSortButtons();
+    updateQuestionBar();
+  });
 
   /* ----------------------------------------------------------
      DROP ZONE HELPERS
@@ -1125,15 +1193,14 @@ var ETHNIC_RESPONSES = [
     var card = buildDzCard(item, null);
     dropZone.appendChild(card);
 
-    /* Animate red flash */
     var tint = card.querySelector('.dz-tint');
     if (tint) tint.className = 'dz-tint wrong-anim';
 
     var dzRect = dropZone.getBoundingClientRect();
     setTimeout(function() {
       clearDropZone();
-      /* Fly-back ghost */
       if (srcRect) {
+        /* Fly-back ghost */
         var fly = document.createElement('div');
         fly.className = 'drag-ghost';
         fly.style.cssText =
@@ -1141,15 +1208,13 @@ var ETHNIC_RESPONSES = [
           'left:' + dzRect.left + 'px;top:' + dzRect.top + 'px;opacity:0.7;' +
           'background:rgba(200,30,30,0.18);border:1px solid #aaa;' +
           'transition:left .45s ease-in-out,top .45s ease-in-out,' +
-                      'width .45s,height .45s,opacity .45s ease-in-out;';
+          'width .45s,height .45s,opacity .45s ease-in-out;';
         document.body.appendChild(fly);
         void fly.offsetWidth;
-        fly.style.left    = srcRect.left   + 'px';
-        fly.style.top     = srcRect.top    + 'px';
-        fly.style.width   = srcRect.width  + 'px';
-        fly.style.height  = srcRect.height + 'px';
+        fly.style.left = srcRect.left + 'px'; fly.style.top    = srcRect.top    + 'px';
+        fly.style.width= srcRect.width+ 'px'; fly.style.height = srcRect.height + 'px';
         fly.style.opacity = '0';
-        setTimeout(function() { if (fly.parentNode) fly.parentNode.removeChild(fly); }, 500);
+        setTimeout(function(){ if(fly.parentNode) fly.parentNode.removeChild(fly); }, 500);
       }
     }, 900);
   }
@@ -1179,135 +1244,122 @@ var ETHNIC_RESPONSES = [
     return card;
   }
 
-  /* ----------------------------------------------------------
-     ANSWER HANDLING
-     Single entry point used by drag-drop AND D-key.
-     Determines correct/wrong, updates drop zone, sorts wall,
-     and triggers response text via updateQuestionBar().
+/* ----------------------------------------------------------
+     REVISED POINTER / DRAG / LONG-PRESS
+     Unified logic to fix Desktop selection and gate Mobile hold-to-submit
   ---------------------------------------------------------- */
-  function handleAnswer(item, srcRect) {
+  drag._suppressNextClick = false;
+
+  function onPointerDown(e, item, faceName) {
     if (qFlipMode) return;
+    if (!lightbox.classList.contains('hidden')) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-    var correct = getTop(rawData(), curQ().field);
-    if (!correct) return;
+    var tile = e.currentTarget;
+    var rect = tile.getBoundingClientRect();
 
-    if (item.title === correct.title) {
-      /* ✓ Correct */
-      qAnswered     = true;
-      activeLabelFn = curQ().labelFn;
-      showCorrectInDropZone(item);
+    // Reset state
+    drag.active = false;
+    drag.pending = true; 
+    drag.pendingTile = tile;
+    drag.pendingItem = item;
+    drag.pendingRect = rect;
+    drag.pendingPointerId = e.pointerId;
+    drag.faceName = faceName || currentFace;
+    drag.startX = e.clientX;
+    drag.startY = e.clientY;
+    drag._suppressNextClick = false;
 
-      /* Sort wall by this question's field and show metrics */
-      activeSortField[currentFace] = curQ().field;
-      var sorted = sortData(rawData(), curQ().field);
-      if (currentFace === 'front') currentTypeData   = sorted;
-      else                         currentEthnicData = sorted;
+    if (drag.longPressTimer) {
+      clearTimeout(drag.longPressTimer);
+      drag.longPressTimer = null;
+    }
 
-      renderTiles(sorted);
-      syncSortButtons();
-      updateQuestionBar();   /* ← shows response text */
-    } else {
-      /* ✗ Wrong — flash and return */
-      showWrongInDropZone(item, srcRect);
-      /* question state unchanged — reader can try again */
+    // "Extended hold" submission ONLY if screen width is mobile (<= 768px)
+    var isMobileWidth = window.innerWidth <= 768; 
+    if ((e.pointerType === 'touch' || e.pointerType === 'pen') && isMobileWidth) {
+      tile.classList.add('long-pressing');
+      drag.longPressTimer = setTimeout(function() {
+        if (drag.pending) {
+          handleAnswer(item, rect, drag.faceName);
+          tile.classList.remove('long-pressing');
+          cancelPendingListeners(tile);
+          drag.pending = false;
+          drag._suppressNextClick = true; // Prevents lightbox opening after auto-submit
+        }
+      }, LONG_PRESS_MS);
+    }
+
+    // All devices (Mouse & Touch) wait for movement or release
+    tile.addEventListener('pointermove', onPendingMove);
+    tile.addEventListener('pointerup', onPendingUp);
+    tile.addEventListener('pointercancel', onPendingCancel);
+  }
+
+  function onPendingMove(e) {
+    var dx = e.clientX - drag.startX;
+    var dy = e.clientY - drag.startY;
+    
+    // Only start a drag/ghost if the user actually moves the pointer
+    if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
+      if (drag.longPressTimer) {
+        clearTimeout(drag.longPressTimer);
+        drag.longPressTimer = null;
+      }
+      var tile = drag.pendingTile;
+      tile.classList.remove('long-pressing');
+      cancelPendingListeners(tile);
+      drag.pending = false;
+
+      e.preventDefault();
+      tile.setPointerCapture(drag.pendingPointerId);
+      
+      drag.active = true;
+      drag.item = drag.pendingItem;
+      drag.srcRect = drag.pendingRect;
+      drag.offsetX = drag.startX - drag.pendingRect.left;
+      drag.offsetY = drag.startY - drag.pendingRect.top;
+
+      startGhost(tile, drag.pendingRect, drag.startX, drag.startY);
+
+      tile.addEventListener('pointermove', onDragMove);
+      tile.addEventListener('pointerup', onDragUp);
+      tile.addEventListener('pointercancel', onDragCancel);
     }
   }
 
-  /* ----------------------------------------------------------
-     REVEAL ANSWER BUTTON
-  ---------------------------------------------------------- */
-  btnReveal.addEventListener('click', function() {
-    if (qFlipMode) return;
-    /* Works whether or not qAnswered (lets reader re-reveal current question) */
-    var correct = getTop(rawData(), curQ().field);
-    if (!correct) return;
-
-    qAnswered     = true;
-    activeLabelFn = curQ().labelFn;
-    showCorrectInDropZone(correct);
-
-    activeSortField[currentFace] = curQ().field;
-    var sorted = sortData(rawData(), curQ().field);
-    if (currentFace === 'front') currentTypeData   = sorted;
-    else                         currentEthnicData = sorted;
-
-    renderTiles(sorted);
-    syncSortButtons();
-    updateQuestionBar();   /* ← shows response text */
-  });
-
-  /* ----------------------------------------------------------
-     SKIP / NEXT / FLIP BUTTON
-  ---------------------------------------------------------- */
-  btnSkipNext.addEventListener('click', function() {
-    if (btnSkipNext.textContent.trim() === 'Flip') { flipWall(); return; }
-
-    /* Advance question index */
-    if (qIdx < questions().length - 1) { qIdx++; } else { qFlipMode = true; }
-    qAnswered     = false;
-    activeLabelFn = null;
-
-    /* Reset display */
-    clearDropZone();
-    tilesGrid.classList.remove('show-captions');
-    qResponse.style.display = 'none';
-
-    /* Return to alpha sort */
-    activeSortField[currentFace] = 'alpha';
-    var sorted = sortData(rawData(), 'alpha');
-    if (currentFace === 'front') currentTypeData   = sorted;
-    else                         currentEthnicData = sorted;
-
-    renderTiles(sorted);
-    syncSortButtons();
-    updateQuestionBar();
-  });
-
-  /* ----------------------------------------------------------
-     POINTER DRAG — full lifecycle
-  ---------------------------------------------------------- */
-  function onPointerDown(e) {
-    if (e.button !== undefined && e.button !== 0) return; /* left only */
-    if (qFlipMode) return;
-    if (!lightbox.classList.contains('hidden')) return;
-
-    var tile = e.currentTarget;
-    /* Find item by stored title key — robust against re-renders */
-    var title   = tile.dataset.itemTitle;
-    var wd      = workingData();
-    var item    = null;
-    for (var i = 0; i < wd.length; i++) { if (wd[i].title === title) { item = wd[i]; break; } }
-    if (!item) return;
-
-    e.preventDefault();
-    tile.setPointerCapture(e.pointerId);
-
-    var rect    = tile.getBoundingClientRect();
-    drag.active = true;
-    drag.item   = item;
-    drag.srcRect = rect;
-    drag.offsetX = e.clientX - rect.left;
-    drag.offsetY = e.clientY - rect.top;
-
-    /* Clone as ghost */
-    var ghost = document.createElement('div');
-    ghost.className = 'drag-ghost';
-    ghost.style.cssText =
-      'width:' + rect.width + 'px;height:' + rect.height + 'px;' +
-      'left:' + (e.clientX - drag.offsetX) + 'px;' +
-      'top:'  + (e.clientY - drag.offsetY) + 'px;';
-    var clone = tile.cloneNode(true);
-    clone.style.cssText = 'position:absolute;inset:0;border:none;box-shadow:none;pointer-events:none;';
-    ghost.appendChild(clone);
-    document.body.appendChild(ghost);
-    drag.ghost = ghost;
-
-    tile.addEventListener('pointermove',   onPointerMove);
-    tile.addEventListener('pointerup',     onPointerUp);
-    tile.addEventListener('pointercancel', onPointerCancel);
+  function onPendingUp(e) {
+    // Quick release (no movement, no long-press): Let native click event fire
+    if (drag.longPressTimer) {
+      clearTimeout(drag.longPressTimer);
+      drag.longPressTimer = null;
+    }
+    var tile = drag.pendingTile;
+    if (tile) tile.classList.remove('long-pressing');
+    cancelPendingListeners(tile);
+    drag.pending = false;
   }
 
-  function onPointerMove(e) {
+  function onPendingCancel(e) {
+    if (drag.longPressTimer) {
+      clearTimeout(drag.longPressTimer);
+      drag.longPressTimer = null;
+    }
+    var tile = drag.pendingTile;
+    if (tile) tile.classList.remove('long-pressing');
+    cancelPendingListeners(tile);
+    drag.pending = false;
+  }
+
+  function cancelPendingListeners(tile) {
+    if (!tile) return;
+    tile.removeEventListener('pointermove', onPendingMove);
+    tile.removeEventListener('pointerup', onPendingUp);
+    tile.removeEventListener('pointercancel', onPendingCancel);
+  }
+
+  /* ── Active drag handlers (unchanged but included for completeness) ── */
+  function onDragMove(e) {
     if (!drag.active || !drag.ghost) return;
     drag.ghost.style.left = (e.clientX - drag.offsetX) + 'px';
     drag.ghost.style.top  = (e.clientY - drag.offsetY) + 'px';
@@ -1317,7 +1369,7 @@ var ETHNIC_RESPONSES = [
       e.clientY >= dz.top  && e.clientY <= dz.bottom);
   }
 
-  function onPointerUp(e) {
+  function onDragUp(e) {
     if (!drag.active) return;
     dropZone.classList.remove('drag-over');
     var dz = dropZone.getBoundingClientRect();
@@ -1325,23 +1377,42 @@ var ETHNIC_RESPONSES = [
       e.clientX >= dz.left && e.clientX <= dz.right &&
       e.clientY >= dz.top  && e.clientY <= dz.bottom;
     var savedItem = drag.item, savedRect = drag.srcRect;
+    var savedFace = drag.faceName;
     endDrag(e.currentTarget);
-    if (dropped) handleAnswer(savedItem, savedRect);
+    drag._suppressNextClick = true; 
+    if (dropped) handleAnswer(savedItem, savedRect, savedFace);
   }
 
-  function onPointerCancel(e) {
+  function onDragCancel(e) {
     dropZone.classList.remove('drag-over');
     endDrag(e.currentTarget);
   }
 
   function endDrag(tile) {
     if (drag.ghost && drag.ghost.parentNode) drag.ghost.parentNode.removeChild(drag.ghost);
-    drag.ghost = null; drag.active = false; drag.item = null; drag.srcRect = null;
+    drag.ghost = null;
+    drag.active = false;
+    drag.item = null;
+    drag.srcRect = null;
     if (tile) {
-      tile.removeEventListener('pointermove',   onPointerMove);
-      tile.removeEventListener('pointerup',     onPointerUp);
-      tile.removeEventListener('pointercancel', onPointerCancel);
+      tile.removeEventListener('pointermove', onDragMove);
+      tile.removeEventListener('pointerup', onDragUp);
+      tile.removeEventListener('pointercancel', onDragCancel);
     }
+  }
+
+  function startGhost(tile, rect, startX, startY) {
+    var ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.style.cssText =
+      'width:' + rect.width + 'px;height:' + rect.height + 'px;' +
+      'left:' + (startX - drag.offsetX) + 'px;' +
+      'top:'  + (startY - drag.offsetY) + 'px;';
+    var clone = tile.cloneNode(true);
+    clone.style.cssText = 'position:absolute;inset:0;border:none;box-shadow:none;pointer-events:none;';
+    ghost.appendChild(clone);
+    document.body.appendChild(ghost);
+    drag.ghost = ghost;
   }
 
   /* ----------------------------------------------------------
@@ -1380,8 +1451,8 @@ var ETHNIC_RESPONSES = [
     activeSortField[currentFace] = 'alpha';
 
     var sorted = sortData(rawData(), 'alpha');
-    if (currentFace === 'front') currentTypeData   = sorted;
-    else                         currentEthnicData = sorted;
+    if (currentFace==='front') currentTypeData   = sorted;
+    else                       currentEthnicData = sorted;
 
     renderTiles(sorted);
     updateFaceLabels();
@@ -1420,7 +1491,6 @@ var ETHNIC_RESPONSES = [
     lbEyebrow.textContent = faceName === 'front' ? 'Costume Type' : 'Ethnic Identity';
     lbTitle.textContent   = item.title;
 
-    /* Stats list */
     lbStatsList.innerHTML = '';
     buildLbStats(item, faceName).forEach(function(entry) {
       var li = document.createElement('li');
@@ -1431,13 +1501,11 @@ var ETHNIC_RESPONSES = [
       lbStatsList.appendChild(li);
     });
 
-    /* Description */
     var raw = (item.description || '').trim();
     var paras = raw.split(/\n+/).filter(function(p){ return p.trim().length > 0; }).slice(0,3);
     if (!paras.length && raw) paras = [raw];
-    lbBody.innerHTML = paras.map(function(p){ return '<p>' + esc(p.trim()) + '</p>'; }).join('');
+    lbBody.innerHTML = paras.map(function(p){ return '<p>'+esc(p.trim())+'</p>'; }).join('');
 
-    /* Examples */
     var exText = (item.full || '').trim();
     lbExamples.innerHTML = exText
       ? '<span class="lb-examples-label">Costumes in this category</span>' +
@@ -1452,18 +1520,21 @@ var ETHNIC_RESPONSES = [
 
   function buildLbStats(item, faceName) {
     if (faceName === 'front') {
+      var cp = parseNum(item.pct), w = parseNum(item.women), m = parseNum(item.men), c = fmtCost(item.cost);
       return [
-        (parseNum(item.pct) !== null)  ? fmtCatPct(parseNum(item.pct)) + ' of catalog'                           : 'n/a',
-        (parseNum(item.women) !== null) ? fmtCatPct(parseNum(item.women)) + ' of costumes under women\'s sections' : 'n/a',
-        (parseNum(item.men)   !== null) ? fmtCatPct(parseNum(item.men))   + ' of costumes under men\'s sections'   : 'n/a',
-        fmtCost(item.cost) ? fmtCost(item.cost) + ': average cost' : 'n/a'
+        cp !== null ? fmtCatPct(cp) + ' of catalog'                             : 'n/a',
+        w  !== null ? fmtCatPct(w)  + ' of costumes under women\'s sections'    : 'n/a',
+        m  !== null ? fmtCatPct(m)  + ' of costumes under men\'s sections'      : 'n/a',
+        c           ? c             + ': average cost'                           : 'n/a'
       ];
     } else {
+      var ep = parseNum(item.pct), p10 = fmtPopPct(item.pct1910),
+          p00 = fmtPopPct(item.pct1900), dst = fmtDist(item.distance);
       return [
-        (parseNum(item.pct) !== null)    ? fmtCatPct(parseNum(item.pct))  + ' of catalog'    : 'n/a',
-        fmtPopPct(item.pct1910)  ? fmtPopPct(item.pct1910)  + ' of 1910 census' : 'n/a',
-        fmtPopPct(item.pct1900)  ? fmtPopPct(item.pct1900)  + ' of 1900 census' : 'n/a',
-        fmtDist(item.distance)   ? fmtDist(item.distance)                        : 'n/a'
+        ep  !== null ? fmtCatPct(ep) + ' of catalog' : 'n/a',
+        p10 ? p10 + ' of 1910 census'                : 'n/a',
+        p00 ? p00 + ' of 1900 census'                : 'n/a',
+        dst ? dst                                     : 'n/a'
       ];
     }
   }
@@ -1477,8 +1548,10 @@ var ETHNIC_RESPONSES = [
   /* ----------------------------------------------------------
      MODAL
   ---------------------------------------------------------- */
-  function closeModal() { introModal.classList.add('hidden'); introModal.setAttribute('aria-hidden','true'); }
-  introModal.addEventListener('click', function(e){ if (e.target === introModal) closeModal(); });
+  function closeModal() {
+    introModal.classList.add('hidden'); introModal.setAttribute('aria-hidden', 'true');
+  }
+  introModal.addEventListener('click', function(e){ if(e.target===introModal) closeModal(); });
 
   /* ----------------------------------------------------------
      GLOBAL KEYBOARD SHORTCUTS
@@ -1490,7 +1563,6 @@ var ETHNIC_RESPONSES = [
         e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
       e.preventDefault(); flipWall();
     }
-    /* D key handled per-tile via keydown listeners in renderTiles */
   });
 
   /* ----------------------------------------------------------
@@ -1499,9 +1571,11 @@ var ETHNIC_RESPONSES = [
   function removeTocFromTabOrder() {
     var sb = document.getElementById('interact-toc-sidebar');
     if (!sb) return;
-    sb.querySelectorAll('a,button,input,select,textarea,[tabindex]').forEach(function(el){ el.setAttribute('tabindex','-1'); });
+    sb.querySelectorAll('a,button,input,select,textarea,[tabindex]').forEach(function(el){
+      el.setAttribute('tabindex', '-1');
+    });
     var h = sb.querySelector('.scrolly-toc-heading');
-    if (h) h.setAttribute('aria-hidden','true');
+    if (h) h.setAttribute('aria-hidden', 'true');
   }
 
   /* ----------------------------------------------------------
@@ -1511,14 +1585,14 @@ var ETHNIC_RESPONSES = [
   labelBack.addEventListener('click',  function(){ flipToFace('back');  });
   [labelFront, labelBack].forEach(function(el){
     el.addEventListener('keydown', function(e){
-      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); el.click(); }
+      if (e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); }
     });
   });
 
   modalClose.addEventListener('click', closeModal);
   modalBegin.addEventListener('click', closeModal);
   lbClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', function(e){ if (e.target === lightbox) closeLightbox(); });
+  lightbox.addEventListener('click', function(e){ if(e.target===lightbox) closeLightbox(); });
 
   /* ----------------------------------------------------------
      INIT
@@ -1529,8 +1603,11 @@ var ETHNIC_RESPONSES = [
     removeTocFromTabOrder();
   }
 
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }
-  else { init(); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
 }());
 </script>
