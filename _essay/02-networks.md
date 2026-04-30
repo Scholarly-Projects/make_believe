@@ -7,13 +7,13 @@ layout: essay-right
 
 {% trigger type: image id: make_believe_008 action: start zoom: coordinates: %}
 
-The most visible thread that connected Dutch interests to Spokane was the “Cape Era” diamond boom in the Kimberley mines of South Africa. While the land had been a Dutch colonial interest since 1652, it was not until the discovery of diamonds in 1867 and the formation of the De Beers Mining company that the conditions for the diamond boom were created. The company introduced new methods for mining that the Dutch had implemented in Brazil and, crucially, collaborated with distributors to restrict supply to maintain artificially inflated prices.^11  
+The most visible thread that connected Dutch interests to Spokane was the “Cape Era” diamond boom in the Kimberley mines of South Africa. While the land had been a Dutch colonial interest since 1652, the British regained control of the region following the discovery of diamonds in 1867. The newly formed De Beers Mining Company still sent the output of the Kimberly mines to Amsterdam and Antwerp, as the Dutch financial capitals were considered the European experts of cutting and polishing diamonds.^11  
 
 {% trigger type: image id: make_believe_008 action: end zoom: 11 coordinates: %}
 
 {% trigger type: image id: make_believe_009 action: start zoom: coordinates: %}
 
-When the first shipments of diamonds from “the run” arrived in the Netherlands to be split, cut, and polished by artisans in 1870, the demand caused an entirely new class structure to emerge.^12 The South African mines generated three times as many diamonds over the twenty years of the boom as they had in the last century and a half in its Brazilian mines and this need for Dutch cleavers, cutters and polishers was reflected in their wages.^13 Their salaries increased from 100 to 200% in 1872, making more than twenty times the income of factory workers.^14 The money began to spread out into the Dutch economy more generally as these “privateers” invested in real estate, furniture, clothing, gambling and bonds.^15 
+When the first shipments of diamonds from “the run” arrived in the Netherlands to be processed by artisans in 1870, the demand caused an entirely new class structure to emerge.^12 The South African mines generated three times as many diamonds over the twenty years of the boom as they had in the last century and a half in its Brazilian mines and this need for Dutch cleavers, cutters and polishers was reflected in their wages.^13 Their salaries increased from 100 to 200% in 1872, making more than twenty times the income of factory workers.^14 The money began to spread out into the Dutch economy more generally as these “privateers” invested in real estate, furniture, clothing, gambling and bonds.^15 
 
 {% trigger type: image id: make_believe_009 action: end zoom: 11 coordinates: %}
 
