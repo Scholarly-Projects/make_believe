@@ -1,0 +1,262 @@
+
+.scrolly-container.layout-inter-vis {
+  grid-template-columns: 14% 1fr;
+  grid-template-areas:   "toc text";
+
+  .scrolly-image-column    { display: none !important; }
+  .scrolly-citation-column { display: none !important; }
+
+  .scrolly-text-column {
+    grid-area:  text;
+    width:      100% !important;
+    max-width:  none !important;
+    border:     none !important;
+    min-height: 100vh;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECTION WRAPPER
+   The sticky frame and invisible trigger block live inside this wrapper.
+   Its height = trigger-block height, so the sticky frame scrolls away once
+   the section ends — exactly the right behaviour for infinite scroll.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.intervis-section {
+  position: relative;
+  width:    100%;
+  /* No explicit height — set by trigger block content */
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STICKY VISUALIZATION FRAME
+   Sticks within .intervis-section, giving the reader a fixed canvas while
+   they scroll through the invisible trigger block underneath.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.intervis-frame {
+  position: sticky;
+  top:      var(--scrolly-header-h, 52px);
+  width:    100%;
+  height:   calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
+  display:  flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  overflow: hidden;
+  z-index:  5;
+  pointer-events: none;
+  /* Frame fades in/out with the section */
+  opacity:    0;
+  transition: opacity 0.8s ease;
+
+  &.is-active { opacity: 1; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER CONTAINER
+   Holds the stacked PNG images. Centred in the frame.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.intervis-layer-container {
+  position: relative;
+  width:    min(70vw, 840px);
+  height:   min(72vh, 680px);
+  flex-shrink: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INDIVIDUAL LAYERS
+   Each .intervis-layer is a PNG loaded from /objects/inter_vis/.
+   Images must have transparent backgrounds; dark objects on white.
+
+   Dark mode  → invert(1) so dark marks appear light on a dark background.
+   Light mode → no filter (dark marks already read on white background).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.intervis-layer {
+  position:   absolute;
+  top:  0; left: 0;
+  width:  100%;
+  height: 100%;
+  object-fit: contain;
+
+  opacity: 0;
+  /* 1-second aesthetic fade as specified */
+  transition: opacity 1s ease;
+
+  z-index:     1;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Dark mode default: invert marks so they read light on dark background */
+body:not(.light-mode) .intervis-layer {
+  filter: invert(1);
+}
+
+/* Light mode: leave marks dark on white */
+body.light-mode .intervis-layer {
+  filter: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STICKY TITLE
+   Floated to the bottom-right of the visualization frame.
+   Visible only while the section is active (JS toggles .is-active).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.intervis-sticky-title {
+  position:   fixed;
+  bottom:     calc(2.8rem + 1.5rem);   /* clear the scrolly footer */
+  right:      2.2rem;
+
+  font-size:      0.82rem;
+  font-family:    "Times New Roman", Times, serif;
+  font-style:     italic;
+  font-weight:    400;
+  color:          rgba(255, 255, 255, 0.42);
+  letter-spacing: 0.025em;
+  line-height:    1.45;
+  max-width:      22vw;
+  text-align:     right;
+
+  pointer-events: none;
+  z-index:        110;
+
+  opacity:    0;
+  transform:  translateY(6px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+
+  &.is-active {
+    opacity:   1;
+    transform: translateY(0);
+  }
+}
+
+body.light-mode .intervis-sticky-title {
+  color: rgba(0, 0, 0, 0.38);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRIGGER BLOCK
+   Visually hidden; provides vertical scroll space for triggers.
+   Each [data-trigger-type] marker gets 80vh of height so the reader
+   scrolls deliberately between layers — the "long scroll" feel.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.intervis-trigger-block {
+  /* Override default scrolly padding; this block is purely a scroll driver */
+  padding:        0 !important;
+  margin:         0 !important;
+  min-height:     0;      /* JS sizes it after counting triggers */
+  position:       relative;
+  z-index:        1;
+  pointer-events: none;
+  user-select:    none;
+
+  /* Visually invisible but present in the layout flow */
+  opacity:        0;
+  overflow:       hidden;
+
+  [data-trigger-type] {
+    /* Override the default zero-height from cleanLayoutArtifacts.
+       These markers must have height to occupy vertical scroll space. */
+    display:    block   !important;
+    visibility: hidden  !important;
+    height:     80vh    !important;
+    width:      1px     !important;
+    margin:     0       !important;
+    padding:    0       !important;
+    overflow:   hidden  !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOC: INTER_VIS ENTRIES
+   Distinct from chapter entries — smaller, lighter, no numbering.
+   Visually signals "visualization interlude" rather than "chapter."
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.toc-intervis-entry > .scrolly-toc-link {
+  padding-left: 1.1rem;
+  font-size:    0.88rem;
+  font-style:   italic;
+  color:        rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.01em;
+
+  &::before {
+    content:      "— ";
+    font-style:   normal;
+    opacity:      0.55;
+  }
+
+  &:hover      { color: rgba(255, 255, 255, 0.75); background-color: rgba(255, 255, 255, 0.04); }
+  &.toc-active { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
+}
+
+body.light-mode .toc-intervis-entry > .scrolly-toc-link {
+  color: rgba(0, 0, 0, 0.35);
+
+  &:hover      { color: rgba(0, 0, 0, 0.70); background-color: rgba(0, 0, 0, 0.04); }
+  &.toc-active { color: rgba(0, 0, 0, 0.80); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE  (≤ 992px)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 992px) {
+
+  .scrolly-container.layout-inter-vis {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:   "text" !important;
+  }
+
+  .intervis-frame {
+    height: calc(58vh - var(--scrolly-header-h, 52px));
+    position: sticky;
+  }
+
+  .intervis-layer-container {
+    width:  90vw;
+    height: 52vh;
+  }
+
+  /* Sticky title: revert to in-flow block on mobile */
+  .intervis-sticky-title {
+    position:   relative;
+    bottom:     auto;
+    right:      auto;
+    display:    block;
+    text-align: center;
+    max-width:  100%;
+    padding:    0.5rem 1rem 0.75rem;
+    font-size:  0.78rem;
+    opacity:    0.65;
+    transform:  none;
+    transition: none;
+
+    &.is-active {
+      opacity:   0.65;
+      transform: none;
+    }
+  }
+
+  .intervis-trigger-block [data-trigger-type] {
+    /* Shorter per-trigger scroll distance on mobile */
+    height: 55vh !important;
+  }
+
+  .toc-intervis-entry > .scrolly-toc-link {
+    font-size: 0.84rem;
+  }
+}

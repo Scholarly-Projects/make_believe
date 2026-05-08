@@ -1,0 +1,208 @@
+<script>
+/* ============================================================================
+   InterVis — Interstitial Visualization Handler
+   Manages a single inter_vis section: a stack of transparent PNG layers
+   that fade in and out as the reader scrolls through the trigger block.
+
+   Instantiated by ScrollyTelling.setupInterVisBlock() for each
+   data-layout="inter_vis" block found in the DOM (initial load or infinite
+   scroll injection).
+
+   Layer images live in  /objects/inter_vis/<id>.png
+   Base path injected by the layout:  window.intervisBasePath
+   ============================================================================ */
+
+class InterVis {
+
+  /**
+   * @param {HTMLElement} triggerBlock  – the .intervis-trigger-block element
+   * @param {HTMLElement} layerContainer – the .intervis-layer-container element
+   * @param {HTMLElement} frame          – the .intervis-frame element
+   * @param {HTMLElement} stickyTitle    – the .intervis-sticky-title element
+   */
+  constructor(triggerBlock, layerContainer, frame, stickyTitle) {
+    this.triggerBlock    = triggerBlock;
+    this.layerContainer  = layerContainer;
+    this.frame           = frame;
+    this.stickyTitle     = stickyTitle;
+
+    // All parsed trigger descriptors in DOM order
+    this.triggers = [];
+
+    // Map<id, HTMLImageElement>  — layer elements keyed by image ID
+    this.layerEls = new Map();
+
+    // Last known visible-layer state (Map<id, opacity>) for diffing
+    this._lastState = new Map();
+
+    this._basePath = window.intervisBasePath
+      || '/objects/inter_vis/';
+
+    this._parse();
+    this._sizeTriggerBlock();
+    this._setupVisibilityObserver();
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // PARSE triggers from marker elements
+  // ───────────────────────────────────────────────────────────────────
+  _parse() {
+    this.triggerBlock
+      .querySelectorAll('[data-trigger-type="image"]')
+      .forEach(marker => {
+        const id      = marker.dataset.triggerId   || '';
+        const action  = marker.dataset.triggerAction || 'start';
+        const opacity = marker.dataset.triggerOpacity !== undefined
+          ? parseFloat(marker.dataset.triggerOpacity) / 100   // 0–100 → 0–1
+          : 1;
+        const zoom    = marker.dataset.triggerZoom
+          ? parseFloat(marker.dataset.triggerZoom)
+          : 10;
+        const coords  = marker.dataset.triggerCoordinates || null;
+
+        this.triggers.push({ marker, id, action, opacity, zoom, coords });
+      });
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // SIZE the trigger block so each trigger gets ~80 vh of scroll space
+  // (80vh per trigger via CSS on [data-trigger-type], but we also add
+  //  top and bottom padding equal to 50 vh each for a clean entry/exit)
+  // ───────────────────────────────────────────────────────────────────
+  _sizeTriggerBlock() {
+    const count = this.triggers.length;
+    if (!count) return;
+    // Each marker already has height: 80vh from CSS.
+    // Add 50vh top padding + 50vh bottom padding via CSS variables.
+    this.triggerBlock.style.paddingTop    = '50vh';
+    this.triggerBlock.style.paddingBottom = '50vh';
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // INTERSECTION OBSERVER — activate/deactivate frame & title
+  // ───────────────────────────────────────────────────────────────────
+  _setupVisibilityObserver() {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const active = entry.isIntersecting;
+        this.frame?.classList.toggle('is-active', active);
+        if (this.stickyTitle) {
+          this.stickyTitle.classList.toggle('is-active', active);
+        }
+        if (!active) this._clearAllLayers();
+      });
+    }, { threshold: 0 });
+
+    observer.observe(this.triggerBlock);
+    this._visibilityObserver = observer;
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // HANDLE SCROLL — called by ScrollyTelling on every scroll event
+  // ───────────────────────────────────────────────────────────────────
+  handleScroll(viewportCenter) {
+    // Re-derive desired state from scratch (handles scroll-back correctly)
+    const desired = new Map(); // id → opacity
+
+    for (const t of this.triggers) {
+      const rect   = t.marker.getBoundingClientRect();
+      const passed = rect.top + rect.height / 2 < viewportCenter;
+      if (!passed) continue;
+
+      if (t.action === 'start' && t.id !== 'all') {
+        desired.set(t.id, t.opacity);
+      } else if (t.action === 'end') {
+        if (t.id === 'all') {
+          desired.clear();
+        } else {
+          desired.delete(t.id);
+        }
+      }
+    }
+
+    // Apply diff — only touch elements that changed
+    desired.forEach((targetOpacity, id) => {
+      const prev = this._lastState.get(id);
+      if (prev === targetOpacity) return;
+
+      const img = this._getOrCreateLayer(id);
+      if (img) img.style.opacity = String(targetOpacity);
+    });
+
+    this._lastState.forEach((_, id) => {
+      if (!desired.has(id)) {
+        const img = this.layerEls.get(id);
+        if (img && img.style.opacity !== '0') img.style.opacity = '0';
+      }
+    });
+
+    this._lastState = new Map(desired);
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // GET OR CREATE a layer <img> for a given id
+  // ───────────────────────────────────────────────────────────────────
+  _getOrCreateLayer(id) {
+    if (this.layerEls.has(id)) return this.layerEls.get(id);
+
+    const img = document.createElement('img');
+    img.className = 'intervis-layer';
+    img.alt       = '';
+    img.src       = this._basePath + id + '.png';
+    img.style.opacity = '0';
+
+    // Apply initial transform from the start trigger for this id
+    const startTrigger = this.triggers.find(t => t.id === id && t.action === 'start');
+    if (startTrigger) {
+      this._applyTransform(img, startTrigger.zoom, startTrigger.coords);
+    }
+
+    // Handle broken image paths gracefully
+    img.addEventListener('error', () => {
+      console.warn(`InterVis: could not load layer "${id}" from ${img.src}`);
+    }, { once: true });
+
+    this.layerContainer.appendChild(img);
+    this.layerEls.set(id, img);
+    return img;
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // APPLY TRANSFORM — zoom + pan coordinates
+  // Mirrors the scrollytelling pan/zoom convention:
+  //   zoom    : scale factor (÷ 10, so 10 = 1×, 15 = 1.5×)
+  //   coords  : "x,y" in 0–1000 space → converted to % transform-origin
+  // ───────────────────────────────────────────────────────────────────
+  _applyTransform(img, zoom, coords) {
+    let x = 50, y = 50;
+    if (coords) {
+      const parts = coords.split(',').map(Number);
+      if (parts.length >= 2) {
+        x = (parts[0] / 1000) * 100;
+        y = (parts[1] / 1000) * 100;
+      }
+    }
+    img.style.transformOrigin = `${x}% ${y}%`;
+    img.style.transform       = `scale(${(zoom || 10) / 10})`;
+    img.style.transition      = 'opacity 1s ease';   /* 1s aesthetic fade */
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // CLEAR ALL layers instantly (called when section leaves viewport)
+  // ───────────────────────────────────────────────────────────────────
+  _clearAllLayers() {
+    this.layerEls.forEach(img => { img.style.opacity = '0'; });
+    this._lastState.clear();
+  }
+
+  // ───────────────────────────────────────────────────────────────────
+  // DESTROY — clean up observers (call when block is removed from DOM)
+  // ───────────────────────────────────────────────────────────────────
+  destroy() {
+    this._visibilityObserver?.disconnect();
+    this._clearAllLayers();
+    this.layerEls.forEach(img => img.remove());
+    this.layerEls.clear();
+  }
+}
+</script>

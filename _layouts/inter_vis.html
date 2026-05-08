@@ -7,6 +7,7 @@ custom-foot: essay/js/scrollytelling-handler.html
 {% include essay/js/intervis-handler.html %}
 
 <script>
+/* ── Essay manifest (all chapters + inter_vis sections, sorted by order) ── */
 window.allEssays = [
   {% assign sorted_essays = site.essay | sort: 'order' %}
   {% for essay in sorted_essays %}
@@ -21,16 +22,19 @@ window.allEssays = [
   {% endfor %}
 ];
 
-/* Base path for inter_vis PNG layers (used by InterVis class) */
+/* ── Base path for inter_vis PNG layers ─────────────────────────────────── */
 window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
 </script>
 
 <link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
 
-<div class="scrolly-container layout-right" id="scrolly-container" data-layout="right">
+<div class="scrolly-container layout-inter-vis"
+     id="scrolly-container"
+     data-layout="inter_vis">
 
   <!-- ── 1. TOC SIDEBAR ──────────────────────────────────────────────── -->
-  <aside class="scrolly-toc-sidebar" id="scrolly-toc-sidebar" aria-label="Table of contents">
+  <aside class="scrolly-toc-sidebar" id="scrolly-toc-sidebar"
+         aria-label="Table of contents">
     <p class="scrolly-toc-heading">Contents</p>
     <ul class="scrolly-toc-list" id="scrolly-toc-list">
 
@@ -78,44 +82,52 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
     </ul>
   </aside>
 
-  <!-- ── 2. IMAGE COLUMN ─────────────────────────────────────────────── -->
-  <div class="scrolly-image-column" id="scrolly-image">
-    <div class="scrolly-image-frame">
-      <div class="scrolly-image-container" id="scrolly-image-container"></div>
-    </div>
-
-    <!-- Desktop: image citation sits below the frame -->
-    <div class="scrolly-image-citation-desktop" id="scrolly-image-citation-footer">
-      <span id="scrolly-image-citation-content"></span>
-      <a id="scrolly-image-view-link"
-         class="citation-view-link"
-         style="display:none;"> View Item →</a>
-    </div>
-  </div>
-
-  <!-- ── 3. TEXT COLUMN ──────────────────────────────────────────────── -->
+  <!-- ── 2. VISUALIZATION COLUMN ─────────────────────────────────────── -->
   <div class="scrolly-text-column" id="scrolly-text">
-    <div class="scrolly-text-content chapter-content-block"
-         data-chapter-path="{{ page.url | prepend: site.baseurl }}"
-         data-chapter-title="{{ page.title | escape }}"
-         data-layout="right">
 
-      <a id="chapter-{{ page.order | plus: 1 }}" class="chapter-scroll-anchor"></a>
-      {% if page.chapter %}
-      <h1 id="chapter-title" class="chapter-title">{{ page.chapter }}</h1>
-      {% endif %}
-      {{ content }}
-    </div>
+    <!--
+      .intervis-section wraps the sticky frame + invisible trigger block.
+      Its natural height comes from the trigger block, so the sticky frame
+      scrolls away once the section ends.
+    -->
+    <div class="intervis-section"
+         data-intervis-order="{{ page.order }}">
+
+      <!-- Sticky visualization frame (JS marks is-active via IntersectionObserver) -->
+      <div class="intervis-frame"
+           id="intervis-frame-{{ page.order }}"
+           data-intervis-for="{{ page.url | prepend: site.baseurl }}">
+        <div class="intervis-layer-container"
+             id="intervis-layers-{{ page.order }}">
+          <!-- PNG layers injected here by InterVis JS -->
+        </div>
+
+        <!-- Sticky title: bottom-right of frame -->
+        <div class="intervis-sticky-title"
+             id="intervis-title-{{ page.order }}">
+          {{ page.toc_title | default: page.title }}
+        </div>
+      </div>
+
+      <!-- Invisible trigger block: drives scroll events, holds trigger markers -->
+      <div class="scrolly-text-content chapter-content-block intervis-trigger-block"
+           data-chapter-path="{{ page.url | prepend: site.baseurl }}"
+           data-chapter-title="{{ page.title | escape }}"
+           data-toc-title="{{ page.toc_title | default: page.title | escape }}"
+           data-layout="inter_vis"
+           data-intervis-order="{{ page.order }}">
+        {{ content }}
+      </div>
+
+    </div><!-- /.intervis-section -->
 
     <div class="chapter-loading-indicator" id="chapter-loading-indicator"
          style="text-align:center; padding:3rem; opacity:0; transition:opacity 0.3s;">
       <div class="spinner-border text-muted" role="status"></div>
     </div>
-  </div>
 
-  <!-- ── 4. CITATION COLUMN (JS-created) ─────────────────────────────── -->
+  </div><!-- /.scrolly-text-column -->
 
 </div><!-- /.scrolly-container -->
 
-<!-- ── 5. FOOTER ─────────────────────────────────────────────────────── -->
 {% include essay/footer-scrollytelling.html %}
