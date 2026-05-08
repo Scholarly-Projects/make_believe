@@ -1,7 +1,8 @@
 ---
 title: "Imitation and Identity"
 chapter: "Imitation and Identity"
-order: 4
+chap_number: 4
+order: 8
 layout: essay-right
 ---
 

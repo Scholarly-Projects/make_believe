@@ -1,7 +1,8 @@
 ---
 title: "Conclusion"
 chapter: "Conclusion"
-order: 5
+chap_number: 5
+order: 10
 layout: essay-right
 ---
 

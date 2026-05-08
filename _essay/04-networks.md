@@ -1,7 +1,8 @@
 ---
 title: "Networks of Capital"
 chapter: "Networks of Capital"
-order: 2
+chap_number: 2
+order: 4
 layout: essay-right
 ---
 
