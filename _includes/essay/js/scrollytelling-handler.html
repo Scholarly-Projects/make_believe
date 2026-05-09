@@ -206,13 +206,14 @@ class ScrollyTelling {
     let frame = imageFrame.querySelector(
       `.intervis-frame[data-intervis-for="${chapterPath}"]`
     );
-    let layerContainer, stickyTitle, hintEl;
+    let layerContainer, stickyTitle, hintEl, descriptionEl;
 
     if (frame) {
-      // Standalone page: frame already correctly placed
+      // Standalone page: frame already correctly placed by inter_vis.html template
       layerContainer = frame.querySelector('.intervis-layer-container');
       stickyTitle    = frame.querySelector('.intervis-sticky-title');
       hintEl         = frame.querySelector('.intervis-scroll-hint');
+      descriptionEl  = frame.querySelector('.intervis-description');
     } else {
       // Infinite-scroll: build frame as sibling of #scrolly-image-container
       frame = document.createElement('div');
@@ -238,8 +239,21 @@ class ScrollyTelling {
       imageFrame.appendChild(frame);
     }
 
+    // ── DESCRIPTION ELEMENT ─────────────────────────────────────────────────
+    // Always ensure descriptionEl exists. This covers:
+    //   (a) Standalone pages whose inter_vis.html predates the description div
+    //   (b) Infinite-scroll frames just built above (descriptionEl still null)
+    // Without this, frame.querySelector returns null for old templates,
+    // descriptionEl stays null, and _updateDescription silently exits every
+    // call — the single most common reason descriptions never appear.
+    if (!descriptionEl) {
+      descriptionEl = document.createElement('div');
+      descriptionEl.className = 'intervis-description';
+      frame.appendChild(descriptionEl);
+    }
+
     if (typeof InterVis === 'function') {
-      const iv = new InterVis(block, layerContainer, frame, stickyTitle, hintEl);
+      const iv = new InterVis(block, layerContainer, frame, stickyTitle, hintEl, descriptionEl);
       this.intervisInstances.set(block, iv);
     } else {
       console.warn('InterVis class not found. Include intervis-handler.html before scrollytelling-handler.html.');

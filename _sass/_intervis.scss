@@ -328,3 +328,77 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
   .intervis-trigger-block [data-trigger-type] { height: 55vh !important; }
   .toc-intervis-entry > .scrolly-toc-link    { font-size: 0.82rem; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INTER_VIS DESCRIPTION
+   position:fixed in the text column (56vw–90vw), vertically centred between
+   the scroll hint (near top) and the sticky title (near bottom).
+   The element lives inside .intervis-frame in the DOM, but position:fixed
+   escapes the frame's overflow:hidden and resolves to the viewport — so it
+   appears in the text column regardless of its DOM parent.
+
+   Visibility is driven purely by JS classes (.is-visible, .is-cleared),
+   not by CSS selectors on the frame, because the frame's overflow:hidden
+   creates a stacking context that would otherwise interfere with fixed layout.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.intervis-description {
+  position: fixed;
+  /* Vertically occupy the space between hint and title */
+  top:    calc(var(--scrolly-header-h, 52px) + 4.5rem);
+  bottom: calc(2.8rem + 4.5rem);
+  left:   56vw;
+  right:  10vw;
+
+  /* Center content vertically within the allocated span */
+  display:         flex;
+  align-items:     center;
+  justify-content: flex-start;
+
+  font-family:    "Times New Roman", Times, serif;
+  font-size:      1.05rem;
+  font-style:     italic;
+  font-weight:    400;
+  color:          rgba(255, 255, 255, 0.65);
+  line-height:    1.6;
+  text-align:     left;
+  pointer-events: none;
+  z-index:        110;
+
+  opacity:    0;
+  transition: opacity 0.5s ease;
+}
+
+.intervis-description.is-visible { opacity: 1; }
+
+/* Explicit cleared state: long transition matching hint/title fade */
+.intervis-description.is-cleared {
+  opacity:    0  !important;
+  transition: opacity 1.5s ease !important;
+}
+
+body.light-mode .intervis-description { color: rgba(0, 0, 0, 0.58); }
+
+@media (max-width: 992px) {
+  /* On mobile, description is absolute within the fixed full-screen frame,
+     positioned between the centered hint (top) and title (bottom). */
+  .intervis-description {
+    position:   absolute !important;
+    top:        auto     !important;
+    bottom:     auto     !important;
+    left:       1rem     !important;
+    right:      1rem     !important;
+    /* Vertically centre in the frame */
+    top:        50%      !important;
+    transform:  translateY(-50%) !important;
+    text-align: center   !important;
+    justify-content: center !important;
+    font-size:  0.92rem  !important;
+    color: rgba(255, 255, 255, 0.58) !important;
+  }
+  .intervis-description.is-visible {
+    opacity: 1;
+    transform: translateY(-50%) !important;
+  }
+  body.light-mode .intervis-description { color: rgba(0, 0, 0, 0.50) !important; }
+}

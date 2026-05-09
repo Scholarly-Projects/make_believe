@@ -71,6 +71,8 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
         <div class="intervis-layer-container" id="intervis-layers-{{ page.order }}"></div>
         <div class="intervis-sticky-title" id="intervis-title-{{ page.order }}">{{ page.title }}</div>
         <div class="intervis-scroll-hint" id="intervis-hint-{{ page.order }}" aria-hidden="true">scroll<span class="scroll-hint-arrow">&#x2193;</span></div>
+        <!-- Description: position:fixed, appears in text column between hint and title -->
+        <div class="intervis-description" id="intervis-desc-{{ page.order }}"></div>
       </div>
     </div>
     <div class="scrolly-image-citation-desktop" id="scrolly-image-citation-footer">

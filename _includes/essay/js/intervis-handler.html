@@ -1,22 +1,29 @@
 <script>
 /* ============================================================================
    InterVis — Interstitial Visualization Handler
+   Set INTERVIS_DEBUG = true to log parse/segment/transform state to the
+   browser console, which is the fastest way to diagnose coordinate issues.
    ============================================================================ */
+
+const INTERVIS_DEBUG = true;   // ← set false in production
 
 class InterVis {
 
-  constructor(triggerBlock, layerContainer, frame, stickyTitle, hintEl) {
+  constructor(triggerBlock, layerContainer, frame, stickyTitle, hintEl, descriptionEl) {
     this.triggerBlock   = triggerBlock;
     this.layerContainer = layerContainer;
     this.frame          = frame;
     this.stickyTitle    = stickyTitle;
-    this.hintEl         = hintEl || null;
+    this.hintEl         = hintEl        || null;
+    this.descriptionEl  = descriptionEl || null;
 
-    this.triggers       = [];
-    this.segments       = [];
-    this.layerEls       = new Map();
-    this._lastOpacity   = new Map();
-    this._hintDismissed = false;
+    this.triggers           = [];
+    this.segments           = [];
+    this.layerEls           = new Map();
+    this._lastOpacity       = new Map();
+    this._hintDismissed     = false;
+    this._activeDescription = '';
+    this._debugLogged       = false;
 
     this._basePath = window.intervisBasePath || '/objects/inter_vis/';
 
@@ -26,43 +33,61 @@ class InterVis {
     this._setupVisibilityObserver();
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // PARSE — supports comma-separated IDs:
-  //   data-trigger-id="intervis_02_04, intervis_02_03"
-  //   creates two trigger entries sharing the same marker element.
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── PARSE ──────────────────────────────────────────────────────────────────
   _parse() {
-    this.triggerBlock
-      .querySelectorAll('[data-trigger-type]')
-      .forEach(marker => {
-        const rawId  = marker.dataset.triggerId     || '';
-        const action = marker.dataset.triggerAction || 'start';
+    const markers = this.triggerBlock.querySelectorAll('[data-trigger-type]');
 
-        const rawOp  = marker.dataset.triggerOpacity;
-        const opacity = (rawOp !== undefined && rawOp !== '')
-          ? Math.min(1, Math.max(0, parseFloat(rawOp) / 100))
-          : 1;
+    if (INTERVIS_DEBUG) {
+      console.log(`[InterVis] Block: ${this.triggerBlock.dataset.chapterPath || '?'}`);
+      console.log(`[InterVis] Found ${markers.length} trigger marker(s)`);
+      if (markers.length === 0) {
+        console.warn('[InterVis] ⚠ No markers found. Check that trigger_tag.rb is correctly emitting <span data-trigger-type="..."> elements and that Jekyll was restarted after the plugin was updated.');
+      }
+    }
 
-        const rawZoom = marker.dataset.triggerZoom;
-        const zoom    = (rawZoom !== undefined && rawZoom !== '')
-          ? parseFloat(rawZoom)
-          : 10;
+    markers.forEach((marker, idx) => {
+      const rawId  = marker.dataset.triggerId     || '';
+      const action = marker.dataset.triggerAction || 'start';
 
-        const coords = marker.dataset.triggerCoordinates || null;
+      const rawOp   = marker.dataset.triggerOpacity;
+      const opacity = (rawOp !== undefined && rawOp !== '')
+        ? Math.min(1, Math.max(0, parseFloat(rawOp) / 100))
+        : 1;
 
-        // Split comma-separated ids; each becomes its own trigger entry
-        const ids = rawId.split(',').map(s => s.trim()).filter(Boolean);
-        if (ids.length === 0) ids.push('');
+      // zoom omitted or empty → default 10 (scale 1×, translate mode)
+      const rawZoom = marker.dataset.triggerZoom;
+      const zoom    = (rawZoom !== undefined && rawZoom !== '')
+        ? parseFloat(rawZoom)
+        : 10;
 
-        ids.forEach(id => {
-          this.triggers.push({ marker, id, action, opacity, zoom, coords });
-        });
+      const coords      = marker.dataset.triggerCoordinates  || null;
+      const description = marker.dataset.triggerDescription  || '';
+
+      if (INTERVIS_DEBUG) {
+        console.log(`[InterVis]   [${idx}] id="${rawId}" action="${action}" coords="${coords}" zoom=${zoom} desc="${description}"`);
+        if (coords === null) {
+          console.warn(`[InterVis]   [${idx}] ⚠ coords is null — data-trigger-coordinates attribute is missing from the span. Check trigger_tag.rb output.`);
+        }
+        if (!description && marker.dataset.triggerDescription === undefined) {
+          // Only warn if description was expected (we can't tell from here, skip)
+        }
+      }
+
+      // Comma-separated ids
+      const ids = rawId.split(',').map(s => s.trim()).filter(Boolean);
+      if (ids.length === 0) ids.push('');
+
+      ids.forEach(id => {
+        this.triggers.push({ marker, id, action, opacity, zoom, coords, description });
       });
+    });
+
+    if (INTERVIS_DEBUG) {
+      console.log(`[InterVis] Parsed ${this.triggers.length} trigger entries`);
+    }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // BUILD SEGMENTS — consecutive trigger pairs per layer id.
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── BUILD SEGMENTS ─────────────────────────────────────────────────────────
   _buildSegments() {
     const byId = new Map();
     this.triggers.forEach(t => {
@@ -76,51 +101,44 @@ class InterVis {
         this.segments.push({ id, from: list[i], to: list[i + 1] });
       }
     });
+
+    if (INTERVIS_DEBUG) {
+      console.log(`[InterVis] Built ${this.segments.length} segment(s):`);
+      this.segments.forEach((seg, i) => {
+        console.log(`[InterVis]   seg[${i}] ${seg.id}: ${seg.from.coords} → ${seg.to.coords}`);
+      });
+      if (this.segments.length === 0) {
+        console.warn('[InterVis] ⚠ No segments. Each layer needs at least two start-triggers to animate. A single start+end pair produces no movement segment.');
+      }
+    }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // SIZE trigger block.
-  //
-  // padding-top controls when the FIRST trigger fires relative to the section
-  // entry point:
-  //
-  //   Standalone page load (scrollY < innerHeight):
-  //     padding-top = 40vh → reader must scroll ~half viewport before first
-  //     image appears. At page load, trigger block top ≈ header height (52px),
-  //     so first trigger fires after ≈ 340px of scroll — one deliberate push.
-  //
-  //   Infinite-scroll load (reader is mid-document, scrollY >= innerHeight):
-  //     padding-top = 15vh → block enters viewport from below with ~100vh of
-  //     natural scroll distance already built in; shorter padding avoids an
-  //     excessive "dead zone" before first image.
-  //
-  // Uses setProperty('important') to override .scrolly-text-content cascade.
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── SIZE TRIGGER BLOCK ─────────────────────────────────────────────────────
   _sizeTriggerBlock() {
     if (!this.triggers.length) return;
-
-    const isStandalonePage = window.scrollY < window.innerHeight;
-    const paddingTop       = isStandalonePage ? '40vh' : '15vh';
-
+    const paddingTop = window.scrollY < window.innerHeight ? '40vh' : '15vh';
     this.triggerBlock.style.setProperty('padding-top',    paddingTop, 'important');
     this.triggerBlock.style.setProperty('padding-bottom', '50vh',     'important');
+
+    if (INTERVIS_DEBUG) {
+      console.log(`[InterVis] padding-top: ${paddingTop}, padding-bottom: 50vh`);
+    }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // VISIBILITY OBSERVER — activates frame when trigger block enters viewport.
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── VISIBILITY OBSERVER ────────────────────────────────────────────────────
   _setupVisibilityObserver() {
     const obs = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         const active = entry.isIntersecting;
         this.frame?.classList.toggle('is-active', active);
-
         if (!active) {
           this._clearAllLayers();
-          // Reset hint + cleared state so re-entry works correctly
-          this._hintDismissed = false;
+          this._hintDismissed     = false;
+          this._activeDescription = '';
           this.hintEl?.classList.remove('is-dismissed');
           this.frame?.classList.remove('is-cleared');
+          this._updateDescription('');
+          this._debugLogged = false;  // reset so next entry re-logs
         }
       });
     }, { threshold: 0 });
@@ -129,17 +147,10 @@ class InterVis {
     this._visibilityObserver = obs;
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // HANDLE SCROLL — called by ScrollyTelling on every scroll event.
-  //
-  // Phase 1: Opacity   — threshold-based, CSS 2s transition.
-  // Phase 2: Transform — segment lerp, direct DOM write, no CSS transition.
-  // Phase 3: Hint      — dismiss once first layer is visible.
-  // Phase 4: Cleared   — set .is-cleared when id:all action:end has passed.
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── HANDLE SCROLL ──────────────────────────────────────────────────────────
   handleScroll(viewportCenter) {
 
-    // ── Phase 1: Opacity ───────────────────────────────────────────────────
+    // Phase 1: Opacity
     const desired = new Map();
 
     for (const t of this.triggers) {
@@ -150,11 +161,8 @@ class InterVis {
       if (t.action === 'start' && t.id !== 'all') {
         desired.set(t.id, t.opacity);
       } else if (t.action === 'end') {
-        if (t.id === 'all') {
-          desired.clear();
-        } else {
-          desired.delete(t.id);
-        }
+        if (t.id === 'all') desired.clear();
+        else desired.delete(t.id);
       }
     }
 
@@ -173,86 +181,133 @@ class InterVis {
 
     this._lastOpacity = new Map(desired);
 
-    // ── Phase 2: Transform lerp ────────────────────────────────────────────
+    // Phase 2: Transforms
     this._updateTransforms(viewportCenter);
 
-    // ── Phase 3: Dismiss scroll hint once first layer is visible ──────────
+    // Phase 3: Hint
     if (desired.size > 0 && !this._hintDismissed) {
       this._hintDismissed = true;
       this.hintEl?.classList.add('is-dismissed');
     }
 
-    // ── Phase 4: .is-cleared when id:all action:end has passed ─────────────
-    // This fades the title and hint via CSS (1.5s transition) before the
-    // next chapter's content becomes prominent — independent of the
-    // IntersectionObserver which keeps .is-active until the trigger block
-    // fully exits the viewport (including the 50vh padding-bottom).
+    // Phase 4: Description
+    let newDesc = '';
+    for (const t of this.triggers) {
+      const rect = t.marker.getBoundingClientRect();
+      if (rect.top + rect.height / 2 >= viewportCenter) continue;
+      if (t.action === 'start' && t.description) {
+        newDesc = t.description;
+      } else if (t.action === 'end' && t.description) {
+        newDesc = '';
+      }
+    }
+    if (newDesc !== this._activeDescription) {
+      this._activeDescription = newDesc;
+      this._updateDescription(newDesc);
+    }
+
+    // Phase 5: is-cleared
     let allEndPassed = false;
     for (const t of this.triggers) {
       if (t.id === 'all' && t.action === 'end') {
         const rect = t.marker.getBoundingClientRect();
-        if (rect.top + rect.height / 2 < viewportCenter) {
-          allEndPassed = true;
-          break;
-        }
+        if (rect.top + rect.height / 2 < viewportCenter) { allEndPassed = true; break; }
       }
     }
     this.frame?.classList.toggle('is-cleared', allEndPassed);
+    if (allEndPassed) {
+      if (this._activeDescription !== '') {
+        this._activeDescription = '';
+        this._updateDescription('', true);
+      } else {
+        this.descriptionEl?.classList.add('is-cleared');
+        this.descriptionEl?.classList.remove('is-visible');
+      }
+    } else {
+      this.descriptionEl?.classList.remove('is-cleared');
+    }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // TRANSFORM LERP
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── TRANSFORMS ─────────────────────────────────────────────────────────────
+  // Per-id segment selection: find the ONE active segment and stop.
+  // No other segment can overwrite it.
   _updateTransforms(viewportCenter) {
+    const byId = new Map();
     this.segments.forEach(seg => {
-      const img = this.layerEls.get(seg.id);
+      if (!byId.has(seg.id)) byId.set(seg.id, []);
+      byId.get(seg.id).push(seg);
+    });
+
+    byId.forEach((segs, id) => {
+      const img = this.layerEls.get(id);
       if (!img || parseFloat(img.style.opacity) === 0) return;
 
-      const fromRect = seg.from.marker.getBoundingClientRect();
-      const toRect   = seg.to.marker.getBoundingClientRect();
-      const fromY    = fromRect.top + fromRect.height / 2;
-      const toY      = toRect.top   + toRect.height / 2;
+      // Debug: log first time this layer has a transform decision
+      if (INTERVIS_DEBUG && !this._debugLogged) {
+        this._debugLogged = true;
+        console.log(`[InterVis] _updateTransforms: ${segs.length} segment(s) for ${id}`);
+        segs.forEach((s, i) => {
+          console.log(`[InterVis]   seg${i}: from(${s.from.coords}) → to(${s.to.coords})`);
+        });
+      }
 
-      if (fromY < viewportCenter && toY > viewportCenter) {
-        const t    = Math.max(0, Math.min(1, (viewportCenter - fromY) / (toY - fromY)));
-        const zoom = this._lerp(seg.from.zoom, seg.to.zoom, t);
-        const x    = this._lerp(this._cx(seg.from.coords), this._cx(seg.to.coords), t);
-        const y    = this._lerp(this._cy(seg.from.coords), this._cy(seg.to.coords), t);
-        this._setTransform(img, zoom, x, y);
-      } else if (toY <= viewportCenter) {
-        this._setTransform(img, seg.to.zoom, this._cx(seg.to.coords), this._cy(seg.to.coords));
-      } else {
-        this._setTransform(img, seg.from.zoom, this._cx(seg.from.coords), this._cy(seg.from.coords));
+      let applied = false;
+
+      for (const seg of segs) {
+        const fromRect = seg.from.marker.getBoundingClientRect();
+        const toRect   = seg.to.marker.getBoundingClientRect();
+        const fromY    = fromRect.top + fromRect.height / 2;
+        const toY      = toRect.top   + toRect.height  / 2;
+
+        if (fromY >= viewportCenter) {
+          // BEFORE this segment — hold at "from"
+          this._setTransform(img, seg.from.zoom, this._cx(seg.from.coords), this._cy(seg.from.coords));
+          applied = true;
+          break;
+        }
+
+        if (toY > viewportCenter) {
+          // WITHIN this segment — lerp
+          const t    = Math.max(0, Math.min(1, (viewportCenter - fromY) / (toY - fromY)));
+          const zoom = this._lerp(seg.from.zoom, seg.to.zoom, t);
+          const x    = this._lerp(this._cx(seg.from.coords), this._cx(seg.to.coords), t);
+          const y    = this._lerp(this._cy(seg.from.coords), this._cy(seg.to.coords), t);
+          this._setTransform(img, zoom, x, y);
+          applied = true;
+          break;
+        }
+        // else: PAST this segment — continue to next
+      }
+
+      // Past ALL segments — hold at last "to"
+      if (!applied && segs.length > 0) {
+        const last = segs[segs.length - 1];
+        this._setTransform(img, last.to.zoom, this._cx(last.to.coords), this._cy(last.to.coords));
       }
     });
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // _setTransform — TWO MODES:
-  //
+  // ── SET TRANSFORM ──────────────────────────────────────────────────────────
   // TRANSLATE MODE (zoom == 10, scale == 1×):
-  //   Coordinates define where the layer center appears in the container.
-  //   (500,500) = center = no movement. translate((x-50)%, (y-50)%).
-  //   Correct for: nodes moving across a static base map.
+  //   Positions dot at (x%, y%) of the frame.
+  //   Formula: translate((x-50)%, (y-50)%)
+  //   Dot is centered at 50% of element. To place at x%:
+  //     50% + translate_x = x%  →  translate_x = (x-50)%
   //
-  // ZOOM MODE (zoom ≠ 10, scale ≠ 1×):
-  //   Coordinates define the zoom focal point.
-  //   transform-origin: x% y% + scale(factor).
-  //   Correct for: zooming into a specific map region.
+  // ZOOM MODE (zoom ≠ 10):
+  //   Zooms into focal point (x%, y%).
+  //   Formula: transform-origin: x% y%; scale(zoom/10)
   //
-  // NO CSS transition on transform — written every scroll frame.
-  // ─────────────────────────────────────────────────────────────────────────
+  // NO CSS transition on transform — written every frame by lerp.
   _setTransform(img, zoom, x, y) {
     const scale = (zoom || 10) / 10;
 
     if (Math.abs(scale - 1.0) < 0.001) {
-      // Translate mode
       const tx = (x - 50).toFixed(3);
       const ty = (y - 50).toFixed(3);
       img.style.transformOrigin = '50% 50%';
       img.style.transform       = `translate(${tx}%, ${ty}%)`;
     } else {
-      // Zoom mode
       img.style.transformOrigin = `${x.toFixed(3)}% ${y.toFixed(3)}%`;
       img.style.transform       = `scale(${scale.toFixed(4)})`;
     }
@@ -274,6 +329,7 @@ class InterVis {
 
   _lerp(a, b, t) { return a + (b - a) * t; }
 
+  // ── GET OR CREATE LAYER ────────────────────────────────────────────────────
   _getOrCreateLayer(id) {
     if (this.layerEls.has(id)) return this.layerEls.get(id);
 
@@ -284,15 +340,47 @@ class InterVis {
     img.src           = this._basePath + id + '.png';
 
     const first = this.triggers.find(t => t.id === id);
-    if (first) this._setTransform(img, first.zoom, this._cx(first.coords), this._cy(first.coords));
+    if (first) {
+      this._setTransform(img, first.zoom, this._cx(first.coords), this._cy(first.coords));
+      if (INTERVIS_DEBUG) {
+        console.log(`[InterVis] Created layer "${id}". First trigger coords: ${first.coords} → translate(${(this._cx(first.coords)-50).toFixed(1)}%, ${(this._cy(first.coords)-50).toFixed(1)}%)`);
+      }
+    }
 
     img.addEventListener('error', () => {
-      console.warn(`InterVis: could not load "${id}" from ${img.src}`);
+      console.warn(`[InterVis] ⚠ Could not load "${id}" from ${img.src}`);
     }, { once: true });
 
     this.layerContainer.appendChild(img);
     this.layerEls.set(id, img);
     return img;
+  }
+
+  // ── DESCRIPTION ────────────────────────────────────────────────────────────
+  _updateDescription(text, isCleared = false) {
+    if (!this.descriptionEl) return;
+
+    if (isCleared) {
+      this.descriptionEl.classList.add('is-cleared');
+      this.descriptionEl.classList.remove('is-visible');
+      return;
+    }
+
+    if (text) {
+      this.descriptionEl.classList.remove('is-cleared');
+      this.descriptionEl.textContent = text;
+      requestAnimationFrame(() => {
+        if (this.descriptionEl) this.descriptionEl.classList.add('is-visible');
+      });
+    } else {
+      this.descriptionEl.classList.remove('is-visible');
+      this.descriptionEl.classList.remove('is-cleared');
+      setTimeout(() => {
+        if (!this._activeDescription && this.descriptionEl) {
+          this.descriptionEl.textContent = '';
+        }
+      }, 600);
+    }
   }
 
   _clearAllLayers() {
