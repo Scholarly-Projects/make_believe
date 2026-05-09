@@ -1,29 +1,26 @@
-
 /* ============================================================================
    INTER_VIS — Interstitial Visualization Sections
 
-   The .intervis-frame renders inside .scrolly-image-frame (position:relative),
-   as a sibling of #scrolly-image-container. It fills that frame via
-   position:absolute + explicit width/height, and clips scaled layer content
-   via overflow:hidden so no layer ever escapes the 42% image column boundary.
+   Frame is position:absolute within .scrolly-image-frame (position:relative),
+   sibling of #scrolly-image-container. overflow:hidden clips scaled layers.
+
+   Hint + title: position:fixed on desktop, centered in the TEXT column
+   (left:56vw to right:10vw = the 34% text column in layout-right).
+   position:absolute on mobile inside the full-screen fixed frame.
+
+   .is-cleared: added by JS when id:all action:end passes viewportCenter.
+   Fades title and hint with 1.5s transition before next chapter content
+   becomes prominent — independent of the IntersectionObserver lifecycle.
    ============================================================================ */
 
 
-/* ── Frame ──────────────────────────────────────────────────────────────────
-   Containing block: .scrolly-image-frame (position:relative, direct parent).
-   overflow:hidden is the CRITICAL property — without it, transform:scale on
-   layers bleeds far outside the image column and appears centered on screen.
-   NO display:flex — all children are position:absolute so flex is irrelevant
-   and can create unexpected centering of flow-positioned content.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ── Frame ─────────────────────────────────────────────────────────────────── */
 .intervis-frame {
   position: absolute;
-  top:    0;
-  left:   0;
-  width:  100%;
-  height: 100%;
-  z-index:  5;         /* above .scrolly-sticky-img (z-index 1–2) */
-  overflow: hidden;    /* CRITICAL: clips scaled layers to image column bounds */
+  top:    0; left: 0;
+  width:  100%; height: 100%;
+  z-index:  5;
+  overflow: hidden;
   pointer-events: none;
   opacity:    0;
   transition: opacity 0.8s ease;
@@ -32,40 +29,27 @@
 .intervis-frame.is-active { opacity: 1; }
 
 
-/* ── Layer container ────────────────────────────────────────────────────────
-   Fills the frame. overflow:hidden provides a second clipping boundary so
-   that even layers whose transform-origin places the scale anchor near an
-   edge cannot bleed into the text column or TOC.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ── Layer container ────────────────────────────────────────────────────────── */
 .intervis-layer-container {
   position: absolute;
-  top:    0;
-  left:   0;
-  width:  100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   overflow: hidden;
 }
 
 
-/* ── Individual layers ──────────────────────────────────────────────────────
-   Each PNG fills the container via width/height 100%. object-fit:contain
-   scales the image content to fit the element while maintaining aspect ratio.
-   transform:scale then zooms relative to the transform-origin percentage,
-   which maps 0-1000 coordinates to 0-100% of the element bounds.
-
-   opacity:   1s CSS transition — aesthetic fade.
-   transform: NO CSS transition — written every scroll frame by JS lerp.
-              A CSS transition on transform would lag behind scroll position.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ── Individual layers ──────────────────────────────────────────────────────── */
+/*
+  opacity:   2s CSS transition — extended aesthetic fade.
+  transform: NO CSS transition — JS segment-lerp writes every scroll frame.
+*/
 .intervis-layer {
   position:   absolute;
-  top:    0;
-  left:   0;
-  width:  100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   object-fit: contain;
   opacity:    0;
-  transition: opacity 1s ease;
+  transition: opacity 2s ease;
   z-index:    1;
   user-select:    none;
   pointer-events: none;
@@ -75,87 +59,109 @@ body:not(.light-mode) .intervis-layer { filter: invert(1); }
 body.light-mode        .intervis-layer { filter: none; }
 
 
-/* ── Sticky title — bottom-right of frame ───────────────────────────────────
-   position:absolute within .intervis-frame so it follows the frame in both
-   desktop (image column) and mobile (full-screen fixed) contexts.
-   ──────────────────────────────────────────────────────────────────────────── */
-.intervis-sticky-title {
-  position: absolute;
-  bottom:   calc(2.8rem + 0.75rem);
-  right:    0.85rem;
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SCROLL HINT — position:fixed, centered in text column.
+   Text column in layout-right: TOC(14%) + image(42%) = 56vw left edge,
+   citation(10%) = 10vw right inset. right:10vw clears the citation column.
+   align-items:center + text-align:center centers content within that span.
 
-  font-size:      0.74rem;
+   .is-cleared fade: 1.5s so it completes before chapter text is prominent.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.intervis-scroll-hint {
+  position: fixed;
+  top:   calc(var(--scrolly-header-h, 52px) + 2rem);
+  left:  56vw;
+  right: 10vw;
+
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  text-align:      center;
+  gap:             0.35rem;
+
+  font-family:    "Times New Roman", Times, serif;
+  font-size:      1.1rem;
+  font-style:     italic;
+  letter-spacing: 0.08em;
+  color:          rgba(255, 255, 255, 0.65);
+  pointer-events: none;
+  z-index:        110;
+
+  opacity:    0;
+  transform:  translateY(-5px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Active and not yet dismissed */
+.intervis-frame.is-active .intervis-scroll-hint:not(.is-dismissed) {
+  opacity:   1;
+  transform: translateY(0);
+}
+
+/* All-cleared: fade out over 1.5s regardless of is-dismissed state */
+.intervis-frame.is-active.is-cleared .intervis-scroll-hint {
+  opacity:    0 !important;
+  transform:  translateY(-5px) !important;
+  transition: opacity 1.5s ease, transform 1.5s ease !important;
+}
+
+.intervis-scroll-hint .scroll-hint-arrow {
+  display:   block;
+  font-size: 1.2rem;
+  animation: intervisBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes intervisBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.55); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STICKY TITLE — position:fixed, centered in text column.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.intervis-sticky-title {
+  position: fixed;
+  bottom:   calc(2.8rem + 2rem);
+  left:     56vw;
+  right:    10vw;
+
+  font-size:      1.3rem;
   font-family:    "Times New Roman", Times, serif;
   font-style:     italic;
   font-weight:    400;
-  color:          rgba(255, 255, 255, 0.38);
+  color:          rgba(255, 255, 255, 0.72);
   letter-spacing: 0.02em;
-  line-height:    1.4;
-  max-width:      85%;
-  text-align:     right;
+  line-height:    1.5;
+  text-align:     center;
   pointer-events: none;
-  z-index:        10;   /* above layers */
+  z-index:        110;
 
   opacity:    0;
-  transform:  translateY(5px);
+  transform:  translateY(6px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
+/* Active */
 .intervis-frame.is-active .intervis-sticky-title {
   opacity:   1;
   transform: translateY(0);
 }
 
-body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.35); }
-
-
-/* ── Scroll hint — top-right of frame ──────────────────────────────────────── */
-.intervis-scroll-hint {
-  position: absolute;
-  top:      1.25rem;
-  right:    0.85rem;
-  z-index:  10;   /* above layers */
-
-  display:        flex;
-  flex-direction: column;
-  align-items:    center;
-  gap:            0.25rem;
-
-  font-family:    "Times New Roman", Times, serif;
-  font-size:      0.62rem;
-  font-style:     italic;
-  letter-spacing: 0.07em;
-  color:          rgba(255, 255, 255, 0.28);
-  pointer-events: none;
-
-  opacity:    0;
-  transform:  translateY(-3px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+/* All-cleared: fade out over 1.5s */
+.intervis-frame.is-active.is-cleared .intervis-sticky-title {
+  opacity:    0 !important;
+  transform:  translateY(6px) !important;
+  transition: opacity 1.5s ease, transform 1.5s ease !important;
 }
 
-.intervis-frame.is-active .intervis-scroll-hint {
-  opacity:   1;
-  transform: translateY(0);
-}
-
-.intervis-scroll-hint .scroll-hint-arrow {
-  display:   block;
-  animation: intervisBounce 1.6s ease-in-out infinite;
-}
-
-@keyframes intervisBounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(4px); }
-}
-
-body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.25); }
+body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.62); }
 
 
-/* ── Trigger block — invisible scroll driver in text column ─────────────────
-   opacity:0, pointer-events:none — completely invisible.
-   JS sets padding-top:15vh and padding-bottom:50vh via setProperty('important')
-   to override .scrolly-text-content's high-specificity padding cascade.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ── Trigger block ──────────────────────────────────────────────────────────── */
 .intervis-trigger-block {
   position:       relative;
   z-index:        1;
@@ -164,14 +170,14 @@ body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.25); }
   opacity:        0;
   overflow:       hidden;
   min-height:     0;
-  padding:        0;   /* JS overrides with setProperty('important') */
+  padding:        0;
   max-width:      none;
   margin:         0;
 
   [data-trigger-type] {
     display:    block   !important;
     visibility: hidden  !important;
-    height:     80vh    !important;   /* one scroll beat per layer */
+    height:     65vh    !important;
     width:      1px     !important;
     margin:     0       !important;
     padding:    0       !important;
@@ -180,11 +186,7 @@ body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.25); }
 }
 
 
-/* ── Inter_vis separator — 5vh, 1px invisible anchor ───────────────────────
-   Tiny enough to eliminate the "two-column flash" of a full 90vh separator,
-   but has a 1px img element so separator observers can still fire the
-   chapter-index update at the correct moment.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ── Inter_vis separator ────────────────────────────────────────────────────── */
 .chapter-separator.intervis-separator {
   height:      5vh;
   padding:     0;
@@ -201,10 +203,7 @@ body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.25); }
 }
 
 
-/* ── TOC: inter_vis entries ─────────────────────────────────────────────────
-   Shown in the essay sidebar and off-canvas menu.
-   Suppressed from home page and bibliography (handled in those layouts).
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ── TOC: inter_vis entries ─────────────────────────────────────────────────── */
 .toc-intervis-entry > .scrolly-toc-link {
   padding-left:   1.1rem;
   font-size:      0.86rem;
@@ -238,23 +237,24 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 }
 
 
-/* ── Mobile ≤ 992px ─────────────────────────────────────────────────────────
-   Full-screen fixed: the frame breaks out of the 45vh sticky image column.
-   position:sticky does not create a containing block for fixed children in
-   all browsers; overflow:hidden on non-transformed ancestors does not clip
-   fixed descendants — so this breakout is reliable.
-   ──────────────────────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MOBILE ≤ 992px
+
+   Frame is position:fixed covering full viewport. Override hint and title
+   from position:fixed to position:absolute so they're scoped inside the
+   full-screen frame (not the viewport). Center them at top and bottom.
+   ═══════════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 992px) {
 
   .intervis-frame {
     position: fixed !important;
     top:    calc(var(--scrolly-header-h, 52px) + env(safe-area-inset-top, 0px)) !important;
-    left:   0       !important;
-    right:  0       !important;
-    bottom: 0       !important;
-    width:  100vw   !important;
-    height: auto    !important;
-    z-index: 200    !important;
+    left:   0      !important;
+    right:  0      !important;
+    bottom: 0      !important;
+    width:  100vw  !important;
+    height: auto   !important;
+    z-index: 200   !important;
     overflow: hidden !important;
     background-color: var(--scrolly-bg-color, #111111);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -267,27 +267,63 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 
   .intervis-layer-container {
     position: absolute !important;
-    top:    5vh  !important;
-    left:   5vw  !important;
-    right:  5vw  !important;
-    bottom: 5vh  !important;
+    top:    8vh  !important;
+    bottom: 8vh  !important;
+    left:   4vw  !important;
+    right:  4vw  !important;
     width:  auto !important;
     height: auto !important;
-    overflow: hidden !important;
   }
 
-  .intervis-sticky-title {
-    font-size: 0.70rem;
-    bottom:    1.25rem;
-    right:     0.85rem;
-    max-width: 70%;
-  }
-
+  /* Hint: absolute within frame, centered at top */
   .intervis-scroll-hint {
-    font-size: 0.58rem;
-    top:       1rem;
-    right:     0.75rem;
+    position:  absolute !important;
+    top:       1.25rem  !important;
+    left:      0        !important;
+    right:     0        !important;
+    bottom:    auto     !important;
+    text-align: center  !important;
+    align-items: center !important;
+    font-size:  0.88rem !important;
+    color: rgba(255, 255, 255, 0.50) !important;
+    transform: none !important;
+    transition: opacity 0.6s ease !important;
   }
+  .intervis-frame.is-active .intervis-scroll-hint:not(.is-dismissed) {
+    opacity:   1 !important;
+    transform: none !important;
+  }
+  .intervis-frame.is-active.is-cleared .intervis-scroll-hint {
+    opacity:    0 !important;
+    transform:  none !important;
+    transition: opacity 1.5s ease !important;
+  }
+
+  /* Title: absolute within frame, centered at bottom */
+  .intervis-sticky-title {
+    position:   absolute !important;
+    bottom:     1.5rem   !important;
+    left:       0        !important;
+    right:      0        !important;
+    top:        auto     !important;
+    text-align: center   !important;
+    font-size:  1.05rem  !important;
+    color: rgba(255, 255, 255, 0.60) !important;
+    transform:  none     !important;
+    transition: opacity 0.7s ease !important;
+  }
+  .intervis-frame.is-active .intervis-sticky-title {
+    opacity:   1 !important;
+    transform: none !important;
+  }
+  .intervis-frame.is-active.is-cleared .intervis-sticky-title {
+    opacity:    0 !important;
+    transform:  none !important;
+    transition: opacity 1.5s ease !important;
+  }
+
+  body.light-mode .intervis-scroll-hint  { color: rgba(0, 0, 0, 0.42) !important; }
+  body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.52) !important; }
 
   .intervis-trigger-block [data-trigger-type] { height: 55vh !important; }
   .toc-intervis-entry > .scrolly-toc-link    { font-size: 0.82rem; }
