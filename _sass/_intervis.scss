@@ -1,14 +1,18 @@
 /* ============================================================================
    INTER_VIS — Interstitial Visualization Sections
 
-   Frame is position:absolute within .scrolly-image-frame (position:relative),
-   sibling of #scrolly-image-container. overflow:hidden clips scaled layers.
+   Frame: position:absolute within .scrolly-image-frame (position:relative).
+   overflow:hidden clips scaled layers to the image column.
 
-   Hint + title + description: position:fixed on desktop, text column area
-   (left:56vw to right:10vw). Visibility driven by .intervis-frame.is-active
-   so no changes to intervis-handler.html are required.
+   Desktop: hint, title, description are position:fixed in the text column
+   (left:56vw to right:10vw). Driven by .intervis-frame.is-active selectors.
 
-   .is-cleared: added by JS when id:all action:end passes viewportCenter.
+   Mobile: frame becomes position:fixed covering the full viewport below the
+   header. The layer-container fills as a SQUARE (enforced by explicit equal
+   width/height using viewport units) centered in the frame. Description,
+   hint, and title are position:absolute overlays inside the frame — the
+   description above the square, the title below — so the visualization
+   occupies all available screen space. No flex layout on the frame.
    ============================================================================ */
 
 
@@ -36,10 +40,6 @@
 
 
 /* ── Individual layers ──────────────────────────────────────────────────────── */
-/*
-  opacity:   2s CSS transition — extended aesthetic fade.
-  transform: NO CSS transition — JS lerp writes every scroll frame.
-*/
 .intervis-layer {
   position:   absolute;
   top: 0; left: 0;
@@ -56,12 +56,14 @@ body:not(.light-mode) .intervis-layer { filter: invert(1); }
 body.light-mode        .intervis-layer { filter: none; }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   SCROLL HINT
-   position:fixed → resolves to viewport, escaping .intervis-frame's overflow.
-   Centered in text column: left:56vw to right:10vw.
-   Museum-label style: upright, spaced, uppercase, legible.
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESKTOP OVERLAY ELEMENTS
+   All three use position:fixed so they escape .intervis-frame's overflow:hidden
+   and appear in the text column (left:56vw to right:10vw).
+   Visibility is driven by .intervis-frame.is-active descendant selectors.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Scroll hint ────────────────────────────────────────────────────────────── */
 .intervis-scroll-hint {
   position: fixed;
   top:   calc(var(--scrolly-header-h, 52px) + 2rem);
@@ -90,13 +92,11 @@ body.light-mode        .intervis-layer { filter: none; }
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-/* Show when frame is active and hint not yet dismissed */
 .intervis-frame.is-active .intervis-scroll-hint:not(.is-dismissed) {
   opacity:   1;
   transform: translateY(0);
 }
 
-/* Fade out 1.5s when all layers have ended */
 .intervis-frame.is-active.is-cleared .intervis-scroll-hint {
   opacity:    0 !important;
   transform:  translateY(-5px) !important;
@@ -120,11 +120,7 @@ body.light-mode        .intervis-layer { filter: none; }
 body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.72); }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   STICKY TITLE
-   position:fixed near bottom of text column.
-   Museum wall-label style: upright, bold, fully readable.
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* ── Sticky title ───────────────────────────────────────────────────────────── */
 .intervis-sticky-title {
   position: fixed;
   bottom:   calc(2.8rem + 2rem);
@@ -161,11 +157,7 @@ body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.72); }
 body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.88); }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   DESCRIPTION
-   position:fixed, vertically between hint (top) and title (bottom).
-   Museum artifact caption style: upright, medium weight, readable.
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* ── Description ────────────────────────────────────────────────────────────── */
 .intervis-description {
   position: fixed;
   top:    calc(var(--scrolly-header-h, 52px) + 5rem);
@@ -217,19 +209,12 @@ body.light-mode .intervis-description { color: rgba(0, 0, 0, 0.78); }
 
   /* ══════════════════════════════════════════════════════════════════════════
      SCROLL DISTANCE BETWEEN TRIGGER COMMANDS
-     ──────────────────────────────────────────────────────────────────────────
-     This single height value controls how far the reader must scroll for each
-     {% trigger %} liquid command to fire. One beat = one trigger marker.
-
-     Increase for slower reveals (more scrolling per image transition).
-     Decrease for faster reveals (less scrolling per image transition).
-
-     Current: 52vh desktop, 42vh mobile.
+     Desktop: 52vh  |  Mobile override below: 42vh
      ══════════════════════════════════════════════════════════════════════════ */
   [data-trigger-type] {
     display:    block   !important;
     visibility: hidden  !important;
-    height:     52vh    !important;   /* ← ADJUST to change scroll pacing */
+    height:     52vh    !important;
     width:      1px     !important;
     margin:     0       !important;
     padding:    0       !important;
@@ -291,95 +276,183 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    MOBILE ≤ 992px
-   Frame becomes position:fixed covering full viewport.
-   Hint, title, and description override from fixed (viewport) to absolute
-   (scoped inside the full-screen frame) so they position correctly within it.
+
+   LAYOUT STRATEGY — matches Image 1 exactly:
+   • Frame covers full viewport below header (position:fixed, no flex layout)
+   • Layer container is a SQUARE centered in the frame via position:absolute +
+     transform:translate(-50%,-50%). All overlay elements (hint, description,
+     title) are also position:absolute within the frame, layered on top.
+   • Description sits in the space above the square (toward frame top)
+   • Title sits in the space below the square (toward frame bottom)
+   • The square fills as much of the screen as possible:
+       width = height = min(96vw, frameHeight - 7rem)
+     This leaves ~3.5rem at top for description and ~3.5rem at bottom for title.
+
+   WHY SQUARE MATTERS FOR COORDINATE ACCURACY:
+   Source layers are 1920×1920 (square). translate(tx%, ty%) percentages in CSS
+   reference the layer element's OWN dimensions. With a square container:
+     • All layers render at identical pixel bounds (zero letterboxing)
+     • translate(-32.5%, +22%) maps the same pixels on every layer
+   With a non-square container, each layer still renders its image identically
+   (same letterboxing), but the translate percentages reference different pixel
+   distances horizontally vs vertically — the x and y scales remain consistent
+   because each maps to its respective container dimension. However, object-fit:
+   contain on a non-square container clips the letterboxed areas differently
+   across layers if one layer's image has different content bounds. Using a
+   square eliminates all letterboxing and keeps coordinates 1:1 with desktop.
    ═══════════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 992px) {
 
+  /* ── Full-screen fixed frame — NO flex, NO column layout ────────────────── */
   .intervis-frame {
     position: fixed !important;
     top:    calc(var(--scrolly-header-h, 52px) + env(safe-area-inset-top, 0px)) !important;
-    left:   0 !important; right:  0 !important; bottom: 0 !important;
-    width:  100vw !important; height: auto !important;
-    z-index: 200 !important;
+    left:   0      !important;
+    right:  0      !important;
+    bottom: 2.8rem !important;   /* clear footer nav */
+    width:  100vw  !important;
+    height: auto   !important;
+    z-index: 200   !important;
     overflow: hidden !important;
+    /* NO display:flex — all children are position:absolute overlays */
     background-color: var(--scrolly-bg-color, #111111);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   body.light-mode .intervis-frame {
     background-color: #ffffff;
-    border-bottom-color: rgba(0, 0, 0, 0.06);
   }
 
+  /* ── KEY MOBILE FIX: fade the frame itself when all layers have ended ────────
+     On desktop .intervis-frame is position:absolute inside the image column and
+     never covers the text column — so .is-cleared only needs to fade layer
+     content (title, hint, description). On mobile the frame is position:fixed
+     z-index:200 covering the ENTIRE viewport including the chapter text column.
+     Its background-color (#111) stays opaque until the IntersectionObserver
+     removes .is-active, which only happens after the FULL trigger block
+     (including padding-bottom) exits the viewport — up to 150vh of scrolling
+     after the last trigger. This rule fades the frame to transparent as soon as
+     .is-cleared is set (when id:all action:end passes viewportCenter), revealing
+     the chapter text immediately rather than after 150vh of masked scrolling. */
+  .intervis-frame.is-active.is-cleared {
+    opacity:    0 !important;
+    transition: opacity 1.5s ease !important;
+  }
+
+  /* ── Square layer container — as large as possible, centered ─────────────
+     Both width and height use the SAME computed value so the container is
+     always square regardless of phone dimensions.
+
+     min(96vw, calc(100vh - header - nav - 7rem)):
+       96vw   = 96% of viewport width (small side margins)
+       -7rem  = reserves ~3.5rem top (hint + description) + ~3.5rem bottom (title)
+       header = var(--scrolly-header-h, 52px)
+       nav    = 2.8rem (footer bar)
+
+     position:absolute + left:50% + top:50% + transform:translate(-50%,-50%)
+     centers the square in the frame. The container's own transform is separate
+     from the per-layer translate() transforms applied by JS.
+     ──────────────────────────────────────────────────────────────────────── */
   .intervis-layer-container {
     position: absolute !important;
-    top: 8vh !important; bottom: 8vh !important;
-    left: 4vw !important; right: 4vw !important;
-    width: auto !important; height: auto !important;
+
+    /* Compute the square size once and apply to both dimensions */
+    width:  min(96vw, calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem - 7rem)) !important;
+    height: min(96vw, calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem - 7rem)) !important;
+
+    /* Center in the frame */
+    left:   50%  !important;
+    top:    50%  !important;
+    right:  auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+
+    overflow: hidden !important;
   }
 
-  /* Hint: absolute, centered at top of full-screen frame */
+  /* ── Scroll hint — absolute at top of frame, above the square ───────────── */
   .intervis-scroll-hint {
-    position:       absolute !important;
-    top:            1.25rem  !important;
-    left:           0        !important;
-    right:          0        !important;
-    bottom:         auto     !important;
-    font-size:      0.78rem  !important;
-    letter-spacing: 0.12em   !important;
+    position:        absolute !important;
+    top:             0.6rem   !important;
+    left:            0        !important;
+    right:           0        !important;
+    bottom:          auto     !important;
+    font-size:       0.75rem  !important;
+    letter-spacing:  0.12em   !important;
+    align-items:     center   !important;
+    justify-content: center   !important;
+    /* Reset desktop translateY */
+    transform:       none     !important;
+    transition:      opacity 0.6s ease !important;
   }
+
   .intervis-frame.is-active .intervis-scroll-hint:not(.is-dismissed) {
     opacity:   1 !important;
     transform: none !important;
   }
+
   .intervis-frame.is-active.is-cleared .intervis-scroll-hint {
-    opacity: 0 !important;
+    opacity:    0 !important;
+    transform:  none !important;
     transition: opacity 1.5s ease !important;
   }
 
-  /* Title: absolute, centered at bottom */
+  /* ── Description — absolute, above the square, below the hint ───────────── */
+  .intervis-description {
+    position:        absolute !important;
+    top:             2.2rem   !important;   /* below hint */
+    bottom:          auto     !important;
+    left:            0.75rem  !important;
+    right:           0.75rem  !important;
+    font-size:       0.92rem  !important;
+    text-align:      center   !important;
+    justify-content: center   !important;
+    align-items:     center   !important;
+    /* Reserve space between hint and where square starts (calc from top:50%) */
+    /* Height is auto — just enough to show the text */
+    max-height:      3.5rem   !important;
+    overflow:        hidden   !important;
+    /* Reset desktop translateY */
+    transform:       none     !important;
+    transition:      opacity 0.5s ease !important;
+  }
+
+  .intervis-description.is-visible { opacity: 1; }
+  .intervis-description.is-cleared {
+    opacity:    0  !important;
+    transition: opacity 1.5s ease !important;
+  }
+
+  /* ── Title — absolute at bottom of frame, below the square ─────────────── */
   .intervis-sticky-title {
     position:   absolute !important;
-    bottom:     1.5rem   !important;
+    bottom:     0.6rem   !important;
     left:       0        !important;
     right:      0        !important;
     top:        auto     !important;
-    font-size:  1.15rem  !important;
+    font-size:  1.05rem  !important;
+    text-align: center   !important;
+    /* Reset desktop translateY */
+    transform:  none     !important;
+    transition: opacity 0.7s ease !important;
   }
+
   .intervis-frame.is-active .intervis-sticky-title {
     opacity:   1 !important;
     transform: none !important;
   }
+
   .intervis-frame.is-active.is-cleared .intervis-sticky-title {
-    opacity: 0 !important;
+    opacity:    0 !important;
+    transform:  none !important;
     transition: opacity 1.5s ease !important;
   }
 
-  /* Description: absolute, vertically centered in frame */
-  .intervis-description {
-    position:        absolute !important;
-    top:             50%      !important;
-    bottom:          auto     !important;
-    left:            1rem     !important;
-    right:           1rem     !important;
-    transform:       translateY(-50%) !important;
-    text-align:      center   !important;
-    justify-content: center   !important;
-    font-size:       0.98rem  !important;
-  }
-  .intervis-description.is-visible { opacity: 1; }
-  .intervis-description.is-cleared {
-    opacity: 0 !important;
-    transition: opacity 1.5s ease !important;
-  }
-
+  /* ── Light mode ──────────────────────────────────────────────────────────── */
   body.light-mode .intervis-scroll-hint  { color: rgba(0, 0, 0, 0.65) !important; }
   body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.85) !important; }
   body.light-mode .intervis-description  { color: rgba(0, 0, 0, 0.72) !important; }
 
-  /* ── MOBILE SCROLL DISTANCE ── adjust this to change mobile scroll pacing */
+  /* ── Mobile scroll distance ── */
   .intervis-trigger-block [data-trigger-type] { height: 42vh !important; }
 
   .toc-intervis-entry > .scrolly-toc-link { font-size: 0.82rem; }

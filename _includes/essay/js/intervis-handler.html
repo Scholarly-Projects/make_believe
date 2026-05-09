@@ -116,12 +116,24 @@ class InterVis {
   // ── SIZE TRIGGER BLOCK ─────────────────────────────────────────────────────
   _sizeTriggerBlock() {
     if (!this.triggers.length) return;
-    const paddingTop = window.scrollY < window.innerHeight ? '40vh' : '15vh';
-    this.triggerBlock.style.setProperty('padding-top',    paddingTop, 'important');
-    this.triggerBlock.style.setProperty('padding-bottom', '50vh',     'important');
+
+    const isMobile    = window.innerWidth <= 992;
+    const paddingTop  = window.scrollY < window.innerHeight ? '40vh' : '15vh';
+
+    // On mobile, 50vh padding-bottom means the fixed frame (position:fixed,
+    // z-index:200) stays covering the viewport for ~150vh of scrolling after
+    // the last trigger (50vh padding + full viewport height before block exits).
+    // 10vh is enough breathing room while letting the IntersectionObserver
+    // fire much sooner so fixed-frame cleanup happens in a reasonable time.
+    // The CSS .intervis-frame.is-active.is-cleared rule handles the visual
+    // transition independently of when the observer fires.
+    const paddingBottom = isMobile ? '10vh' : '50vh';
+
+    this.triggerBlock.style.setProperty('padding-top',    paddingTop,    'important');
+    this.triggerBlock.style.setProperty('padding-bottom', paddingBottom, 'important');
 
     if (INTERVIS_DEBUG) {
-      console.log(`[InterVis] padding-top: ${paddingTop}, padding-bottom: 50vh`);
+      console.log(`[InterVis] padding-top: ${paddingTop}, padding-bottom: ${paddingBottom}`);
     }
   }
 
@@ -131,14 +143,35 @@ class InterVis {
       entries.forEach(entry => {
         const active = entry.isIntersecting;
         this.frame?.classList.toggle('is-active', active);
-        if (!active) {
+
+        // Drive hint and title visibility directly via JS classes —
+        // NOT via CSS .intervis-frame.is-active selectors. This is critical
+        // because hint and title are position:fixed on body (or inside a
+        // mobile fixed frame) and must not depend on the frame's opacity.
+        if (active) {
+          this.stickyTitle?.classList.add('intervis-title-active');
+          // Hint shows on entry; dismissed after first trigger (Phase 3)
+          if (!this._hintDismissed) {
+            this.hintEl?.classList.add('intervis-hint-active');
+          }
+        } else {
           this._clearAllLayers();
           this._hintDismissed     = false;
           this._activeDescription = '';
-          this.hintEl?.classList.remove('is-dismissed');
+          this._wasCleared        = false;
+
+          // Reset any inline styles set by Phase 5 so CSS class rules take over
+          [this.stickyTitle, this.hintEl, this.descriptionEl].forEach(el => {
+            if (!el) return;
+            el.style.transition = '';
+            el.style.opacity    = '';
+          });
+
+          this.hintEl?.classList.remove('is-dismissed', 'intervis-hint-active', 'is-cleared');
+          this.stickyTitle?.classList.remove('intervis-title-active', 'is-cleared');
           this.frame?.classList.remove('is-cleared');
           this._updateDescription('');
-          this._debugLogged = false;  // reset so next entry re-logs
+          this._debugLogged = false;
         }
       });
     }, { threshold: 0 });
@@ -184,10 +217,11 @@ class InterVis {
     // Phase 2: Transforms
     this._updateTransforms(viewportCenter);
 
-    // Phase 3: Hint
+    // Phase 3: Hint — dismiss once any layer is visible
     if (desired.size > 0 && !this._hintDismissed) {
       this._hintDismissed = true;
       this.hintEl?.classList.add('is-dismissed');
+      this.hintEl?.classList.remove('intervis-hint-active');
     }
 
     // Phase 4: Description
@@ -206,15 +240,66 @@ class InterVis {
       this._updateDescription(newDesc);
     }
 
-    // Phase 5: is-cleared
+    // Phase 5: is-cleared — remove overlay elements when all layers have ended.
+    //
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FINE-TUNE: CLEARED THRESHOLD
+    // Controls how early the title, hint, and description disappear relative
+    // to the last trigger in the inter_vis markdown:
+    //   {% trigger type: image id: all action: end %}
+    //
+    // Value is a fraction of window.innerHeight (viewport height):
+    //   0.50 = fires when the marker reaches the viewport CENTRE
+    //          (same as all other triggers — default on desktop)
+    //   0.65 = fires when marker reaches 65% down — about half a scroll beat earlier
+    //   0.72 = fires when marker reaches 72% down — about one scroll beat earlier
+    //   0.85 = fires when marker reaches 85% down — roughly two scroll beats earlier
+    //
+    // Increase to clear EARLIER (overlays disappear sooner before chapter arrives).
+    // Decrease to clear LATER  (overlays linger longer into the chapter transition).
+    // Only applied on mobile (≤992px); desktop always uses viewportCenter (0.50).
+    // ═══════════════════════════════════════════════════════════════════════════
+    const CLEARED_THRESHOLD_MOBILE = 0.72;   // ← ADJUST THIS VALUE
+
+    const isMobile       = window.innerWidth <= 992;
+    const clearThreshold = isMobile
+      ? window.innerHeight * CLEARED_THRESHOLD_MOBILE
+      : viewportCenter;
+
     let allEndPassed = false;
     for (const t of this.triggers) {
       if (t.id === 'all' && t.action === 'end') {
         const rect = t.marker.getBoundingClientRect();
-        if (rect.top + rect.height / 2 < viewportCenter) { allEndPassed = true; break; }
+        if (rect.top + rect.height / 2 < clearThreshold) { allEndPassed = true; break; }
       }
     }
+
+    const wasCleared = this._wasCleared || false;
+    this._wasCleared = allEndPassed;
+
+    // Toggle CSS class on frame for the background fade (desktop + mobile)
     this.frame?.classList.toggle('is-cleared', allEndPassed);
+
+    if (allEndPassed && !wasCleared) {
+      // FIRST MOMENT cleared: instantly zero-out all overlay text elements.
+      // transition:none prevents any animation delay before opacity reaches 0.
+      [this.stickyTitle, this.hintEl, this.descriptionEl].forEach(el => {
+        if (!el) return;
+        el.style.transition = 'none';
+        el.style.opacity    = '0';
+      });
+    } else if (!allEndPassed && wasCleared) {
+      // Scrolled back into section: restore CSS-driven transitions by clearing
+      // inline styles so the class-based rules take over again.
+      [this.stickyTitle, this.hintEl, this.descriptionEl].forEach(el => {
+        if (!el) return;
+        el.style.transition = '';
+        el.style.opacity    = '';
+      });
+      this.descriptionEl?.classList.remove('is-cleared');
+    }
+
+    // Description class bookkeeping (kept for CSS fallback on desktop)
     if (allEndPassed) {
       if (this._activeDescription !== '') {
         this._activeDescription = '';
@@ -223,8 +308,6 @@ class InterVis {
         this.descriptionEl?.classList.add('is-cleared');
         this.descriptionEl?.classList.remove('is-visible');
       }
-    } else {
-      this.descriptionEl?.classList.remove('is-cleared');
     }
   }
 
