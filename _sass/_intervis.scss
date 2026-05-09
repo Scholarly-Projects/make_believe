@@ -4,28 +4,25 @@
    Frame is position:absolute within .scrolly-image-frame (position:relative),
    sibling of #scrolly-image-container. overflow:hidden clips scaled layers.
 
-   Hint + title: position:fixed on desktop, centered in the TEXT column
-   (left:56vw to right:10vw = the 34% text column in layout-right).
-   position:absolute on mobile inside the full-screen fixed frame.
+   Hint + title + description: position:fixed on desktop, text column area
+   (left:56vw to right:10vw). Visibility driven by .intervis-frame.is-active
+   so no changes to intervis-handler.html are required.
 
    .is-cleared: added by JS when id:all action:end passes viewportCenter.
-   Fades title and hint with 1.5s transition before next chapter content
-   becomes prominent — independent of the IntersectionObserver lifecycle.
    ============================================================================ */
 
 
 /* ── Frame ─────────────────────────────────────────────────────────────────── */
 .intervis-frame {
   position: absolute;
-  top:    0; left: 0;
-  width:  100%; height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   z-index:  5;
   overflow: hidden;
   pointer-events: none;
   opacity:    0;
   transition: opacity 0.8s ease;
 }
-
 .intervis-frame.is-active { opacity: 1; }
 
 
@@ -41,7 +38,7 @@
 /* ── Individual layers ──────────────────────────────────────────────────────── */
 /*
   opacity:   2s CSS transition — extended aesthetic fade.
-  transform: NO CSS transition — JS segment-lerp writes every scroll frame.
+  transform: NO CSS transition — JS lerp writes every scroll frame.
 */
 .intervis-layer {
   position:   absolute;
@@ -60,12 +57,10 @@ body.light-mode        .intervis-layer { filter: none; }
 
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   SCROLL HINT — position:fixed, centered in text column.
-   Text column in layout-right: TOC(14%) + image(42%) = 56vw left edge,
-   citation(10%) = 10vw right inset. right:10vw clears the citation column.
-   align-items:center + text-align:center centers content within that span.
-
-   .is-cleared fade: 1.5s so it completes before chapter text is prominent.
+   SCROLL HINT
+   position:fixed → resolves to viewport, escaping .intervis-frame's overflow.
+   Centered in text column: left:56vw to right:10vw.
+   Museum-label style: upright, spaced, uppercase, legible.
    ═══════════════════════════════════════════════════════════════════════════════ */
 .intervis-scroll-hint {
   position: fixed;
@@ -78,13 +73,15 @@ body.light-mode        .intervis-layer { filter: none; }
   align-items:     center;
   justify-content: center;
   text-align:      center;
-  gap:             0.35rem;
+  gap:             0.4rem;
 
   font-family:    "Times New Roman", Times, serif;
-  font-size:      1.1rem;
-  font-style:     italic;
-  letter-spacing: 0.08em;
-  color:          rgba(255, 255, 255, 0.65);
+  font-size:      1.0rem;
+  font-style:     normal;
+  font-weight:    600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          rgba(255, 255, 255, 0.80);
   pointer-events: none;
   z-index:        110;
 
@@ -93,13 +90,13 @@ body.light-mode        .intervis-layer { filter: none; }
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-/* Active and not yet dismissed */
+/* Show when frame is active and hint not yet dismissed */
 .intervis-frame.is-active .intervis-scroll-hint:not(.is-dismissed) {
   opacity:   1;
   transform: translateY(0);
 }
 
-/* All-cleared: fade out over 1.5s regardless of is-dismissed state */
+/* Fade out 1.5s when all layers have ended */
 .intervis-frame.is-active.is-cleared .intervis-scroll-hint {
   opacity:    0 !important;
   transform:  translateY(-5px) !important;
@@ -107,21 +104,26 @@ body.light-mode        .intervis-layer { filter: none; }
 }
 
 .intervis-scroll-hint .scroll-hint-arrow {
-  display:   block;
-  font-size: 1.2rem;
+  display:        block;
+  font-size:      1.4rem;
+  font-weight:    400;
+  letter-spacing: 0;
+  text-transform: none;
   animation: intervisBounce 1.5s ease-in-out infinite;
 }
 
 @keyframes intervisBounce {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(6px); }
+  50%       { transform: translateY(7px); }
 }
 
-body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.55); }
+body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.72); }
 
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   STICKY TITLE — position:fixed, centered in text column.
+   STICKY TITLE
+   position:fixed near bottom of text column.
+   Museum wall-label style: upright, bold, fully readable.
    ═══════════════════════════════════════════════════════════════════════════════ */
 .intervis-sticky-title {
   position: fixed;
@@ -129,13 +131,13 @@ body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.55); }
   left:     56vw;
   right:    10vw;
 
-  font-size:      1.3rem;
   font-family:    "Times New Roman", Times, serif;
-  font-style:     italic;
-  font-weight:    400;
-  color:          rgba(255, 255, 255, 0.72);
-  letter-spacing: 0.02em;
-  line-height:    1.5;
+  font-size:      1.4rem;
+  font-style:     normal;
+  font-weight:    700;
+  letter-spacing: 0.01em;
+  line-height:    1.35;
+  color:          rgba(255, 255, 255, 0.92);
   text-align:     center;
   pointer-events: none;
   z-index:        110;
@@ -145,20 +147,59 @@ body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.55); }
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-/* Active */
 .intervis-frame.is-active .intervis-sticky-title {
   opacity:   1;
   transform: translateY(0);
 }
 
-/* All-cleared: fade out over 1.5s */
 .intervis-frame.is-active.is-cleared .intervis-sticky-title {
   opacity:    0 !important;
   transform:  translateY(6px) !important;
   transition: opacity 1.5s ease, transform 1.5s ease !important;
 }
 
-body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.62); }
+body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.88); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DESCRIPTION
+   position:fixed, vertically between hint (top) and title (bottom).
+   Museum artifact caption style: upright, medium weight, readable.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.intervis-description {
+  position: fixed;
+  top:    calc(var(--scrolly-header-h, 52px) + 5rem);
+  bottom: calc(2.8rem + 5.5rem);
+  left:   56vw;
+  right:  10vw;
+
+  display:         flex;
+  align-items:     center;
+  justify-content: flex-start;
+
+  font-family:    "Times New Roman", Times, serif;
+  font-size:      1.15rem;
+  font-style:     normal;
+  font-weight:    500;
+  letter-spacing: 0.01em;
+  line-height:    1.6;
+  color:          rgba(255, 255, 255, 0.85);
+  text-align:     left;
+  pointer-events: none;
+  z-index:        110;
+
+  opacity:    0;
+  transition: opacity 0.5s ease;
+}
+
+.intervis-description.is-visible { opacity: 1; }
+
+.intervis-description.is-cleared {
+  opacity:    0  !important;
+  transition: opacity 1.5s ease !important;
+}
+
+body.light-mode .intervis-description { color: rgba(0, 0, 0, 0.78); }
 
 
 /* ── Trigger block ──────────────────────────────────────────────────────────── */
@@ -174,10 +215,21 @@ body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.62); }
   max-width:      none;
   margin:         0;
 
+  /* ══════════════════════════════════════════════════════════════════════════
+     SCROLL DISTANCE BETWEEN TRIGGER COMMANDS
+     ──────────────────────────────────────────────────────────────────────────
+     This single height value controls how far the reader must scroll for each
+     {% trigger %} liquid command to fire. One beat = one trigger marker.
+
+     Increase for slower reveals (more scrolling per image transition).
+     Decrease for faster reveals (less scrolling per image transition).
+
+     Current: 52vh desktop, 42vh mobile.
+     ══════════════════════════════════════════════════════════════════════════ */
   [data-trigger-type] {
     display:    block   !important;
     visibility: hidden  !important;
-    height:     65vh    !important;
+    height:     52vh    !important;   /* ← ADJUST to change scroll pacing */
     width:      1px     !important;
     margin:     0       !important;
     padding:    0       !important;
@@ -239,22 +291,18 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    MOBILE ≤ 992px
-
-   Frame is position:fixed covering full viewport. Override hint and title
-   from position:fixed to position:absolute so they're scoped inside the
-   full-screen frame (not the viewport). Center them at top and bottom.
+   Frame becomes position:fixed covering full viewport.
+   Hint, title, and description override from fixed (viewport) to absolute
+   (scoped inside the full-screen frame) so they position correctly within it.
    ═══════════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 992px) {
 
   .intervis-frame {
     position: fixed !important;
     top:    calc(var(--scrolly-header-h, 52px) + env(safe-area-inset-top, 0px)) !important;
-    left:   0      !important;
-    right:  0      !important;
-    bottom: 0      !important;
-    width:  100vw  !important;
-    height: auto   !important;
-    z-index: 200   !important;
+    left:   0 !important; right:  0 !important; bottom: 0 !important;
+    width:  100vw !important; height: auto !important;
+    z-index: 200 !important;
     overflow: hidden !important;
     background-color: var(--scrolly-bg-color, #111111);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -267,138 +315,72 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 
   .intervis-layer-container {
     position: absolute !important;
-    top:    8vh  !important;
-    bottom: 8vh  !important;
-    left:   4vw  !important;
-    right:  4vw  !important;
-    width:  auto !important;
-    height: auto !important;
+    top: 8vh !important; bottom: 8vh !important;
+    left: 4vw !important; right: 4vw !important;
+    width: auto !important; height: auto !important;
   }
 
-  /* Hint: absolute within frame, centered at top */
+  /* Hint: absolute, centered at top of full-screen frame */
   .intervis-scroll-hint {
-    position:  absolute !important;
-    top:       1.25rem  !important;
-    left:      0        !important;
-    right:     0        !important;
-    bottom:    auto     !important;
-    text-align: center  !important;
-    align-items: center !important;
-    font-size:  0.88rem !important;
-    color: rgba(255, 255, 255, 0.50) !important;
-    transform: none !important;
-    transition: opacity 0.6s ease !important;
+    position:       absolute !important;
+    top:            1.25rem  !important;
+    left:           0        !important;
+    right:          0        !important;
+    bottom:         auto     !important;
+    font-size:      0.78rem  !important;
+    letter-spacing: 0.12em   !important;
   }
   .intervis-frame.is-active .intervis-scroll-hint:not(.is-dismissed) {
     opacity:   1 !important;
     transform: none !important;
   }
   .intervis-frame.is-active.is-cleared .intervis-scroll-hint {
-    opacity:    0 !important;
-    transform:  none !important;
+    opacity: 0 !important;
     transition: opacity 1.5s ease !important;
   }
 
-  /* Title: absolute within frame, centered at bottom */
+  /* Title: absolute, centered at bottom */
   .intervis-sticky-title {
     position:   absolute !important;
     bottom:     1.5rem   !important;
     left:       0        !important;
     right:      0        !important;
     top:        auto     !important;
-    text-align: center   !important;
-    font-size:  1.05rem  !important;
-    color: rgba(255, 255, 255, 0.60) !important;
-    transform:  none     !important;
-    transition: opacity 0.7s ease !important;
+    font-size:  1.15rem  !important;
   }
   .intervis-frame.is-active .intervis-sticky-title {
     opacity:   1 !important;
     transform: none !important;
   }
   .intervis-frame.is-active.is-cleared .intervis-sticky-title {
-    opacity:    0 !important;
-    transform:  none !important;
+    opacity: 0 !important;
     transition: opacity 1.5s ease !important;
   }
 
-  body.light-mode .intervis-scroll-hint  { color: rgba(0, 0, 0, 0.42) !important; }
-  body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.52) !important; }
-
-  .intervis-trigger-block [data-trigger-type] { height: 55vh !important; }
-  .toc-intervis-entry > .scrolly-toc-link    { font-size: 0.82rem; }
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   INTER_VIS DESCRIPTION
-   position:fixed in the text column (56vw–90vw), vertically centred between
-   the scroll hint (near top) and the sticky title (near bottom).
-   The element lives inside .intervis-frame in the DOM, but position:fixed
-   escapes the frame's overflow:hidden and resolves to the viewport — so it
-   appears in the text column regardless of its DOM parent.
-
-   Visibility is driven purely by JS classes (.is-visible, .is-cleared),
-   not by CSS selectors on the frame, because the frame's overflow:hidden
-   creates a stacking context that would otherwise interfere with fixed layout.
-   ═══════════════════════════════════════════════════════════════════════════════ */
-.intervis-description {
-  position: fixed;
-  /* Vertically occupy the space between hint and title */
-  top:    calc(var(--scrolly-header-h, 52px) + 4.5rem);
-  bottom: calc(2.8rem + 4.5rem);
-  left:   56vw;
-  right:  10vw;
-
-  /* Center content vertically within the allocated span */
-  display:         flex;
-  align-items:     center;
-  justify-content: flex-start;
-
-  font-family:    "Times New Roman", Times, serif;
-  font-size:      1.05rem;
-  font-style:     italic;
-  font-weight:    400;
-  color:          rgba(255, 255, 255, 0.65);
-  line-height:    1.6;
-  text-align:     left;
-  pointer-events: none;
-  z-index:        110;
-
-  opacity:    0;
-  transition: opacity 0.5s ease;
-}
-
-.intervis-description.is-visible { opacity: 1; }
-
-/* Explicit cleared state: long transition matching hint/title fade */
-.intervis-description.is-cleared {
-  opacity:    0  !important;
-  transition: opacity 1.5s ease !important;
-}
-
-body.light-mode .intervis-description { color: rgba(0, 0, 0, 0.58); }
-
-@media (max-width: 992px) {
-  /* On mobile, description is absolute within the fixed full-screen frame,
-     positioned between the centered hint (top) and title (bottom). */
+  /* Description: absolute, vertically centered in frame */
   .intervis-description {
-    position:   absolute !important;
-    top:        auto     !important;
-    bottom:     auto     !important;
-    left:       1rem     !important;
-    right:      1rem     !important;
-    /* Vertically centre in the frame */
-    top:        50%      !important;
-    transform:  translateY(-50%) !important;
-    text-align: center   !important;
-    justify-content: center !important;
-    font-size:  0.92rem  !important;
-    color: rgba(255, 255, 255, 0.58) !important;
+    position:        absolute !important;
+    top:             50%      !important;
+    bottom:          auto     !important;
+    left:            1rem     !important;
+    right:           1rem     !important;
+    transform:       translateY(-50%) !important;
+    text-align:      center   !important;
+    justify-content: center   !important;
+    font-size:       0.98rem  !important;
   }
-  .intervis-description.is-visible {
-    opacity: 1;
-    transform: translateY(-50%) !important;
+  .intervis-description.is-visible { opacity: 1; }
+  .intervis-description.is-cleared {
+    opacity: 0 !important;
+    transition: opacity 1.5s ease !important;
   }
-  body.light-mode .intervis-description { color: rgba(0, 0, 0, 0.50) !important; }
+
+  body.light-mode .intervis-scroll-hint  { color: rgba(0, 0, 0, 0.65) !important; }
+  body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.85) !important; }
+  body.light-mode .intervis-description  { color: rgba(0, 0, 0, 0.72) !important; }
+
+  /* ── MOBILE SCROLL DISTANCE ── adjust this to change mobile scroll pacing */
+  .intervis-trigger-block [data-trigger-type] { height: 42vh !important; }
+
+  .toc-intervis-entry > .scrolly-toc-link { font-size: 0.82rem; }
 }
