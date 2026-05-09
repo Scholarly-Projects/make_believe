@@ -1,6 +1,6 @@
 ---
-title: "The Miller-Dervant Catalog"
+title: "Visualization Four"
 toc_title: "● ● ● ●"
-order: 7
+order: 8
 layout: inter_vis
 ---

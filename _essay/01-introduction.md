@@ -2,7 +2,7 @@
 title: "Introduction"
 chapter: "Introduction"
 chap_number: 1
-order: 2
+order: 1
 layout: essay-right
 ---
 

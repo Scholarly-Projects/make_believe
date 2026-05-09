@@ -1,7 +1,7 @@
 ---
-title: "Networks of Capital"
-toc_title: "● ●"
-order: 3
+title: "Visualization One"
+toc_title: "●"
+order: 2
 layout: inter_vis
 ---
 

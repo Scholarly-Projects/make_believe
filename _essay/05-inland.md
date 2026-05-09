@@ -2,7 +2,7 @@
 title: "Colonialism in the Inland Empire"
 chapter: "Colonialism in the Inland Empire"
 chap_number: 3
-order: 6
+order: 5
 layout: essay-right
 ---
 

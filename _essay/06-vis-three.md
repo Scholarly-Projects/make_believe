@@ -1,6 +1,6 @@
 ---
-title: "Lange's Ventures"
+title: "Visualization Three"
 toc_title: "● ● ●"
-order: 5
+order: 6
 layout: inter_vis
 ---
