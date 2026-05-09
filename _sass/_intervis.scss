@@ -1,166 +1,161 @@
+
 /* ============================================================================
    INTER_VIS — Interstitial Visualization Sections
+
+   The .intervis-frame renders inside .scrolly-image-frame (position:relative),
+   as a sibling of #scrolly-image-container. It fills that frame via
+   position:absolute + explicit width/height, and clips scaled layer content
+   via overflow:hidden so no layer ever escapes the 42% image column boundary.
    ============================================================================ */
 
 
-/* ── Container grid override ─────────────────────────────────────────────── */
-
-.scrolly-container.layout-inter-vis {
-  grid-template-columns: 14% 1fr;
-  grid-template-areas:   "toc text";
-
-  .scrolly-image-column    { display: none !important; }
-  .scrolly-citation-column { display: none !important; }
-
-  .scrolly-text-column {
-    grid-area:  text;
-    width:      100% !important;
-    max-width:  none !important;
-    border:     none !important;
-    min-height: 100vh;
-  }
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SECTION WRAPPER
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.intervis-section {
-  position: relative;
-  width:    100%;
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   STICKY VISUALIZATION FRAME
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ── Frame ──────────────────────────────────────────────────────────────────
+   Containing block: .scrolly-image-frame (position:relative, direct parent).
+   overflow:hidden is the CRITICAL property — without it, transform:scale on
+   layers bleeds far outside the image column and appears centered on screen.
+   NO display:flex — all children are position:absolute so flex is irrelevant
+   and can create unexpected centering of flow-positioned content.
+   ──────────────────────────────────────────────────────────────────────────── */
 .intervis-frame {
-  position: sticky;
-  top:      var(--scrolly-header-h, 52px);
-  width:    100%;
-  height:   calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
-  display:  flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  overflow: hidden;
-  z-index:  5;
+  position: absolute;
+  top:    0;
+  left:   0;
+  width:  100%;
+  height: 100%;
+  z-index:  5;         /* above .scrolly-sticky-img (z-index 1–2) */
+  overflow: hidden;    /* CRITICAL: clips scaled layers to image column bounds */
   pointer-events: none;
   opacity:    0;
   transition: opacity 0.8s ease;
-
-  &.is-active { opacity: 1; }
 }
 
-/*
-  When an inter_vis section is loaded via infinite scroll and sits inside
-  a chapter layout (layout-right or layout-left), the frame must not
-  fight the image column for sticky space. We keep it sticky but limit
-  its width to the text column it actually occupies.
-*/
-.scrolly-container:not(.layout-inter-vis) .intervis-frame {
-  /* Frame still sticks, but is sized to the text column, not the full viewport */
-  height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
-}
+.intervis-frame.is-active { opacity: 1; }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LAYER CONTAINER
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ── Layer container ────────────────────────────────────────────────────────
+   Fills the frame. overflow:hidden provides a second clipping boundary so
+   that even layers whose transform-origin places the scale anchor near an
+   edge cannot bleed into the text column or TOC.
+   ──────────────────────────────────────────────────────────────────────────── */
 .intervis-layer-container {
-  position: relative;
-  width:    min(70vw, 840px);
-  height:   min(72vh, 680px);
-  flex-shrink: 0;
-}
-
-/* Narrower within a chapter layout */
-.scrolly-container:not(.layout-inter-vis) .intervis-layer-container {
+  position: absolute;
+  top:    0;
+  left:   0;
   width:  100%;
-  height: min(65vh, 600px);
+  height: 100%;
+  overflow: hidden;
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   INDIVIDUAL LAYERS
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── Individual layers ──────────────────────────────────────────────────────
+   Each PNG fills the container via width/height 100%. object-fit:contain
+   scales the image content to fit the element while maintaining aspect ratio.
+   transform:scale then zooms relative to the transform-origin percentage,
+   which maps 0-1000 coordinates to 0-100% of the element bounds.
 
+   opacity:   1s CSS transition — aesthetic fade.
+   transform: NO CSS transition — written every scroll frame by JS lerp.
+              A CSS transition on transform would lag behind scroll position.
+   ──────────────────────────────────────────────────────────────────────────── */
 .intervis-layer {
   position:   absolute;
-  top:  0; left: 0;
+  top:    0;
+  left:   0;
   width:  100%;
   height: 100%;
   object-fit: contain;
-  opacity: 0;
-  transition: opacity 1s ease;  /* 1-second aesthetic fade */
-  z-index:     1;
-  user-select: none;
+  opacity:    0;
+  transition: opacity 1s ease;
+  z-index:    1;
+  user-select:    none;
   pointer-events: none;
 }
 
-/* Dark mode: invert dark marks so they read as light on dark background */
-body:not(.light-mode) .intervis-layer {
-  filter: invert(1);
-}
-
-/* Light mode: dark marks on white — no filter needed */
-body.light-mode .intervis-layer {
-  filter: none;
-}
+body:not(.light-mode) .intervis-layer { filter: invert(1); }
+body.light-mode        .intervis-layer { filter: none; }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   STICKY TITLE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ── Sticky title — bottom-right of frame ───────────────────────────────────
+   position:absolute within .intervis-frame so it follows the frame in both
+   desktop (image column) and mobile (full-screen fixed) contexts.
+   ──────────────────────────────────────────────────────────────────────────── */
 .intervis-sticky-title {
-  position:   fixed;
-  bottom:     calc(2.8rem + 1.5rem);
-  right:      2.2rem;
+  position: absolute;
+  bottom:   calc(2.8rem + 0.75rem);
+  right:    0.85rem;
 
-  font-size:      0.82rem;
+  font-size:      0.74rem;
   font-family:    "Times New Roman", Times, serif;
   font-style:     italic;
   font-weight:    400;
-  color:          rgba(255, 255, 255, 0.42);
-  letter-spacing: 0.025em;
-  line-height:    1.45;
-  max-width:      22vw;
+  color:          rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.02em;
+  line-height:    1.4;
+  max-width:      85%;
   text-align:     right;
-
   pointer-events: none;
-  z-index:        110;
+  z-index:        10;   /* above layers */
 
   opacity:    0;
-  transform:  translateY(6px);
+  transform:  translateY(5px);
   transition: opacity 0.7s ease, transform 0.7s ease;
-
-  &.is-active {
-    opacity:   1;
-    transform: translateY(0);
-  }
 }
 
-body.light-mode .intervis-sticky-title {
-  color: rgba(0, 0, 0, 0.38);
+.intervis-frame.is-active .intervis-sticky-title {
+  opacity:   1;
+  transform: translateY(0);
 }
 
+body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.35); }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   TRIGGER BLOCK
-   Provides vertical scroll space for trigger markers.
-   Each [data-trigger-type] marker gets 80vh from the rule below.
 
-   CRITICAL: No `padding` rule with `!important` here.
-   JS sets paddingTop/paddingBottom (50vh each) via style.setProperty(..., 'important')
-   to override the inherited .scrolly-text-content padding. The !important
-   in the JS call is required because .scrolly-text-content sets padding
-   with high specificity.
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── Scroll hint — top-right of frame ──────────────────────────────────────── */
+.intervis-scroll-hint {
+  position: absolute;
+  top:      1.25rem;
+  right:    0.85rem;
+  z-index:  10;   /* above layers */
 
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            0.25rem;
+
+  font-family:    "Times New Roman", Times, serif;
+  font-size:      0.62rem;
+  font-style:     italic;
+  letter-spacing: 0.07em;
+  color:          rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+
+  opacity:    0;
+  transform:  translateY(-3px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.intervis-frame.is-active .intervis-scroll-hint {
+  opacity:   1;
+  transform: translateY(0);
+}
+
+.intervis-scroll-hint .scroll-hint-arrow {
+  display:   block;
+  animation: intervisBounce 1.6s ease-in-out infinite;
+}
+
+@keyframes intervisBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(4px); }
+}
+
+body.light-mode .intervis-scroll-hint { color: rgba(0, 0, 0, 0.25); }
+
+
+/* ── Trigger block — invisible scroll driver in text column ─────────────────
+   opacity:0, pointer-events:none — completely invisible.
+   JS sets padding-top:15vh and padding-bottom:50vh via setProperty('important')
+   to override .scrolly-text-content's high-specificity padding cascade.
+   ──────────────────────────────────────────────────────────────────────────── */
 .intervis-trigger-block {
   position:       relative;
   z-index:        1;
@@ -169,27 +164,14 @@ body.light-mode .intervis-sticky-title {
   opacity:        0;
   overflow:       hidden;
   min-height:     0;
-
-  /*
-    Override the large default padding from .scrolly-text-content.
-    This zeroes it out at the CSS level; JS then re-applies 50vh top/bottom
-    via setProperty with 'important' flag so the entry/exit breathing room
-    is correctly set at runtime (after trigger count is known).
-  */
-  padding:    0;
-  max-width:  none;
-  margin:     0;
+  padding:        0;   /* JS overrides with setProperty('important') */
+  max-width:      none;
+  margin:         0;
 
   [data-trigger-type] {
-    /*
-      Each trigger marker occupies 80vh of scroll space.
-      These heights are the scroll "beats" — one deliberate long scroll
-      per layer transition as specified.
-      The width: 1px keeps them from affecting horizontal layout.
-    */
     display:    block   !important;
     visibility: hidden  !important;
-    height:     80vh    !important;
+    height:     80vh    !important;   /* one scroll beat per layer */
     width:      1px     !important;
     margin:     0       !important;
     padding:    0       !important;
@@ -198,80 +180,115 @@ body.light-mode .intervis-sticky-title {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   TOC: INTER_VIS ENTRIES
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── Inter_vis separator — 5vh, 1px invisible anchor ───────────────────────
+   Tiny enough to eliminate the "two-column flash" of a full 90vh separator,
+   but has a 1px img element so separator observers can still fire the
+   chapter-index update at the correct moment.
+   ──────────────────────────────────────────────────────────────────────────── */
+.chapter-separator.intervis-separator {
+  height:      5vh;
+  padding:     0;
+  margin:      0;
+  align-items: flex-start;
 
-.toc-intervis-entry > .scrolly-toc-link {
-  padding-left: 1.1rem;
-  font-size:    0.88rem;
-  font-style:   italic;
-  color:        rgba(255, 255, 255, 0.38);
-  letter-spacing: 0.01em;
-
-  &::before {
-    content:    "— ";
-    font-style: normal;
-    opacity:    0.55;
+  img {
+    width:      1px  !important;
+    height:     1px  !important;
+    opacity:    0    !important;
+    visibility: hidden !important;
+    filter:     none !important;
   }
+}
 
-  &:hover      { color: rgba(255, 255, 255, 0.75); background-color: rgba(255, 255, 255, 0.04); }
-  &.toc-active { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
+
+/* ── TOC: inter_vis entries ─────────────────────────────────────────────────
+   Shown in the essay sidebar and off-canvas menu.
+   Suppressed from home page and bibliography (handled in those layouts).
+   ──────────────────────────────────────────────────────────────────────────── */
+.toc-intervis-entry > .scrolly-toc-link {
+  padding-left:   1.1rem;
+  font-size:      0.86rem;
+  font-style:     italic;
+  font-weight:    400;
+  color:          rgba(255, 255, 255, 0.30);
+  letter-spacing: 0.01em;
+  line-height:    1.2;
+
+  &:hover      { color: rgba(255, 255, 255, 0.62); background-color: rgba(255, 255, 255, 0.04); }
+  &.toc-active { color: rgba(255, 255, 255, 0.75); font-weight: 500; }
 }
 
 body.light-mode .toc-intervis-entry > .scrolly-toc-link {
-  color: rgba(0, 0, 0, 0.35);
-  &:hover      { color: rgba(0, 0, 0, 0.70); background-color: rgba(0, 0, 0, 0.04); }
-  &.toc-active { color: rgba(0, 0, 0, 0.80); }
+  color: rgba(0, 0, 0, 0.26);
+  &:hover      { color: rgba(0, 0, 0, 0.58); }
+  &.toc-active { color: rgba(0, 0, 0, 0.70); }
+}
+
+.offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
+  padding-left: 1.1rem !important;
+  font-size:    0.9rem  !important;
+  font-style:   italic  !important;
+  color:        rgba(255, 255, 255, 0.28) !important;
+  &:hover { color: rgba(255, 255, 255, 0.60) !important; }
+}
+
+html.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link,
+body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
+  color: rgba(0, 0, 0, 0.25) !important;
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE  (≤ 992px)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ── Mobile ≤ 992px ─────────────────────────────────────────────────────────
+   Full-screen fixed: the frame breaks out of the 45vh sticky image column.
+   position:sticky does not create a containing block for fixed children in
+   all browsers; overflow:hidden on non-transformed ancestors does not clip
+   fixed descendants — so this breakout is reliable.
+   ──────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 992px) {
 
-  .scrolly-container.layout-inter-vis {
-    grid-template-columns: 1fr !important;
-    grid-template-areas:   "text" !important;
+  .intervis-frame {
+    position: fixed !important;
+    top:    calc(var(--scrolly-header-h, 52px) + env(safe-area-inset-top, 0px)) !important;
+    left:   0       !important;
+    right:  0       !important;
+    bottom: 0       !important;
+    width:  100vw   !important;
+    height: auto    !important;
+    z-index: 200    !important;
+    overflow: hidden !important;
+    background-color: var(--scrolly-bg-color, #111111);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .intervis-frame {
-    height: calc(58vh - var(--scrolly-header-h, 52px));
-    position: sticky;
+  body.light-mode .intervis-frame {
+    background-color: #ffffff;
+    border-bottom-color: rgba(0, 0, 0, 0.06);
   }
 
   .intervis-layer-container {
-    width:  90vw;
-    height: 52vh;
+    position: absolute !important;
+    top:    5vh  !important;
+    left:   5vw  !important;
+    right:  5vw  !important;
+    bottom: 5vh  !important;
+    width:  auto !important;
+    height: auto !important;
+    overflow: hidden !important;
   }
 
-  /* Revert fixed positioning on mobile — sticky title flows in-column */
   .intervis-sticky-title {
-    position:   relative;
-    bottom:     auto;
-    right:      auto;
-    display:    block;
-    text-align: center;
-    max-width:  100%;
-    padding:    0.5rem 1rem 0.75rem;
-    font-size:  0.78rem;
-    opacity:    0.65;
-    transform:  none;
-    transition: none;
-
-    &.is-active {
-      opacity:   0.65;
-      transform: none;
-    }
+    font-size: 0.70rem;
+    bottom:    1.25rem;
+    right:     0.85rem;
+    max-width: 70%;
   }
 
-  .intervis-trigger-block [data-trigger-type] {
-    height: 55vh !important;
+  .intervis-scroll-hint {
+    font-size: 0.58rem;
+    top:       1rem;
+    right:     0.75rem;
   }
 
-  .toc-intervis-entry > .scrolly-toc-link {
-    font-size: 0.84rem;
-  }
+  .intervis-trigger-block [data-trigger-type] { height: 55vh !important; }
+  .toc-intervis-entry > .scrolly-toc-link    { font-size: 0.82rem; }
 }

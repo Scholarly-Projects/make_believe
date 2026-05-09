@@ -1,18 +1,4 @@
 <style>
-/* ═══════════════════════════════════════════════════════════════════
-   SCROLLYTELLING HEADER
-   Desktop: [identity] … [chapter-center] … [toggle]
-   Mobile:  [hamburger] [stacked title/chapter]        [toggle]
-
-   THEMING STRATEGY
-   ────────────────
-   Every body.light-mode rule is paired with an html.light-mode rule.
-   The pre-paint script sets html.light-mode synchronously (before the
-   first paint) so non-essay pages render light immediately with zero
-   flash.  At DOMContentLoaded the class migrates from <html> to
-   <body> and the html.* rule becomes inert — body.* takes over for
-   the remainder of the session (toggle, etc.).
-   ═══════════════════════════════════════════════════════════════════ */
 
 nav.navbar,
 #navbar,
@@ -479,12 +465,21 @@ body.light-mode .offcanvas-menu .toc-divider { border-top-color: rgba(0, 0, 0, 0
 
     {% assign toc_essays = site.essay | sort: 'order' %}
     {% for essay in toc_essays %}
-    <li class="toc-chapter-entry">
-      <a href="{{ essay.url | prepend: site.baseurl }}"
-         class="scrolly-toc-link {% if essay.url == page.url %}toc-active{% endif %}">
-        {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
-      </a>
-    </li>
+      {% if essay.layout == 'inter_vis' %}
+      <li class="toc-intervis-entry">
+        <a href="{{ essay.url | prepend: site.baseurl }}"
+          class="scrolly-toc-link {% if essay.url == page.url %}toc-active{% endif %}">
+          {{ essay.toc_title | default: essay.title }}
+        </a>
+      </li>
+      {% else %}
+      <li class="toc-chapter-entry">
+        <a href="{{ essay.url | prepend: site.baseurl }}"
+          class="scrolly-toc-link {% if essay.url == page.url %}toc-active{% endif %}">
+          {% if essay.chap_number %}{{ essay.chap_number }}. {% endif %}{{ essay.title }}
+        </a>
+      </li>
+      {% endif %}
     {% endfor %}
 
     <hr class="toc-divider">
@@ -663,8 +658,17 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ── Chapter display (called by scrollytelling-handler.js) ─────────── */
 window.updateChapterDisplay = function (data) {
   if (!data) return;
-  var label = (data.chapter && data.chapter.trim()) ? data.chapter.trim() : (data.title || '');
-  var text  = data.order ? 'Chapter ' + data.order + ': ' + label : label;
+
+  var text;
+  if (data.layout === 'inter_vis') {
+    // Visualization sections: just the title, no chapter prefix
+    text = data.title || '';
+  } else {
+    var label = (data.chapter && data.chapter.trim()) ? data.chapter.trim() : (data.title || '');
+    // Use chap_number (1, 2, 3…) if present; fall back to order
+    var num = data.chap_number || data.order;
+    text = num ? 'Chapter ' + num + ': ' + label : label;
+  }
 
   ['scrolly-chapter-display', 'scrolly-chapter-display-mobile'].forEach(function (id) {
     var el = document.getElementById(id);

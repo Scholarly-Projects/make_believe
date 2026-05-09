@@ -14,7 +14,6 @@ window.collectionMetadata['{{ item.objectid }}'] = {
 };
 {% endfor %}
 
-// Initialize citation lookup
 window.citationData = {};
 {% assign citations = site.data.citation %}
 {% for citation in citations %}
@@ -26,9 +25,9 @@ window.citationData['{{ citation.id }}'] = {
 
 class ScrollyTelling {
   constructor() {
-    this.triggers      = [];
+    this.triggers = [];
     this.imageSegments = [];
-    this.footnotes     = [];
+    this.footnotes = [];
 
     this.activeImageId            = null;
     this.currentCitation          = null;
@@ -48,6 +47,7 @@ class ScrollyTelling {
     this.chapterEndFaded          = false;
     this.activeFullLayoutImageId  = null;
 
+    // ── INTER_VIS: instances keyed by trigger block element
     this.intervisInstances = new Map();
 
     this.textColumn         = document.getElementById('scrolly-text');
@@ -70,7 +70,6 @@ class ScrollyTelling {
     this.init();
   }
 
-  // ─────────────────────────────────────────────────────────────────
   init() {
     if (!this.textColumn || !this.allEssays.length || !this.textContentEl) return;
 
@@ -122,72 +121,58 @@ class ScrollyTelling {
     this._suppressBackToTop();
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // STATE SAVE / RESTORE
-  // ─────────────────────────────────────────────────────────────────
+  // ── STATE SAVE / RESTORE (unchanged from preserve) ──────────────────────
+
   _saveScrollState() {
     try {
       sessionStorage.setItem('scrolly_state', JSON.stringify({
-        y:     window.scrollY,
-        start: this.loadedRange.start,
-        end:   this.loadedRange.end,
-        path:  location.pathname
+        y: window.scrollY, start: this.loadedRange.start,
+        end: this.loadedRange.end, path: location.pathname
       }));
     } catch (e) {}
   }
 
   async _restoreScrollState() {
     let state = null;
-    try {
-      const raw = sessionStorage.getItem('scrolly_state');
-      state = raw ? JSON.parse(raw) : null;
-    } catch (e) {}
+    try { const raw = sessionStorage.getItem('scrolly_state'); state = raw ? JSON.parse(raw) : null; }
+    catch (e) {}
 
     if (!state || this.normalizeUrl(state.path) !== this.normalizeUrl(location.pathname)) {
-      setTimeout(() => this.handleScroll(), 100);
-      return;
+      setTimeout(() => this.handleScroll(), 100); return;
     }
 
-    this.isRestoring              = true;
-    this.scrollAdjustmentCooldown = true;
-    this.layoutObserverPaused     = true;
+    this.isRestoring = true; this.scrollAdjustmentCooldown = true; this.layoutObserverPaused = true;
 
     try {
       while (this.loadedRange.end < state.end) {
         if (this.isLoading) { await this._wait(150); continue; }
-        await this.loadChapter('next');
-        await this._wait(80);
+        await this.loadChapter('next'); await this._wait(80);
       }
       while (this.loadedRange.start > state.start) {
         if (this.isLoading) { await this._wait(150); continue; }
-        await this.loadChapter('prev');
-        await this._wait(80);
+        await this.loadChapter('prev'); await this._wait(80);
       }
-
       await this._wait(250);
       window.scrollTo({ top: state.y, behavior: 'instant' });
       await this._wait(350);
-
       sessionStorage.removeItem('scrolly_state');
     } catch (err) {
       console.error('ScrollyTelling: state restore failed', err);
     } finally {
-      this.isRestoring              = false;
-      this.scrollAdjustmentCooldown = false;
-      this.layoutObserverPaused     = false;
-      this.handleScroll();
+      this.isRestoring = false; this.scrollAdjustmentCooldown = false;
+      this.layoutObserverPaused = false; this.handleScroll();
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // BLOCK PROCESSING
-  // ─────────────────────────────────────────────────────────────────
+  // ── BLOCK PROCESSING ────────────────────────────────────────────────────
+
   processNewBlock(block) {
     const layout = block.dataset.layout || 'right';
 
+    // ── INTER_VIS: delegate entirely; skip chapter processing ──────────────
     if (layout === 'inter_vis') {
       this.setupInterVisBlock(block);
-      this.updateHistory(block);
+      this.populateTocSections(block);  // no-op for inter_vis, but harmless
       return;
     }
 
@@ -207,34 +192,46 @@ class ScrollyTelling {
     this.populateTocSections(block);
     if (this._wireLightboxOnInlineImages) this._wireLightboxOnInlineImages();
   }
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // REPLACE the entire setupInterVisBlock method in scrollytelling-handler.html
+  // with this version. The key change: frame is appended to .scrolly-image-frame
+  // as a SIBLING of #scrolly-image-container, NOT inside it.
+  // ═══════════════════════════════════════════════════════════════════════════
 
-  // ─────────────────────────────────────────────────────────────────
-  // INTER_VIS BLOCK SETUP
-  // ─────────────────────────────────────────────────────────────────
   setupInterVisBlock(block) {
     if (this.intervisInstances.has(block)) return;
 
-    let section, frame, layerContainer, stickyTitle;
-    section = block.closest('.intervis-section');
+    // Target .scrolly-image-frame (position:relative) as the containing block.
+    // This is the parent of #scrolly-image-container, and has position:relative
+    // set in scrolly.scss — making it the unambiguous CSS containing block for
+    // the absolutely-positioned inter_vis frame.
+    const imageFrame = document.querySelector('#scrolly-image .scrolly-image-frame');
+    if (!imageFrame) {
+      console.warn('InterVis: .scrolly-image-frame not found'); return;
+    }
 
-    if (section) {
-      // Standalone page: layout template already built the wrapper
-      frame          = section.querySelector('.intervis-frame');
-      layerContainer = section.querySelector('.intervis-layer-container');
-      stickyTitle    = section.querySelector('.intervis-sticky-title');
+    const chapterPath = block.dataset.chapterPath || '';
+
+    // Look for an existing frame (standalone page: already in HTML as sibling of
+    // #scrolly-image-container inside .scrolly-image-frame)
+    let frame = imageFrame.querySelector(
+      `.intervis-frame[data-intervis-for="${chapterPath}"]`
+    );
+
+    let layerContainer, stickyTitle, hintEl;
+
+    if (frame) {
+      // Standalone page: layout template already built the frame correctly placed
+      layerContainer = frame.querySelector('.intervis-layer-container');
+      stickyTitle    = frame.querySelector('.intervis-sticky-title');
+      hintEl         = frame.querySelector('.intervis-scroll-hint');
     } else {
-      // Infinite-scroll injection: build the wrapper dynamically.
-      // We wrap the block BEFORE measuring scroll height in loadChapter,
-      // so the wrapper is in place when height delta is calculated.
-      section = document.createElement('div');
-      section.className = 'intervis-section';
-
-      // Insert section in place of block, then move block inside it
-      block.parentNode.insertBefore(section, block);
-      section.appendChild(block);
-
+      // Infinite-scroll: create frame and append to .scrolly-image-frame
+      // (sibling of #scrolly-image-container, NOT inside it)
       frame = document.createElement('div');
       frame.className = 'intervis-frame';
+      frame.dataset.intervisFor = chapterPath;
 
       layerContainer = document.createElement('div');
       layerContainer.className = 'intervis-layer-container';
@@ -242,37 +239,40 @@ class ScrollyTelling {
 
       stickyTitle = document.createElement('div');
       stickyTitle.className   = 'intervis-sticky-title';
-      stickyTitle.textContent = block.dataset.tocTitle || block.dataset.chapterTitle || '';
+      // Use chapterTitle (page.title) not tocTitle (the ● symbol)
+      stickyTitle.textContent = block.dataset.chapterTitle || block.dataset.tocTitle || '';
       frame.appendChild(stickyTitle);
 
-      // Frame goes before the trigger block inside the section
-      section.insertBefore(frame, block);
-    }
+      hintEl = document.createElement('div');
+      hintEl.className = 'intervis-scroll-hint';
+      hintEl.setAttribute('aria-hidden', 'true');
+      hintEl.innerHTML = 'scroll<span class="scroll-hint-arrow">&#x2193;</span>';
+      frame.appendChild(hintEl);
 
-    if (!frame || !layerContainer) {
-      console.warn('InterVis: could not find/create frame for block', block);
-      return;
+      // Append to imageFrame (the containing block), NOT to #scrolly-image-container
+      imageFrame.appendChild(frame);
     }
 
     if (typeof InterVis === 'function') {
-      const iv = new InterVis(block, layerContainer, frame, stickyTitle);
+      const iv = new InterVis(block, layerContainer, frame, stickyTitle, hintEl);
       this.intervisInstances.set(block, iv);
     } else {
-      console.warn('InterVis class not found. Ensure intervis-handler.html is included before scrollytelling-handler.html.');
+      console.warn('InterVis class not found. Include intervis-handler.html before scrollytelling-handler.html.');
     }
 
+    // Observe trigger block so layoutObserver tracks chapter index changes
     this.observeBlock(block);
   }
 
+  // ── INTER_VIS: proxy scroll to all active instances ────────────────────
   handleInterVisScroll(triggerThreshold) {
     this.intervisInstances.forEach(iv => iv.handleScroll(triggerThreshold));
   }
 
-  // ─────────────────────────────────────────────────────────────────
   cleanLayoutArtifacts(container) {
     container.querySelectorAll('br').forEach(br => br.remove());
-    if (container.dataset.layout !== 'full' &&
-        container.dataset.layout !== 'inter_vis') {
+    // ── INTER_VIS: do NOT zero trigger heights (they need 80vh for scroll space)
+    if (container.dataset.layout !== 'full' && container.dataset.layout !== 'inter_vis') {
       container.querySelectorAll('[data-trigger-type]').forEach(t => {
         Object.assign(t.style, {
           display: 'block', height: '0px', width: '0px',
@@ -295,8 +295,8 @@ class ScrollyTelling {
 
       if (!img) {
         img = document.createElement('img');
-        img.src       = meta.object_location || meta.image_small;
-        img.alt       = meta.image_alt_text || meta.title;
+        img.src = meta.object_location || meta.image_small;
+        img.alt = meta.image_alt_text || meta.title;
         img.className = 'img-fluid d-block mx-auto mb-2';
         img.style.maxWidth = '100%';
         Object.assign(trigger.style, {
@@ -315,11 +315,11 @@ class ScrollyTelling {
     });
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // TOC MANAGEMENT
-  // ─────────────────────────────────────────────────────────────────
+  // ── TOC MANAGEMENT ──────────────────────────────────────────────────────
+
   populateTocSections(block) {
     if (!this.tocList) return;
+    // ── INTER_VIS: no section breaks in visualization blocks
     if (block.dataset.layout === 'inter_vis') return;
 
     const chapterUrl = block.dataset.chapterPath;
@@ -348,8 +348,7 @@ class ScrollyTelling {
       if (!hr.id) hr.id = `section-break-${essay.order}-${i + 1}`;
       const li = document.createElement('li');
       const a  = document.createElement('a');
-      a.href              = `#${hr.id}`;
-      a.className         = 'toc-section-rule';
+      a.href = `#${hr.id}`; a.className = 'toc-section-rule';
       a.setAttribute('aria-label', `Section break ${i + 1} of chapter ${essay.order}`);
       a.dataset.sectionId = hr.id;
       a.addEventListener('click', e => {
@@ -360,8 +359,7 @@ class ScrollyTelling {
           window.scrollTo({ top: y, behavior: 'smooth' });
         }
       });
-      li.appendChild(a);
-      fragment.appendChild(li);
+      li.appendChild(a); fragment.appendChild(li);
     });
 
     sectionUl.appendChild(fragment);
@@ -394,18 +392,16 @@ class ScrollyTelling {
 
     let activeRule = null;
     rules.forEach(rule => {
-      const id     = rule.dataset.sectionId;
+      const id = rule.dataset.sectionId;
       const target = id ? document.getElementById(id) : null;
       if (!target) return;
       if (target.getBoundingClientRect().top <= triggerThreshold) activeRule = rule;
     });
-
     rules.forEach(rule => rule.classList.toggle('toc-section-active', rule === activeRule));
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // SCROLL HANDLING
-  // ─────────────────────────────────────────────────────────────────
+  // ── SCROLL HANDLING ─────────────────────────────────────────────────────
+
   handleScroll() {
     if (this.isTransitioning || this.isRestoring) return;
 
@@ -413,12 +409,17 @@ class ScrollyTelling {
 
     const triggerThreshold = window.innerHeight / 2;
 
+    // ── INTER_VIS: check whether the active essay is an inter_vis section ──
+    const activeEssay = this.allEssays[this.activeChapterIndex];
+    const inIntervis  = activeEssay?.layout === 'inter_vis';
+
     let newActiveId     = null;
     let lastStartParams = null;
 
     for (const trigger of this.triggers) {
-      if (trigger.parentLayout === 'full' ||
-          trigger.parentLayout === 'inter_vis') continue;
+      if (trigger.parentLayout === 'full') continue;
+      // ── INTER_VIS: skip trigger markers belonging to inter_vis blocks
+      if (trigger.parentLayout === 'inter_vis') continue;
       if (trigger.type !== 'image') continue;
 
       const rect     = trigger.element.getBoundingClientRect();
@@ -426,19 +427,15 @@ class ScrollyTelling {
 
       if (midpoint < triggerThreshold) {
         if (trigger.action === 'start') {
-          newActiveId     = trigger.id;
-          lastStartParams = trigger.params;
+          newActiveId = trigger.id; lastStartParams = trigger.params;
         } else if (trigger.action === 'end') {
-          newActiveId     = null;
-          lastStartParams = null;
+          newActiveId = null; lastStartParams = null;
         }
       }
     }
 
-    const noImageLayout = this.currentLayout === 'full' ||
-                          this.currentLayout === 'inter_vis';
-
-    if (!noImageLayout) {
+    // ── INTER_VIS: suppress chapter image logic during visualization sections
+    if (this.currentLayout !== 'full' && !inIntervis) {
       if (newActiveId !== this.activeImageId) {
         this.updateImageVisibility(newActiveId, lastStartParams);
       }
@@ -450,7 +447,10 @@ class ScrollyTelling {
     this.handleCitations(triggerThreshold);
     this.handleSeparatorFade(triggerThreshold);
     this.updateTocSectionActive(triggerThreshold);
+
+    // ── INTER_VIS: proxy scroll to all active InterVis instances
     this.handleInterVisScroll(triggerThreshold);
+
     this.handleInfiniteScroll();
   }
 
@@ -459,16 +459,13 @@ class ScrollyTelling {
       '.chapter-content-block[data-layout="full"] [data-trigger-type="image"]'
     );
     let bestId = null, bestTop = -Infinity;
-
     triggers.forEach(trigger => {
-      const objId = trigger.dataset.triggerId;
-      if (!objId) return;
+      const objId = trigger.dataset.triggerId; if (!objId) return;
       const rect = trigger.getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.top > bestTop) {
         bestTop = rect.top; bestId = objId;
       }
     });
-
     if (bestId !== this.activeFullLayoutImageId) {
       this.activeFullLayoutImageId = bestId;
       this.updateFooterImageCitation(bestId);
@@ -476,7 +473,7 @@ class ScrollyTelling {
   }
 
   updateImageVisibility(newId, params) {
-    if (this.currentLayout === 'full' || this.currentLayout === 'inter_vis') return;
+    if (this.currentLayout === 'full') return;
 
     this.activeImageId = newId;
 
@@ -508,7 +505,6 @@ class ScrollyTelling {
     if (objectid && window.collectionMetadata[objectid]) {
       const meta    = window.collectionMetadata[objectid];
       const itemUrl = `{{ site.baseurl }}/items/${objectid}.html`;
-
       if (desktopContent) {
         desktopContent.innerHTML = this._figureLabel(objectid) + (meta.image_citation
           ? this.formatCitation(meta.image_citation)
@@ -527,9 +523,8 @@ class ScrollyTelling {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // LAYOUT OBSERVERS
-  // ─────────────────────────────────────────────────────────────────
+  // ── LAYOUT OBSERVERS ────────────────────────────────────────────────────
+
   setupLayoutObserver() {
     this.layoutObserverPaused = false;
 
@@ -566,7 +561,9 @@ class ScrollyTelling {
             }
           }
 
-          if (targetLayout && targetLayout !== this.currentLayout && !this.isTransitioning) {
+          // ── INTER_VIS: stay in layout-right — skip transition for inter_vis targets
+          if (targetLayout && targetLayout !== this.currentLayout &&
+              !this.isTransitioning && targetLayout !== 'inter_vis') {
             this.applyLayoutTransition(targetLayout);
           }
 
@@ -583,18 +580,14 @@ class ScrollyTelling {
         if (!entry.isIntersecting) return;
         const separator = entry.target.closest('.chapter-separator');
         if (!separator) return;
+        const nextBlock = separator.nextElementSibling;
+        if (!nextBlock || !nextBlock.classList.contains('chapter-content-block')) return;
 
-        const nextSibling = separator.nextElementSibling;
-        const contentBlock = nextSibling && nextSibling.classList.contains('intervis-section')
-          ? nextSibling.querySelector('.chapter-content-block')
-          : nextSibling;
-        if (!contentBlock || !contentBlock.classList.contains('chapter-content-block')) return;
+        const targetLayout = nextBlock.dataset.layout;
 
-        const targetLayout = contentBlock.dataset.layout;
-
-        if (contentBlock.dataset.chapterPath) {
+        if (nextBlock.dataset.chapterPath) {
           const nextIdx = this.allEssays.findIndex(e =>
-            this.normalizeUrl(e.url) === this.normalizeUrl(contentBlock.dataset.chapterPath)
+            this.normalizeUrl(e.url) === this.normalizeUrl(nextBlock.dataset.chapterPath)
           );
           if (nextIdx !== -1 && nextIdx !== this.activeChapterIndex) {
             this.activeChapterIndex = nextIdx;
@@ -603,7 +596,8 @@ class ScrollyTelling {
           }
         }
 
-        if (targetLayout && targetLayout !== this.currentLayout) {
+        // ── INTER_VIS: no layout transition for inter_vis targets
+        if (targetLayout && targetLayout !== this.currentLayout && targetLayout !== 'inter_vis') {
           this.applyLayoutTransition(targetLayout);
         }
       });
@@ -617,11 +611,7 @@ class ScrollyTelling {
         if (!entry.isIntersecting) return;
         const separator = entry.target.closest('.chapter-separator');
         if (!separator) return;
-
-        const prevSibling = separator.previousElementSibling;
-        const prevBlock   = prevSibling && prevSibling.classList.contains('intervis-section')
-          ? prevSibling.querySelector('.chapter-content-block')
-          : prevSibling;
+        const prevBlock = separator.previousElementSibling;
         if (!prevBlock || !prevBlock.classList.contains('chapter-content-block')) return;
 
         const targetLayout = prevBlock.dataset.layout;
@@ -637,16 +627,16 @@ class ScrollyTelling {
           }
         }
 
-        if (targetLayout && targetLayout !== this.currentLayout) {
+        // ── INTER_VIS: no layout transition for inter_vis targets
+        if (targetLayout && targetLayout !== this.currentLayout && targetLayout !== 'inter_vis') {
           this.applyLayoutTransition(targetLayout);
         }
       });
     }, { rootMargin: '-98% 0px 0px 0px', threshold: 0 });
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // LAYOUT TRANSITIONS
-  // ─────────────────────────────────────────────────────────────────
+  // ── LAYOUT TRANSITIONS (unchanged from preserve — full/non-full only) ───
+
   applyLayoutTransition(newLayout) {
     if (this.isRestoring) return Promise.resolve();
     if (this.currentLayout === newLayout && !this.isTransitioning) return Promise.resolve();
@@ -656,19 +646,16 @@ class ScrollyTelling {
       return this.transitionPromise || Promise.resolve();
     }
 
-    this.isTransitioning = true;
-    this.currentLayout   = newLayout;
-
-    const cssLayout = newLayout.replace(/_/g, '-');
+    this.isTransitioning  = true;
+    this.currentLayout    = newLayout;
     this.scrollyContainer.dataset.layout = newLayout;
 
-    this.transitionPromise = this._performLayoutTransition(newLayout, cssLayout)
+    this.transitionPromise = this._performLayoutTransition(newLayout)
       .finally(() => {
         this.isTransitioning   = false;
         this.transitionPromise = null;
         if (this.pendingLayout && this.pendingLayout !== this.currentLayout) {
-          const nextLayout   = this.pendingLayout;
-          this.pendingLayout = null;
+          const nextLayout = this.pendingLayout; this.pendingLayout = null;
           setTimeout(() => this.applyLayoutTransition(nextLayout), 50);
         }
       });
@@ -693,52 +680,26 @@ class ScrollyTelling {
 
   async _curtainDown(ms = 0) {
     const c = this._getCurtain();
-    c.style.transition    = `opacity ${ms}ms ease`;
-    c.style.opacity       = '1';
-    c.style.pointerEvents = 'all';
+    c.style.transition = `opacity ${ms}ms ease`; c.style.opacity = '1'; c.style.pointerEvents = 'all';
     if (ms > 0) await this._wait(ms);
   }
 
   async _curtainUp(ms = 300) {
     const c = this._getCurtain();
-    c.style.transition    = `opacity ${ms}ms ease`;
-    c.style.opacity       = '0';
-    c.style.pointerEvents = 'none';
+    c.style.transition = `opacity ${ms}ms ease`; c.style.opacity = '0'; c.style.pointerEvents = 'none';
     await this._wait(ms);
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // _performLayoutTransition
-  //
-  // Four distinct cases:
-  //   A. enteringNoImage  (→ full | → inter_vis)
-  //      Hide image column, swap class, wait, curtain up.
-  //
-  //   B. leavingFull  (full → right | full → left | full → inter_vis)
-  //      Needs heightDelta scroll compensation because full-layout prose
-  //      reflows into a narrower column when the grid changes.
-  //
-  //   C. leavingInterVis  (inter_vis → right | inter_vis → left)
-  //      NO scroll compensation. Inter_vis trigger markers have explicit
-  //      height: 80vh !important so they don't reflow when the grid
-  //      changes from 2-column to 4-column. Compensating would produce
-  //      a large unpredictable jump into the middle of the chapter text.
-  //      Instead: swap class, reveal image column, curtain up cleanly.
-  //
-  //   D. else  (right ↔ left)
-  //      Simple class swap, no compensation needed.
-  // ─────────────────────────────────────────────────────────────────
-  async _performLayoutTransition(newLayout, cssLayout) {
+  // Identical to preserve version — handles full/non-full only.
+  // inter_vis never reaches this method (skipped in layoutObserver above).
+  async _performLayoutTransition(newLayout) {
     try {
       this.layoutObserverPaused = true;
 
-      const imageCol = document.getElementById('scrolly-image');
-
-      // Classify leaving state from current CSS class
-      const leavingFull      = this.scrollyContainer.classList.contains('layout-full');
-      const leavingInterVis  = this.scrollyContainer.classList.contains('layout-inter-vis');
-
-      const enteringNoImage  = newLayout === 'full' || newLayout === 'inter_vis';
+      const imageCol    = document.getElementById('scrolly-image');
+      const leavingFull = this.scrollyContainer.classList.contains('layout-full') ||
+                          this.scrollyContainer.dataset.layout === 'full';
+      const enteringFull = newLayout === 'full';
 
       await this._curtainDown(0);
 
@@ -749,34 +710,28 @@ class ScrollyTelling {
       }
       this.chapterEndFaded = false;
 
-      // ── CASE A: Entering a no-image layout ──────────────────────────
-      if (enteringNoImage) {
+      if (enteringFull) {
         if (imageCol) { imageCol.style.transition = 'none'; imageCol.style.opacity = '0'; }
-        this.scrollyContainer.className = `scrolly-container layout-${cssLayout}`;
+        this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
 
-        if (newLayout === 'full') {
-          document.querySelectorAll('.chapter-content-block[data-layout="full"]')
-            .forEach(block => this.hydrateInlineImages(block));
-        }
+        document.querySelectorAll('.chapter-content-block[data-layout="full"]')
+          .forEach(block => this.hydrateInlineImages(block));
 
         this.imageContainer.querySelectorAll('img').forEach(img => {
           img.style.opacity = '0'; img.style.visibility = 'hidden';
         });
-        this.activeFullLayoutImageId = null;
-        this.currentCitation         = null;
+        this.activeFullLayoutImageId = null; this.currentCitation = null;
 
-        await this._wait(500);
-        await this._curtainUp(350);
+        await this._wait(500); await this._curtainUp(350);
 
-      // ── CASE B: Leaving full layout (prose reflows → compensate) ────
       } else if (leavingFull) {
         if (imageCol) { imageCol.style.transition = 'none'; imageCol.style.opacity = '0'; }
 
-        const scrollBefore  = window.scrollY;
-        const heightBefore  = document.documentElement.scrollHeight;
+        const scrollBefore = window.scrollY;
+        const heightBefore = document.documentElement.scrollHeight;
 
-        this.scrollyContainer.className = `scrolly-container layout-${cssLayout}`;
+        this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
 
         const heightDelta = document.documentElement.scrollHeight - heightBefore;
@@ -788,49 +743,19 @@ class ScrollyTelling {
         this.imageContainer.querySelectorAll('img').forEach(img => {
           img.style.visibility = 'visible';
         });
-        this.activeImageId           = null;
-        this.activeFullLayoutImageId = null;
-        this.currentCitation         = null;
-        this.updateFooterImageCitation(null);
+        this.activeImageId = null; this.activeFullLayoutImageId = null;
+        this.currentCitation = null; this.updateFooterImageCitation(null);
 
-        await this._wait(16);
-        await this._curtainUp(280);
+        await this._wait(16); await this._curtainUp(280);
 
-      // ── CASE C: Leaving inter_vis (fixed heights → NO compensation) ─
-      } else if (leavingInterVis) {
-        if (imageCol) { imageCol.style.transition = 'none'; imageCol.style.opacity = '0'; }
-
-        // Swap class without reading or adjusting scroll position.
-        // Inter_vis trigger markers use height: 80vh !important so they
-        // don't change height when the grid reflows — there is no height
-        // delta to compensate for, and attempting to do so produces a
-        // large spurious jump into the middle of the chapter.
-        this.scrollyContainer.className = `scrolly-container layout-${cssLayout}`;
-        void this.scrollyContainer.offsetWidth;
-
-        this.imageContainer.querySelectorAll('img').forEach(img => {
-          img.style.visibility = 'visible';
-        });
-        this.activeImageId           = null;
-        this.activeFullLayoutImageId = null;
-        this.currentCitation         = null;
-        this.updateFooterImageCitation(null);
-
-        await this._wait(16);
-        await this._curtainUp(280);
-
-      // ── CASE D: right ↔ left swap ────────────────────────────────────
       } else {
-        this.scrollyContainer.className = `scrolly-container layout-${cssLayout}`;
+        this.scrollyContainer.className = `scrolly-container layout-${newLayout}`;
         void this.scrollyContainer.offsetWidth;
-        await this._wait(16);
-        await this._curtainUp(280);
+        await this._wait(16); await this._curtainUp(280);
       }
 
-      // Fade image column back in for any layout that uses it
-      if (!enteringNoImage && imageCol) {
-        imageCol.style.transition = 'opacity 0.35s ease';
-        imageCol.style.opacity    = '1';
+      if (!enteringFull && imageCol) {
+        imageCol.style.transition = 'opacity 0.35s ease'; imageCol.style.opacity = '1';
         await this._wait(350);
       }
 
@@ -839,41 +764,31 @@ class ScrollyTelling {
 
     } catch (error) {
       console.error('Layout transition failed:', error);
-      this.layoutObserverPaused     = false;
-      this.scrollAdjustmentCooldown = false;
+      this.layoutObserverPaused = false; this.scrollAdjustmentCooldown = false;
       await this._curtainUp(150);
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // TRIGGER PARSING / ANIMATION
-  // ─────────────────────────────────────────────────────────────────
+  // ── TRIGGER PARSING / ANIMATION (preserve version) ──────────────────────
+
   parseTriggers(container, layout) {
     const rawTriggers = [];
 
     container.querySelectorAll('[data-trigger-type]').forEach(marker => {
       if (!marker.dataset.scrollyProcessed) {
         const t = {
-          element:      marker,
-          parentLayout: layout,
-          type:         marker.dataset.triggerType,
-          id:           marker.dataset.triggerId,
-          action:       marker.dataset.triggerAction,
+          element: marker, parentLayout: layout,
+          type: marker.dataset.triggerType, id: marker.dataset.triggerId,
+          action: marker.dataset.triggerAction,
           params: {
-            zoom:        marker.dataset.triggerZoom
-              ? parseFloat(marker.dataset.triggerZoom) : 10,
-            coordinates: marker.dataset.triggerCoordinates || null,
-            opacity:     marker.dataset.triggerOpacity !== undefined
-              ? parseFloat(marker.dataset.triggerOpacity) / 100 : 1
+            zoom: marker.dataset.triggerZoom ? parseFloat(marker.dataset.triggerZoom) : 10,
+            coordinates: marker.dataset.triggerCoordinates || null
           }
         };
-        this.triggers.push(t);
-        rawTriggers.push(t);
+        this.triggers.push(t); rawTriggers.push(t);
         marker.dataset.scrollyProcessed = 'true';
       }
     });
-
-    if (layout === 'inter_vis') return;
 
     const pendingStarts = {};
     rawTriggers.forEach(t => {
@@ -886,7 +801,7 @@ class ScrollyTelling {
   }
 
   renderAnimations(viewportCenter) {
-    if (this.currentLayout === 'full' || this.currentLayout === 'inter_vis') return;
+    if (this.currentLayout === 'full') return;
 
     this.imageSegments.forEach(segment => {
       if (segment.id !== this.activeImageId) return;
@@ -922,17 +837,17 @@ class ScrollyTelling {
     let x = 50, y = 50;
     if (trigger.params.coordinates) {
       const parts = trigger.params.coordinates.split(',').map(Number);
-      x = (parts[0] / 1000) * 100;
-      y = (parts[1] / 1000) * 100;
+      x = (parts[0] / 1000) * 100; y = (parts[1] / 1000) * 100;
     }
     return { zoom: trigger.params.zoom || 10, x, y };
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // CITATIONS
-  // ─────────────────────────────────────────────────────────────────
+  // ── CITATIONS ───────────────────────────────────────────────────────────
+
   handleCitations(triggerThreshold) {
-    if (this.currentLayout === 'inter_vis') return;
+    // ── INTER_VIS: no citation display during visualization sections
+    const activeEssay = this.allEssays[this.activeChapterIndex];
+    if (activeEssay?.layout === 'inter_vis') return;
 
     let active = null;
     this.footnotes.forEach(f => {
@@ -958,11 +873,9 @@ class ScrollyTelling {
     if (!this.citationDisplayEl) return;
     const citationText = this.citationDisplayEl.querySelector('.bib-citation-text');
     if (!citationText) return;
-
     const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
     if (urlPattern.test(citationText.innerHTML)) {
-      citationText.innerHTML = citationText.innerHTML.replace(
-        urlPattern,
+      citationText.innerHTML = citationText.innerHTML.replace(urlPattern,
         (match, openBracket, closeBracket) => {
           const hasBrackets = openBracket === '[' || closeBracket === ']';
           return hasBrackets
@@ -979,11 +892,13 @@ class ScrollyTelling {
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // CHAPTER SEPARATOR FADE
-  // ─────────────────────────────────────────────────────────────────
+  // ── SEPARATOR FADE ───────────────────────────────────────────────────────
+
   handleSeparatorFade(triggerThreshold) {
-    if (this.currentLayout === 'full' || this.currentLayout === 'inter_vis') return;
+    if (this.currentLayout === 'full') return;
+    // ── INTER_VIS: no image column fade during visualization sections
+    const activeEssay = this.allEssays[this.activeChapterIndex];
+    if (activeEssay?.layout === 'inter_vis') return;
 
     for (const icon of this.separatorIcons) {
       const iconRect = icon.getBoundingClientRect();
@@ -991,19 +906,14 @@ class ScrollyTelling {
       if (!imageCol) continue;
 
       if (iconRect.top < 0) {
-        imageCol.style.transition = 'opacity 0.3s ease';
-        imageCol.style.opacity    = '1';
-        continue;
+        imageCol.style.transition = 'opacity 0.3s ease'; imageCol.style.opacity = '1'; continue;
       }
       if (iconRect.top >= 0 && iconRect.top <= window.innerHeight) {
         const progress = 1 - (iconRect.top / window.innerHeight);
-        const fade = progress > 0.4
-          ? Math.max(0.15, 1 - ((progress - 0.4) / 0.6) * 0.85) : 1;
-        imageCol.style.transition = 'opacity 0.1s linear';
-        imageCol.style.opacity    = fade.toFixed(3);
+        const fade = progress > 0.4 ? Math.max(0.15, 1 - ((progress - 0.4) / 0.6) * 0.85) : 1;
+        imageCol.style.transition = 'opacity 0.1s linear'; imageCol.style.opacity = fade.toFixed(3);
       } else if (iconRect.top > window.innerHeight) {
-        imageCol.style.transition = 'opacity 0.2s ease';
-        imageCol.style.opacity    = '1';
+        imageCol.style.transition = 'opacity 0.2s ease'; imageCol.style.opacity = '1';
       }
     }
 
@@ -1015,12 +925,7 @@ class ScrollyTelling {
 
       const separator = icon.closest('.chapter-separator');
       if (!separator) continue;
-
-      const nextSibling = separator.nextElementSibling;
-      const nextBlock   = nextSibling && nextSibling.classList.contains('intervis-section')
-        ? nextSibling.querySelector('.chapter-content-block')
-        : nextSibling;
-
+      const nextBlock = separator.nextElementSibling;
       if (!nextBlock || !nextBlock.classList.contains('chapter-content-block')) continue;
       if (nextBlock.getBoundingClientRect().top >= triggerThreshold) { inGap = true; break; }
     }
@@ -1039,15 +944,13 @@ class ScrollyTelling {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // FOOTNOTE CONVERSION
-  // ─────────────────────────────────────────────────────────────────
+  // ── FOOTNOTES (preserve) ────────────────────────────────────────────────
+
   convertFootnotesToSuperscript(container) {
     container.querySelectorAll('p').forEach(p => {
       if (!p.querySelector('sup[id^="fnref:"]')) {
         p.innerHTML = p.innerHTML.replace(/\^(\d+)/g,
-          (match, num) => `<sup id="fnref:${num}" class="footnote-ref">${num}</sup>`
-        );
+          (match, num) => `<sup id="fnref:${num}" class="footnote-ref">${num}</sup>`);
       }
     });
   }
@@ -1057,19 +960,16 @@ class ScrollyTelling {
       const rawNum = sup.textContent.trim();
       const id     = `citation_${rawNum.padStart(3, '0')}`;
       if (!window.citationData[id]) return;
-
       const marker = document.createElement('span');
-      marker.className          = 'footnote-trigger-marker';
+      marker.className = 'footnote-trigger-marker';
       marker.dataset.citationId = id;
       sup.parentNode.insertBefore(marker, sup);
-
       this.footnotes.push({ element: marker, citationId: id, number: rawNum });
     });
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // INFINITE SCROLL / CHAPTER LOADING
-  // ─────────────────────────────────────────────────────────────────
+  // ── INFINITE SCROLL / CHAPTER LOADING ───────────────────────────────────
+
   async loadChapter(direction) {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -1078,8 +978,7 @@ class ScrollyTelling {
     const targetIdx = isNext ? this.loadedRange.end + 1 : this.loadedRange.start - 1;
 
     if (targetIdx < 0 || targetIdx >= this.allEssays.length) {
-      this.isLoading = false;
-      return;
+      this.isLoading = false; return;
     }
 
     const targetChapter = this.allEssays[targetIdx];
@@ -1089,17 +988,15 @@ class ScrollyTelling {
     if (existingBlocks.length > 0) {
       if (existingBlocks.length > 1) {
         for (let i = 1; i < existingBlocks.length; i++) {
-          const dup     = existingBlocks[i];
-          const prev    = dup.previousElementSibling;
+          const dup  = existingBlocks[i];
+          const prev = dup.previousElementSibling;
           if (prev && prev.classList.contains('chapter-separator')) prev.remove();
-          const section = dup.closest('.intervis-section');
-          (section || dup).remove();
+          dup.remove();
         }
       }
       if (isNext  && targetIdx > this.loadedRange.end)   this.loadedRange.end   = targetIdx;
       if (!isNext && targetIdx < this.loadedRange.start) this.loadedRange.start = targetIdx;
-      this.isLoading = false;
-      return;
+      this.isLoading = false; return;
     }
 
     try {
@@ -1113,31 +1010,31 @@ class ScrollyTelling {
         newBlock.className           = 'scrolly-text-content chapter-content-block';
         newBlock.dataset.chapterPath = normalizedUrl;
         newBlock.dataset.layout      = source.dataset.layout || 'right';
-        if (source.dataset.tocTitle) newBlock.dataset.tocTitle = source.dataset.tocTitle;
+        if (source.dataset.tocTitle)     newBlock.dataset.tocTitle     = source.dataset.tocTitle;
+        if (source.dataset.chapterTitle) newBlock.dataset.chapterTitle = source.dataset.chapterTitle;
         newBlock.innerHTML = source.innerHTML;
 
         const newLayout    = newBlock.dataset.layout;
         let adjacentLayout = null;
 
         if (isNext) {
-          const blocks    = document.querySelectorAll('.chapter-content-block');
-          const lastBlock = blocks[blocks.length - 1];
-          adjacentLayout  = lastBlock ? lastBlock.dataset.layout : null;
+          const blocks = document.querySelectorAll('.chapter-content-block');
+          adjacentLayout = blocks[blocks.length - 1]?.dataset.layout || null;
         } else {
-          const firstBlock = document.querySelector('.chapter-content-block');
-          adjacentLayout   = firstBlock ? firstBlock.dataset.layout : null;
+          adjacentLayout = document.querySelector('.chapter-content-block')?.dataset.layout || null;
         }
 
-        const isNoImageLayout   = newLayout === 'full' || newLayout === 'inter_vis';
-        const adjacentIsNoImage = adjacentLayout === 'full' || adjacentLayout === 'inter_vis';
-        const needsLargeSep     = isNoImageLayout || adjacentIsNoImage;
-        const newSeparator      = this.createChapterSeparator(needsLargeSep, isNoImageLayout);
+        // ── INTER_VIS: minimal separator between inter_vis ↔ chapter
+        const intervisAdjacent = newLayout === 'inter_vis' || adjacentLayout === 'inter_vis';
+        const needsLargeSep    = newLayout === 'full'      || adjacentLayout === 'full';
+        const newSeparator     = intervisAdjacent
+          ? this.createIntervisSeparator()
+          : this.createChapterSeparator(needsLargeSep, newLayout === 'full');
 
         if (isNext) {
           this.textColumn.insertBefore(newSeparator, this.loadingIndicatorEl);
           this.textColumn.insertBefore(newBlock, this.loadingIndicatorEl);
           this.loadedRange.end++;
-          // processNewBlock runs BEFORE height measurement (no measurement needed for isNext)
           this.processNewBlock(newBlock);
           this.observeSeparator(newSeparator);
         } else {
@@ -1148,9 +1045,6 @@ class ScrollyTelling {
           this.textColumn.prepend(newSeparator);
           this.textColumn.prepend(newBlock);
           this.loadedRange.start--;
-
-          // processNewBlock must complete (including intervis-section wrapping)
-          // BEFORE the height delta is measured.
           this.processNewBlock(newBlock);
           this.observeSeparator(newSeparator);
 
@@ -1181,8 +1075,7 @@ class ScrollyTelling {
     if (Math.abs(currentY - this.lastScrollY) < 10) return;
     this.lastScrollY = currentY;
 
-    let bottomThreshold = 2000;
-    let topThreshold    = 1000;
+    let bottomThreshold = 2000, topThreshold = 1000;
 
     if (this.loadedRange.end < this.allEssays.length - 1) {
       const nextChapter = this.allEssays[this.loadedRange.end + 1];
@@ -1190,20 +1083,15 @@ class ScrollyTelling {
       const nextBlock   = document.querySelector(
         `[data-chapter-path="${this.normalizeUrl(nextChapter.url)}"]`
       );
-      const noImageNext =
-        (currentLast && (currentLast.dataset.layout === 'full' ||
-                         currentLast.dataset.layout === 'inter_vis')) ||
-        (nextBlock   && (nextBlock.dataset.layout   === 'full' ||
-                         nextBlock.dataset.layout   === 'inter_vis'));
-      if (noImageNext) bottomThreshold = 3500;
+      if ((currentLast && currentLast.dataset.layout === 'full') ||
+          (nextBlock   && nextBlock.dataset.layout   === 'full')) {
+        bottomThreshold = 3500;
+      }
     }
 
     if (this.loadedRange.start > 0) {
       const firstBlock = document.querySelector('.chapter-content-block');
-      if (firstBlock && (firstBlock.dataset.layout === 'full' ||
-                         firstBlock.dataset.layout === 'inter_vis')) {
-        topThreshold = 2000;
-      }
+      if (firstBlock && firstBlock.dataset.layout === 'full') topThreshold = 2000;
     }
 
     const scrollBottom = window.scrollY + window.innerHeight;
@@ -1211,22 +1099,19 @@ class ScrollyTelling {
     if (document.documentElement.scrollHeight - scrollBottom < bottomThreshold &&
         this.loadedRange.end < this.allEssays.length - 1) {
       this.loadChapter('next');
-    } else if (window.scrollY < topThreshold &&
-               this.loadedRange.start > 0 &&
+    } else if (window.scrollY < topThreshold && this.loadedRange.start > 0 &&
                this.maxScrollY > topThreshold * 2) {
       this.loadChapter('prev');
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // UTILITIES
-  // ─────────────────────────────────────────────────────────────────
+  // ── UTILITIES ────────────────────────────────────────────────────────────
+
   createChapterSeparator(isLarge = false, isBeforeFullLayout = false) {
     const sep = document.createElement('div');
     if (isBeforeFullLayout) {
-      sep.className          = 'chapter-separator large full-layout-separator';
-      sep.style.marginBottom = '80vh';
-      sep.style.paddingTop   = '25vh';
+      sep.className = 'chapter-separator large full-layout-separator';
+      sep.style.marginBottom = '80vh'; sep.style.paddingTop = '25vh';
     } else if (isLarge) {
       sep.className = 'chapter-separator large';
     } else {
@@ -1236,22 +1121,26 @@ class ScrollyTelling {
     return sep;
   }
 
+  // ── INTER_VIS: 5vh minimal separator with 1px anchor for observers ──────
+  createIntervisSeparator() {
+    const sep = document.createElement('div');
+    sep.className = 'chapter-separator intervis-separator';
+    sep.innerHTML = `<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" aria-hidden="true">`;
+    return sep;
+  }
+
   createImageElement(objectid, params) {
-    const meta = window.collectionMetadata[objectid];
-    if (!meta) return;
-
-    const img            = document.createElement('img');
+    const meta = window.collectionMetadata[objectid]; if (!meta) return;
+    const img = document.createElement('img');
     img.dataset.objectid = objectid;
-    img.src              = meta.object_location || meta.image_small;
-    img.className        = 'scrolly-sticky-img';
-
+    img.src = meta.object_location || meta.image_small;
+    img.className = 'scrolly-sticky-img';
     Object.assign(img.style, {
       position: 'absolute', top: '0', left: '0',
       width: '100%', height: '100%',
       objectFit: 'contain', opacity: '0',
       transition: 'opacity 0.6s ease-in-out', zIndex: '1'
     });
-
     if (params) this.applyTransformToImage(img, params.zoom, params.x, params.y);
     this.imageContainer.appendChild(img);
   }
@@ -1272,9 +1161,7 @@ class ScrollyTelling {
 
   observeSeparator(separator) {
     if (!separator || !separator.classList.contains('chapter-separator')) return;
-    const icon = separator.querySelector('img');
-    if (!icon) return;
-
+    const icon = separator.querySelector('img'); if (!icon) return;
     if (this.separatorForwardObserver)  this.separatorForwardObserver.observe(icon);
     if (this.separatorBackwardObserver) this.separatorBackwardObserver.observe(icon);
     if (!this.separatorIcons.includes(icon)) this.separatorIcons.push(icon);
@@ -1287,17 +1174,18 @@ class ScrollyTelling {
     }
   }
 
+  // ── INTER_VIS: pass chap_number and layout to updateChapterDisplay ──────
   updateHeaderForChapter(idx) {
-    const essay = this.allEssays[idx];
-    if (!essay) return;
+    const essay = this.allEssays[idx]; if (!essay) return;
 
     if (typeof updateChapterDisplay === 'function') {
       updateChapterDisplay({
-        chapter:   essay.chapter   || null,
-        title:     essay.title     || '',
-        toc_title: essay.toc_title || essay.title || '',
-        order:     essay.order     || idx + 1,
-        layout:    essay.layout    || 'right'
+        chapter:     essay.chapter     || null,
+        title:       essay.title       || '',
+        toc_title:   essay.toc_title   || essay.title || '',
+        chap_number: essay.chap_number || null,
+        order:       essay.order       || idx + 1,
+        layout:      essay.layout      || 'right'
       });
     }
 
@@ -1314,8 +1202,8 @@ class ScrollyTelling {
 
   updateTheme() {
     const isLight = document.body.classList.contains('light-mode');
-    const bg      = isLight ? '#ffffff' : '#111111';
-    const fg      = isLight ? '#1a1a1a' : '#f0f0f0';
+    const bg = isLight ? '#ffffff' : '#111111';
+    const fg = isLight ? '#1a1a1a' : '#f0f0f0';
 
     if (this.scrollyContainer) {
       this.scrollyContainer.style.backgroundColor = bg;
@@ -1327,20 +1215,17 @@ class ScrollyTelling {
     const toc = document.getElementById('scrolly-toc-sidebar');
     if (toc) {
       toc.style.backgroundColor  = bg;
-      toc.style.borderRightColor = isLight
-        ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)';
+      toc.style.borderRightColor = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)';
     }
 
     const citationDesktop = document.getElementById('scrolly-image-citation-footer');
     if (citationDesktop) {
       citationDesktop.style.backgroundColor = bg;
-      citationDesktop.style.color = isLight
-        ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)';
+      citationDesktop.style.color = isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)';
     }
 
     document.querySelectorAll('.scrolly-text-content hr').forEach(hr => {
-      hr.style.borderTopColor = isLight
-        ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.2)';
+      hr.style.borderTopColor = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.2)';
     });
   }
 
@@ -1355,7 +1240,6 @@ class ScrollyTelling {
       }
     };
     hide();
-
     const originalOnscroll = window.onscroll;
     window.onscroll = function (e) {
       if (originalOnscroll) {
@@ -1364,63 +1248,46 @@ class ScrollyTelling {
       }
       hide();
     };
-
     const el = document.getElementById('scroll-to-top');
-    if (el) {
-      new MutationObserver(hide).observe(el, {
-        attributes: true, attributeFilter: ['style', 'class']
-      });
-    }
+    if (el) new MutationObserver(hide).observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // LIGHTBOX — inter_vis sections excluded
-  // ─────────────────────────────────────────────────────────────────
+  // ── LIGHTBOX (preserve) ──────────────────────────────────────────────────
+
   setupLightbox() {
     if (!document.getElementById('scrolly-lightbox')) {
       const overlay = document.createElement('div');
-      overlay.id    = 'scrolly-lightbox';
-      overlay.setAttribute('role', 'dialog');
-      overlay.setAttribute('aria-modal', 'true');
+      overlay.id = 'scrolly-lightbox';
+      overlay.setAttribute('role', 'dialog'); overlay.setAttribute('aria-modal', 'true');
       overlay.setAttribute('aria-label', 'Image lightbox');
 
       const closeBtn = document.createElement('button');
-      closeBtn.id    = 'scrolly-lightbox-close';
-      closeBtn.textContent = '×';
+      closeBtn.id = 'scrolly-lightbox-close'; closeBtn.textContent = '×';
       closeBtn.setAttribute('aria-label', 'Close lightbox');
 
-      const img = document.createElement('img');
-      img.id = 'scrolly-lightbox-img'; img.alt = '';
+      const img = document.createElement('img'); img.id = 'scrolly-lightbox-img'; img.alt = '';
+      const caption = document.createElement('div'); caption.id = 'scrolly-lightbox-caption';
 
-      const caption = document.createElement('div');
-      caption.id    = 'scrolly-lightbox-caption';
-
-      overlay.appendChild(closeBtn);
-      overlay.appendChild(img);
-      overlay.appendChild(caption);
+      overlay.appendChild(closeBtn); overlay.appendChild(img); overlay.appendChild(caption);
       document.body.appendChild(overlay);
 
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) this.closeLightbox();
-      });
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) this.closeLightbox(); });
       closeBtn.addEventListener('click', () => this.closeLightbox());
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && overlay.classList.contains('active')) {
-          e.preventDefault();
-          this.closeLightbox();
+          e.preventDefault(); this.closeLightbox();
         }
       });
     }
 
     if (this.imageContainer && !this.imageContainer.dataset.lightboxWired) {
       this.imageContainer.addEventListener('click', (e) => {
-        if (this.currentLayout === 'full' || this.currentLayout === 'inter_vis') return;
+        if (this.currentLayout === 'full') return;
         const img = e.target.closest('img');
-        if (!img) return;
-        const meta = img.dataset.objectid
-          ? window.collectionMetadata[img.dataset.objectid] : null;
-        const captionText = meta
-          ? this.formatCitation(meta.image_citation || meta.title || '') : '';
+        // ── INTER_VIS: don't open lightbox for visualization layers
+        if (!img || img.classList.contains('intervis-layer')) return;
+        const meta = img.dataset.objectid ? window.collectionMetadata[img.dataset.objectid] : null;
+        const captionText = meta ? this.formatCitation(meta.image_citation || meta.title || '') : '';
         this.openLightbox(img.src, captionText);
       });
       this.imageContainer.dataset.lightboxWired = 'true';
@@ -1439,33 +1306,27 @@ class ScrollyTelling {
         const trigger = img.closest('[data-trigger-type="image"]');
         const objId   = trigger ? trigger.dataset.triggerId : null;
         const meta    = objId ? window.collectionMetadata[objId] : null;
-        const caption = meta
-          ? this.formatCitation(meta.image_citation || meta.title || '') : '';
+        const caption = meta ? this.formatCitation(meta.image_citation || meta.title || '') : '';
         this.openLightbox(img.src, caption);
       });
     });
   }
 
   openLightbox(src, caption) {
-    const overlay   = document.getElementById('scrolly-lightbox');
-    const imgEl     = document.getElementById('scrolly-lightbox-img');
+    const overlay = document.getElementById('scrolly-lightbox');
+    const imgEl   = document.getElementById('scrolly-lightbox-img');
     const captionEl = document.getElementById('scrolly-lightbox-caption');
     if (!overlay || !imgEl) return;
-    imgEl.src           = src;
-    captionEl.innerHTML = caption || '';
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    this.truncateCitationUrlsForLightbox();
-    this._wireLightboxOnInlineImages();
+    imgEl.src = src; captionEl.innerHTML = caption || '';
+    overlay.classList.add('active'); document.body.style.overflow = 'hidden';
+    this.truncateCitationUrlsForLightbox(); this._wireLightboxOnInlineImages();
   }
 
   truncateCitationUrlsForLightbox() {
-    const captionEl = document.getElementById('scrolly-lightbox-caption');
-    if (!captionEl) return;
+    const captionEl = document.getElementById('scrolly-lightbox-caption'); if (!captionEl) return;
     const urlPattern = /(\[?)https?:\/\/[^\s\]<>"']+[\.\/\w:]*(\]?)?/gi;
     if (urlPattern.test(captionEl.innerHTML)) {
-      captionEl.innerHTML = captionEl.innerHTML.replace(
-        urlPattern,
+      captionEl.innerHTML = captionEl.innerHTML.replace(urlPattern,
         (match, openBracket, closeBracket) => {
           const hasBrackets = openBracket === '[' || closeBracket === ']';
           return hasBrackets
@@ -1477,10 +1338,8 @@ class ScrollyTelling {
   }
 
   closeLightbox() {
-    const overlay = document.getElementById('scrolly-lightbox');
-    if (!overlay) return;
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
+    const overlay = document.getElementById('scrolly-lightbox'); if (!overlay) return;
+    overlay.classList.remove('active'); document.body.style.overflow = '';
     setTimeout(() => {
       const imgEl = document.getElementById('scrolly-lightbox-img');
       if (imgEl && !overlay.classList.contains('active')) imgEl.src = '';

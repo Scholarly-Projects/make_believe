@@ -11,17 +11,17 @@ window.allEssays = [
   {% assign sorted_essays = site.essay | sort: 'order' %}
   {% for essay in sorted_essays %}
   {
-    url:       "{{ essay.url | prepend: site.baseurl }}",
-    title:     {{ essay.title | jsonify }},
-    toc_title: {{ essay.toc_title | default: essay.title | jsonify }},
-    chapter:   {{ essay.chapter | default: '' | jsonify }},
-    order:     {{ essay.order }},
-    layout:    "{{ essay.layout }}"
+    url:        "{{ essay.url | prepend: site.baseurl }}",
+    title:      {{ essay.title | jsonify }},
+    toc_title:  {{ essay.toc_title | default: essay.title | jsonify }},
+    chapter:    {{ essay.chapter | default: '' | jsonify }},
+    chap_number: {% if essay.chap_number %}{{ essay.chap_number }}{% else %}null{% endif %},
+    order:      {{ essay.order }},
+    layout:     "{{ essay.layout }}"
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ];
 
-/* Base path for inter_vis PNG layers (used by InterVis class) */
 window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
 </script>
 
@@ -30,7 +30,8 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
 <div class="scrolly-container layout-right" id="scrolly-container" data-layout="right">
 
   <!-- ── 1. TOC SIDEBAR ──────────────────────────────────────────────── -->
-  <aside class="scrolly-toc-sidebar" id="scrolly-toc-sidebar" aria-label="Table of contents">
+  <aside class="scrolly-toc-sidebar" id="scrolly-toc-sidebar"
+         aria-label="Table of contents">
     <p class="scrolly-toc-heading">Contents</p>
     <ul class="scrolly-toc-list" id="scrolly-toc-list">
 
@@ -40,26 +41,32 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
 
       {% assign toc_essays = site.essay | sort: 'order' %}
       {% for essay in toc_essays %}
-      <li class="{% if essay.layout == 'inter_vis' %}toc-intervis-entry{% else %}toc-chapter-entry{% endif %}">
 
-        <a href="{{ essay.url | prepend: site.baseurl }}"
-           class="scrolly-toc-link {% if essay.url == page.url %}toc-active{% endif %}"
-           data-toc-chapter="{{ essay.order }}">
-          {% if essay.layout == 'inter_vis' %}
+        {% if essay.layout == 'inter_vis' %}
+        <!-- Inter_vis entry: toc_title, muted italic -->
+        <li class="toc-intervis-entry">
+          <a href="{{ essay.url | prepend: site.baseurl }}"
+             class="scrolly-toc-link {% if essay.url == page.url %}toc-active{% endif %}"
+             data-toc-chapter="{{ essay.order }}">
             {{ essay.toc_title | default: essay.title }}
-          {% else %}
-            {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
-          {% endif %}
-        </a>
+          </a>
+        </li>
 
-        {% unless essay.layout == 'inter_vis' %}
-        <ul class="toc-section-list"
-            id="toc-sections-{{ essay.order }}"
-            data-toc-chapter-url="{{ essay.url | prepend: site.baseurl }}"
-            style="display:none;"></ul>
-        {% endunless %}
+        {% else %}
+        <!-- Chapter entry: chap_number. Title -->
+        <li class="toc-chapter-entry">
+          <a href="{{ essay.url | prepend: site.baseurl }}"
+             class="scrolly-toc-link {% if essay.url == page.url %}toc-active{% endif %}"
+             data-toc-chapter="{{ essay.order }}">
+            {% if essay.chap_number %}{{ essay.chap_number }}. {% endif %}{{ essay.title }}
+          </a>
+          <ul class="toc-section-list"
+              id="toc-sections-{{ essay.order }}"
+              data-toc-chapter-url="{{ essay.url | prepend: site.baseurl }}"
+              style="display:none;"></ul>
+        </li>
+        {% endif %}
 
-      </li>
       {% endfor %}
 
       <hr class="toc-divider">
@@ -84,11 +91,9 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
       <div class="scrolly-image-container" id="scrolly-image-container"></div>
     </div>
 
-    <!-- Desktop: image citation sits below the frame -->
     <div class="scrolly-image-citation-desktop" id="scrolly-image-citation-footer">
       <span id="scrolly-image-citation-content"></span>
-      <a id="scrolly-image-view-link"
-         class="citation-view-link"
+      <a id="scrolly-image-view-link" class="citation-view-link"
          style="display:none;"> View Item →</a>
     </div>
   </div>
@@ -117,5 +122,4 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
 
 </div><!-- /.scrolly-container -->
 
-<!-- ── 5. FOOTER ─────────────────────────────────────────────────────── -->
 {% include essay/footer-scrollytelling.html %}

@@ -169,15 +169,23 @@ layout: default
             <a href="{{ '/' | relative_url }}" class="scrolly-toc-link">Home</a>
         </li>
 
-        {% assign toc_essays = site.essay | sort: 'order' %}
-        {% for essay in toc_essays %}
-        <li class="toc-chapter-entry">
-            <a href="{{ essay.url | prepend: site.baseurl }}"
-               class="scrolly-toc-link"
-               data-toc-chapter="{{ essay.order }}">
-                {% if essay.order %}{{ essay.order }}. {% endif %}{{ essay.title }}
+        {% assign bib_all = site.essay | sort: 'order' %}
+        {% for essay in bib_all %}
+        {% unless essay.layout == 'inter_vis' %}
+            {% assign prev_order    = essay.order | minus: 1 %}
+            {% assign preceding     = bib_all | where: "order", prev_order | first %}
+            {% assign bib_nav_url   = essay.url %}
+            {% if preceding.layout == 'inter_vis' %}
+            {% assign bib_nav_url = preceding.url %}
+            {% endif %}
+            <li class="toc-chapter-entry">
+            <a href="{{ bib_nav_url | prepend: site.baseurl }}"
+                class="scrolly-toc-link"
+                data-toc-chapter="{{ essay.order }}">
+                {% if essay.chap_number %}{{ essay.chap_number }}. {% endif %}{{ essay.title }}
             </a>
-        </li>
+            </li>
+        {% endunless %}
         {% endfor %}
 
         <hr class="toc-divider">

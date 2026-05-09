@@ -11,6 +11,9 @@
 
    Desktop grid (full layout):
      [TOC 14%] | [Text 1fr]   (citation becomes a fixed right rail)
+
+   Desktop grid (inter_vis layout):
+     [TOC 14%] | [Vis content 86%]  — imported from _intervis.scss
    ============================================================================ */
 
 
@@ -176,12 +179,6 @@ body.light-mode .scrolly-toc-sidebar {
   &::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.15); }
 }
 
-/* ── TOC Heading ─────────────────────────────────────────────────────────
-   Matches .home-toc-heading in size (0.805rem), weight (700), tracking
-   (0.18em), case, and font. Color follows dark/light composition:
-     dark default  : rgba(255,255,255,0.4) — mirror of home's rgba(0,0,0,0.4)
-     light override: rgba(0,0,0,0.4)       — identical to home page
-   ──────────────────────────────────────────────────────────────────────── */
 .scrolly-toc-heading {
   font-size:      0.805rem;
   font-weight:    700;
@@ -196,7 +193,6 @@ body.light-mode .scrolly-toc-sidebar {
 }
 body.light-mode .scrolly-toc-heading { color: rgba(0, 0, 0, 0.4); }
 
-/* ── Lists ───────────────────────────────────────────────────────────────── */
 .scrolly-toc-list {
   list-style: none;
   margin:  0;
@@ -204,14 +200,6 @@ body.light-mode .scrolly-toc-heading { color: rgba(0, 0, 0, 0.4); }
   li { margin: 0 0 0.1rem 0; padding: 0; }
 }
 
-/* ── TOC Links ───────────────────────────────────────────────────────────
-   Matches .home-toc-link in size (1.058rem), padding (0.45rem 0.6rem),
-   weight (400), radius (3px), and transition (0.15s). Left-aligned in
-   the sidebar vs. center-aligned on the home page.
-   Color follows dark/light composition:
-     dark default  : rgba(255,255,255,0.78) → rgba(255,255,255,0.95) hover
-     light override: rgba(0,0,0,0.78) → #111111 hover — identical to home
-   ──────────────────────────────────────────────────────────────────────── */
 .scrolly-toc-link {
   display:     block;
   padding:     0.45rem 0.6rem;
@@ -233,12 +221,6 @@ body.light-mode .scrolly-toc-link            { color: rgba(0, 0, 0, 0.78); }
 body.light-mode .scrolly-toc-link:hover      { color: #111111; background-color: rgba(0, 0, 0, 0.05); }
 body.light-mode .scrolly-toc-link.toc-active { color: #000000; }
 
-/* ── Chapter (essay) sub-entries ─────────────────────────────────────────
-   Matches .home-toc-item.is-essay .home-toc-link in size (1.012rem) and
-   indent (padding-left: 1.4rem). Color follows dark/light composition:
-     dark default  : rgba(255,255,255,0.65) → rgba(255,255,255,0.95) hover
-     light override: rgba(0,0,0,0.65) → rgba(0,0,0,0.95) hover — identical to home
-   ──────────────────────────────────────────────────────────────────────── */
 .toc-chapter-entry > .scrolly-toc-link {
   padding-left: 1.4rem;
   font-size:    1.012rem;
@@ -292,8 +274,6 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   grid-area: image;
   position:  sticky;
   top:    var(--scrolly-header-h, 52px);
-  /* Reserve space above the footer (2.8rem) so the sticky image never
-     sits behind the fixed footer bar on desktop.                      */
   height: calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem);
   display:        flex;
   flex-direction: column;
@@ -328,9 +308,6 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   z-index: 1;
 }
 
-/* ── Desktop image citation — below the image frame ─────────────────────── */
-/* Sits directly under the image sticky panel; replaces the old footer       */
-/* citation. Height is fixed so the image frame has a predictable anchor.    */
 .scrolly-image-citation-desktop {
   flex-shrink: 0;
   flex:        0 0 auto;
@@ -338,7 +315,7 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   overflow:    hidden;
   padding:     0.55rem 1rem 0.65rem;
   font-size:   0.71em;
-  color:       #CACACA;   /* base scale */
+  color:       #CACACA;
   line-height: 1.4;
   border-top:  1px solid var(--scrolly-border-color);
   background-color: var(--scrolly-bg-color);
@@ -347,19 +324,19 @@ body.light-mode .toc-section-rule.toc-section-active { background-color: rgba(0,
   .citation-view-link {
     display:    inline;
     font-size:  0.9em;
-    color:      #8C8C8C;   /* muted — below base, it's a secondary action */
+    color:      #8C8C8C;
     text-decoration: underline;
     text-underline-offset: 2px;
     transition: color 0.15s ease;
 
-    &:hover { color: #E4E4E4; }   /* mid scale on hover */
+    &:hover { color: #E4E4E4; }
   }
 }
 
 body.light-mode .scrolly-image-citation-desktop {
-  color: #353535;   /* inverse of #CACACA */
-  .citation-view-link       { color: #737373; }   /* inverse of #8C8C8C */
-  .citation-view-link:hover { color: #1B1B1B; }   /* inverse of #E4E4E4 */
+  color: #353535;
+  .citation-view-link       { color: #737373; }
+  .citation-view-link:hover { color: #1B1B1B; }
 }
 
 
@@ -376,8 +353,6 @@ body.light-mode .scrolly-image-citation-desktop {
   transition: all 0.5s ease;
 }
 
-/* Add bottom padding equal to footer height so the last content line is
-   never hidden behind the fixed footer on both left/right and full layouts. */
 .scrolly-container.layout-left  .scrolly-text-content,
 .scrolly-container.layout-right .scrolly-text-content {
   padding:    50vh 10% calc(20rem + 2.8rem);
@@ -448,7 +423,6 @@ body.light-mode .scrolly-image-citation-desktop {
     &:hover { color: #FFFFFF; text-decoration-color: rgba(255, 255, 255, 0.85); }
   }
 
-  /* Indicator for truncated URLs */
   .citation-url-continuation {
     color: #8C8C8C;
     font-style: italic;
@@ -461,20 +435,12 @@ body.light-mode .scrolly-citation-display {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   FOOTER — fixed bottom bar, desktop + mobile
-   (Defined here for layout awareness; visual styles live in
-    footer-scrollytelling.html to keep self-contained.)
+   FOOTER
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.scrolly-footer {
-  /* Ensure footer sits above all content layers */
-  z-index: 999;
-}
+.scrolly-footer { z-index: 999; }
 
-/* Give the TOC sidebar clearance so it doesn't run behind the footer */
-.scrolly-toc-sidebar {
-  padding-bottom: calc(2.8rem + 1rem);
-}
+.scrolly-toc-sidebar { padding-bottom: calc(2.8rem + 1rem); }
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -498,15 +464,11 @@ body.light-mode .scrolly-citation-display {
     visibility: visible !important;
     display:    block;
     width:      40px;
-    /* Smooth transition for both opacity and the light/dark filter */
     transition: opacity 0.3s ease, filter 0.3s ease;
-    /* Dark mode default: icon is white circle / dark interior — no filter needed */
     filter: none;
   }
 }
 
-/* Light mode: invert the chapter separator icon so a white-on-dark icon
-   becomes dark-on-white, matching the bright reading environment. */
 body.light-mode .chapter-separator img {
   filter: invert(1);
 }
@@ -518,7 +480,7 @@ body.light-mode .chapter-separator img {
 
 .scrolly-container.layout-right .chapter-content-block[data-layout="full"] {
   width:       76vw;
-  margin-left: -124%;          /* shift left by image col (42vw) relative to text col (34vw) */
+  margin-left: -124%;
   background-color: var(--scrolly-bg-color);
   z-index:   20;
   position:  relative;
@@ -630,9 +592,7 @@ body.light-mode .chapter-separator img {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   HIDE BACK-TO-TOP BUTTON in the reading interface
-   CollectionBuilder renders a #back-to-top or .back-to-top element globally.
-   Suppress it site-wide when the scrolly header is present.
+   HIDE BACK-TO-TOP BUTTON
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #back-to-top,
@@ -647,8 +607,6 @@ body:has(#scrolly-container) .back-to-top {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    IMAGE LIGHTBOX / SPOTLIGHT
-   A full-screen overlay that centres an image when clicked.
-   The overlay is injected by scrollytelling-handler.js.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #scrolly-lightbox {
@@ -656,7 +614,7 @@ body:has(#scrolly-container) .back-to-top {
   inset:      0;
   z-index:    10000;
   display:    flex;
-  flex-direction: column; /* Stack image and caption vertically */
+  flex-direction: column;
   align-items:     center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.88);
@@ -664,7 +622,7 @@ body:has(#scrolly-container) .back-to-top {
   pointer-events: none;
   transition: opacity 0.28s ease;
   cursor:     zoom-out;
-  padding:    2rem 1rem; /* Add padding to prevent caption hitting edges */
+  padding:    2rem 1rem;
   box-sizing: border-box;
 }
 
@@ -675,15 +633,15 @@ body:has(#scrolly-container) .back-to-top {
 
 #scrolly-lightbox img {
   max-width:  90vw;
-  max-height: 75vh; /* Reduced from 88vh to reserve space for caption below */
+  max-height: 75vh;
   object-fit: contain;
   border-radius: 2px;
   box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
   transform:  scale(0.96);
   transition: transform 0.28s ease;
   cursor:     default;
-  display:    block; /* Ensure flex item behaves correctly */
-  margin-bottom: 1rem; /* Space between image and caption */
+  display:    block;
+  margin-bottom: 1rem;
 }
 
 #scrolly-lightbox.active img {
@@ -696,7 +654,7 @@ body:has(#scrolly-container) .back-to-top {
   right: 1.5rem;
   background: none;
   border: none;
-  color: #CACACA;   /* base scale */
+  color: #CACACA;
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
@@ -704,25 +662,23 @@ body:has(#scrolly-container) .back-to-top {
   transition: color 0.15s ease;
   z-index: 10001;
 }
-#scrolly-lightbox-close:hover { color: #FFFFFF; }   /* focus on hover */
+#scrolly-lightbox-close:hover { color: #FFFFFF; }
 
-/* Caption below the expanded image */
 #scrolly-lightbox-caption {
-  position: relative; /* Remove absolute positioning to flow below image */
+  position: relative;
   bottom:   auto;
   left:     auto;
   transform: none;
   font-size:  0.85em;
   color:      #CACACA;
   text-align: center;
-  max-width:  800px; /* Constrain width for better readability and less vertical height */
+  max-width:  800px;
   width:      100%;
   line-height: 1.4;
   pointer-events: auto;
   margin:     0;
   padding:    0 1rem;
 
-  /* Indicator for truncated URLs — matches citation sidebar styling */
   .citation-url-continuation {
     color: #8C8C8C;
     font-style: italic;
@@ -751,32 +707,42 @@ body.light-mode #scrolly-lightbox-caption {
   }
 }
 
-/* Clickable hint on sticky images */
 .scrolly-image-frame img,
 .scrolly-image-container img {
   cursor: zoom-in;
 }
 
-/* Inline full-layout images */
 .chapter-content-block[data-layout="full"] [data-trigger-type="image"] img {
   cursor: zoom-in;
 }
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE  (≤ 992px) — REVISED FOR CHAPTER TITLE VISIBILITY
+   MOBILE  (≤ 992px)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 992px) {
 
+  /* ── Grid reset for all layouts including inter_vis ─────────────────────
+     layout-inter-vis is added here alongside the existing list so that
+     switching back to layout-right after an inter_vis section correctly
+     restores the "image / text" mobile grid and the sticky image column.
+     Without this entry, the container's desktop inter_vis grid persists
+     on mobile and the sticky chapter image area fails to reappear.        */
   .scrolly-container,
   .scrolly-container.layout-left,
   .scrolly-container.layout-right,
-  .scrolly-container.layout-full {
+  .scrolly-container.layout-full,
+  .scrolly-container.layout-inter-vis {
     display:               grid !important;
     grid-template-columns: 1fr !important;
     grid-template-areas:   "image" "text" !important;
     align-items: start !important;
+  }
+
+  /* inter_vis has no image column; collapse to text-only on mobile */
+  .scrolly-container.layout-inter-vis {
+    grid-template-areas: "text" !important;
   }
 
   .scrolly-toc-sidebar,
@@ -785,9 +751,7 @@ body.light-mode #scrolly-lightbox-caption {
     display: none !important;
   }
 
-  /* ═════════════════════════════════════════════════════════════════════════
-     IMAGE COLUMN — MOBILE
-     ═════════════════════════════════════════════════════════════════════════ */
+  /* ── IMAGE COLUMN — MOBILE ─────────────────────────────────────────────── */
   .scrolly-image-column {
     grid-area:  image !important;
     position:   sticky !important;
@@ -807,36 +771,30 @@ body.light-mode #scrolly-lightbox-caption {
     border-bottom-color: rgba(0, 0, 0, 0.08);
   }
 
-  .scrolly-image-frame { 
-    flex: 1; 
-    width: 100%; 
+  .scrolly-image-frame {
+    flex: 1;
+    width: 100%;
     height: 100%;
     padding: 0 1rem;
   }
 
-  /* ═════════════════════════════════════════════════════════════════════════
-     TEXT COLUMN — MOBILE
-     REVISED: Increased margin-top and adjusted gradient fade
-     ═════════════════════════════════════════════════════════════════════════ */
+  /* ── TEXT COLUMN — MOBILE ──────────────────────────────────────────────── */
   .scrolly-text-column {
     grid-area:  text !important;
     border:     none !important;
     z-index:    1 !important;
     position:   relative !important;
-    /* REVISED: Increased from 2rem to 3rem for more clearance */
     margin-top: 3rem !important;
     width:      100% !important;
     order:      2 !important;
   }
 
-  /* REVISED: Gradient fade overlay — reduced height so it doesn't cover titles */
   .scrolly-text-column::before {
     content:  '';
     position: absolute;
     top:      0;
     left:     0;
     right:    0;
-    /* REVISED: Reduced from 4em to 2.5em to clear chapter titles */
     height:   2.5em;
     background: linear-gradient(
       to bottom,
@@ -847,29 +805,19 @@ body.light-mode #scrolly-lightbox-caption {
     pointer-events: none;
   }
 
-  /* ═════════════════════════════════════════════════════════════════════════
-     TEXT CONTENT — MOBILE
-     REVISED: Increased top padding for title clearance
-     ═════════════════════════════════════════════════════════════════════════ */
+  /* ── TEXT CONTENT — MOBILE ─────────────────────────────────────────────── */
   .scrolly-text-content {
-    /* REVISED: Increased top padding from 1rem to 2rem */
     padding: 2rem 8% calc(10rem + 2.8rem) !important;
   }
 
-  /* ═════════════════════════════════════════════════════════════════════════
-     CHAPTER TITLES — MOBILE
-     REVISED: Additional top margin to ensure full visibility
-     ═════════════════════════════════════════════════════════════════════════ */
+  /* ── CHAPTER TITLES — MOBILE ───────────────────────────────────────────── */
   .scrolly-text-content .chapter-title {
-    /* REVISED: Increased margins for breathing room */
     margin-top: 1rem;
     margin-bottom: 2rem;
-    /* Ensure title isn't affected by any overflow hiding */
     position: relative;
     z-index: 10;
   }
 
-  /* Full layout chapter titles need extra clearance */
   .scrolly-container.layout-full .chapter-title {
     margin-top: 2rem;
     margin-bottom: 3rem;
@@ -888,4 +836,4 @@ body.light-mode #scrolly-lightbox-caption {
   }
 }
 
-@import "intervis"
+@import "intervis";
