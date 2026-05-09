@@ -31,10 +31,38 @@
 
 
 /* ── Layer container ────────────────────────────────────────────────────────── */
+/*
+  SQUARE CONTAINER — critical for coordinate accuracy at all screen sizes.
+
+  The source PNG layers are 1920×1920 (square). translate((x-50)%, (y-50)%)
+  percentages in CSS reference the layer element's OWN dimensions. When the
+  container is rectangular (non-square), object-fit:contain letterboxes the
+  image into the smaller dimension — but translate percentages still reference
+  the full container bounds, not the rendered image content area. This causes
+  coordinate drift as the screen aspect ratio changes:
+
+    Portrait column (42vw < 100vh): letterboxing above/below → y coordinates shift
+    Landscape column (42vw > 100vh): letterboxing left/right  → x coordinates shift
+
+  With a square container matching the 1920×1920 sources, there is zero
+  letterboxing and translate() percentages map identically regardless of
+  whether the viewer is on a standard monitor, wide monitor, or any size in
+  between.
+
+  Size = min(image-column-width, image-column-height)
+       = min(42vw, 100vh - header)
+  Centered via position:absolute + translate(-50%, -50%).
+  The .intervis-frame's overflow:hidden clips everything to the column bounds.
+*/
 .intervis-layer-container {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  width:  min(42vw, calc(100vh - var(--scrolly-header-h, 52px)));
+  height: min(42vw, calc(100vh - var(--scrolly-header-h, 52px)));
+  left:   50%;
+  top:    50%;
+  right:  auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
   overflow: hidden;
 }
 
