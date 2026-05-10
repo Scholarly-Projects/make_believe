@@ -3,6 +3,7 @@ title: "Visualization One"
 toc_title: "●"
 order: 2
 layout: inter_vis
+alt_text: "A world map with the Atlantic Ocean in the center, with a small circle moving around to mark the locations of the Kimberley Mine in South Africa; Amsterdam, the Netherlands; St. Paul, Minnesota and Spokane, Washington."
 ---
 
 {% trigger type: image id: intervis_02_01 action: start %}

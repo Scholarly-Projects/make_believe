@@ -240,16 +240,28 @@ class ScrollyTelling {
     }
 
     // ── DESCRIPTION ELEMENT ─────────────────────────────────────────────────
-    // Always ensure descriptionEl exists. This covers:
-    //   (a) Standalone pages whose inter_vis.html predates the description div
-    //   (b) Infinite-scroll frames just built above (descriptionEl still null)
-    // Without this, frame.querySelector returns null for old templates,
-    // descriptionEl stays null, and _updateDescription silently exits every
-    // call — the single most common reason descriptions never appear.
+    // The description must be a direct child of document.body — NOT inside
+    // .intervis-frame. The frame has `opacity: 0` (transitioning to 1 via
+    // .is-active), which creates a CSS stacking context. All descendants —
+    // including position:fixed ones — are rendered within that stacking
+    // context, so their effective visual opacity is frame_opacity × their_own.
+    // Appending to body bypasses this entirely.
+    //
+    // Any pre-existing description in the frame HTML (from inter_vis.html)
+    // is moved to body here. Infinite-scroll builds fresh on body directly.
+    let existingInFrame = frame.querySelector('.intervis-description');
+    if (existingInFrame) {
+      existingInFrame.remove();  // remove from frame; we'll recreate on body
+    }
+
+    descriptionEl = document.querySelector(
+      `.intervis-description[data-intervis-for="${chapterPath}"]`
+    );
     if (!descriptionEl) {
       descriptionEl = document.createElement('div');
       descriptionEl.className = 'intervis-description';
-      frame.appendChild(descriptionEl);
+      descriptionEl.dataset.intervisFor = chapterPath;
+      document.body.appendChild(descriptionEl);
     }
 
     if (typeof InterVis === 'function') {
@@ -1028,6 +1040,7 @@ class ScrollyTelling {
 
         if (source.dataset.tocTitle)     newBlock.dataset.tocTitle     = source.dataset.tocTitle;
         if (source.dataset.chapterTitle) newBlock.dataset.chapterTitle = source.dataset.chapterTitle;
+        if (source.dataset.intervisAlt)  newBlock.dataset.intervisAlt  = source.dataset.intervisAlt;
         newBlock.innerHTML = source.innerHTML;
 
         const newLayout    = newBlock.dataset.layout;

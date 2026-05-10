@@ -27,10 +27,46 @@ class InterVis {
 
     this._basePath = window.intervisBasePath || '/objects/inter_vis/';
 
+    // ── ACCESSIBILITY: overall alt text for the full visualization section ──
+    // Read from data-intervis-alt on the trigger block element (set via
+    // `alt_text:` front matter in the inter_vis markdown file).
+    // Applied as role="img" + aria-labelledby on the frame, with a
+    // visually-hidden <span class="intervis-alt-text"> carrying the text.
+    // This gives screen-reader users a single meaningful sentence describing
+    // the entire visualization rather than per-layer "image" announcements.
+    this._applyAltText();
     this._parse();
     this._buildSegments();
     this._sizeTriggerBlock();
     this._setupVisibilityObserver();
+  }
+
+  // ── ALT TEXT ───────────────────────────────────────────────────────────────
+  // Reads `alt_text:` front matter from data-intervis-alt on the trigger block.
+  // Creates a visually-hidden <span class="intervis-alt-text"> inside the frame
+  // and wires up role="img" + aria-labelledby so screen readers announce the
+  // full visualization description rather than individual layer images.
+  // Safe to call multiple times — idempotent (skips if span already exists).
+  _applyAltText() {
+    const altText = this.triggerBlock?.dataset?.intervisAlt || '';
+    if (!altText || !this.frame) return;
+
+    // Idempotent: don't create a second span if already applied
+    if (this.frame.querySelector('.intervis-alt-text')) return;
+
+    const id   = `intervis-alt-${Math.random().toString(36).slice(2, 8)}`;
+    const span = document.createElement('span');
+    span.className   = 'intervis-alt-text';
+    span.id          = id;
+    span.textContent = altText;
+
+    this.frame.appendChild(span);
+    this.frame.setAttribute('role',             'img');
+    this.frame.setAttribute('aria-labelledby',  id);
+
+    if (INTERVIS_DEBUG) {
+      console.log(`[InterVis] Alt text applied: "${altText}"`);
+    }
   }
 
   // ── PARSE ──────────────────────────────────────────────────────────────────
@@ -418,7 +454,9 @@ class InterVis {
 
     const img         = document.createElement('img');
     img.className     = 'intervis-layer';
-    img.alt           = '';
+    img.alt           = '';                        // empty: frame aria-labelledby covers description
+    img.setAttribute('aria-hidden', 'true');       // hide from AT — parent frame has role="img" + label
+    img.setAttribute('role',        'presentation'); // belt-and-suspenders for older screen readers
     img.style.opacity = '0';
     img.src           = this._basePath + id + '.png';
 

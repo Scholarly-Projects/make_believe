@@ -16,6 +16,30 @@
    ============================================================================ */
 
 
+/* ── Visually-hidden alt text for the full inter_vis section ────────────────── */
+/*
+  A single descriptive sentence covering the entire visualization is more useful
+  to screen-reader and keyboard users than per-layer alt text, which would be
+  too abstract (e.g. "layer image" repeated per PNG). The element is rendered
+  in the DOM but clipped to 1px so it is announced by screen readers without
+  affecting the visual layout.
+
+  Set the text via `alt_text:` in the inter_vis page front matter.
+  The frame receives role="img" and aria-labelledby pointing to this element.
+*/
+.intervis-alt-text {
+  position:   absolute;
+  width:      1px;
+  height:     1px;
+  padding:    0;
+  margin:     -1px;
+  overflow:   hidden;
+  clip:       rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border:     0;
+}
+
+
 /* ── Frame ─────────────────────────────────────────────────────────────────── */
 .intervis-frame {
   position: absolute;

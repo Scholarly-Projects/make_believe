@@ -87,7 +87,8 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
          data-chapter-title="{{ page.title | escape }}"
          data-toc-title="{{ page.toc_title | default: page.title | escape }}"
          data-layout="inter_vis"
-         data-intervis-order="{{ page.order }}">
+         data-intervis-order="{{ page.order }}"
+         data-intervis-alt="{{ page.alt_text | escape }}">
       {{ content }}
     </div>
     <div class="chapter-loading-indicator" id="chapter-loading-indicator"
