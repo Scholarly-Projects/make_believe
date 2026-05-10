@@ -450,20 +450,25 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 
   /* ── Description — absolute, above the square, below the hint ───────────── */
   .intervis-description {
-    position:        absolute !important;
-    top:             2.2rem   !important;   /* below hint */
-    bottom:          auto     !important;
-    left:            0.75rem  !important;
-    right:           0.75rem  !important;
+    /* position:fixed — NOT absolute.
+       The description element is appended to document.body (not inside the
+       frame) to escape the frame's opacity stacking context on desktop.
+       position:absolute on a body-level element resolves relative to the
+       nearest positioned ancestor above body, never the frame — so it ends
+       up off-screen. position:fixed resolves to the viewport, placing it
+       correctly above the visualization square on mobile just as it does
+       in the text column on desktop. */
+    position:        fixed  !important;
+    top:    calc(var(--scrolly-header-h, 52px) + 2.2rem) !important;
+    bottom:          auto   !important;
+    left:            1rem   !important;
+    right:           1rem   !important;
     font-size:       0.92rem  !important;
     text-align:      center   !important;
     justify-content: center   !important;
     align-items:     center   !important;
-    /* Reserve space between hint and where square starts (calc from top:50%) */
-    /* Height is auto — just enough to show the text */
     max-height:      3.5rem   !important;
     overflow:        hidden   !important;
-    /* Reset desktop translateY */
     transform:       none     !important;
     transition:      opacity 0.5s ease !important;
   }
