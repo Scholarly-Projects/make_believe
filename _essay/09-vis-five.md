@@ -5,13 +5,9 @@ order: 9
 layout: inter_vis
 ---
 
-{% trigger type: image id: intervis_02_01 action: start %}
-{% trigger type: image id: intervis_02_02 action: start opacity: 90 coordinates: 800,765 description: "Kimberley Mines, Present-Day South Africa" %}
-{% trigger type: image id: intervis_02_02 action: end opacity: 90 coordinates: 800,765 description: "Kimberley Mines, Present-Day South Africa" %}
-{% trigger type: image id: intervis_02_02 action: start opacity: 90 coordinates: 700,300 description: "Amsterdam, the Capital of the Netherlands" %}
-{% trigger type: image id: intervis_02_02 action: end opacity: 90 coordinates: 700,300 description: "Amsterdam, the Capital of the Netherlands" %}
-{% trigger type: image id: intervis_02_02 action: start opacity: 90 coordinates: 210,350 description: "St. Paul, Minnesota, Home of the Great Northern Railway" %}
-{% trigger type: image id: intervis_02_02 action: end opacity: 90 coordinates: 210,350 description: "St. Paul, Minnesota, Home of the Great Northern Railway" %}
-{% trigger type: image id: intervis_02_02 action: start opacity: 90 coordinates: 130,340 description: "Spokane, Washington" %}
-{% trigger type: image id: intervis_02_02 action: end opacity: 90 coordinates: 130,340 description: "Spokane, Washington" %}
+{% trigger type: image id: intervis_06_01 action: start %}
+{% trigger type: image id: intervis_06_02 action: start opacity: 90 description: "The Netherlands American Bank writes off the failed Arcadia Orchards venture. While not directly connected to Everwijn Lange Jr., it represents another major Dutch investment in the Spokane area." %}
+{% trigger type: image id: intervis_06_03 action: start opacity: 90 description: "The United States’ entry into World War I began a long, gradual liquidation of the Northwestern & Pacific Hypotheek Bank, along with the other Spokane-area mortgage firms financed by Everwijn Lange Jr." %}
+{% trigger type: image id: intervis_06_04 action: start opacity: 90 description: "The Phoenix Lumber Company is liquidated. Afterward, some members of the Van Dissel family move to Lange’s newly formed Spokane Mines Limited Company." %}
+{% trigger type: image id: intervis_06_05 action: start opacity: 90 description: "The Spokane Flour Mill and its associated mill in Pendleton are dissolved, with Everwijn Lange Jr. appointed as liquidator alongside many of his longtime Spokane associates. These included H. Croinmelim, representative of the Holland Bank in Spokane; D. I. L. Huntington, director of the Washington Water-Power Company in Spokane; R. Insinger, representative of the Northwestern & Pacific Mortgage Bank in Spokane; and L. S. Lens, described as “our representative in Seattle.” " %}
 {% trigger type: image id: all action: end %}
