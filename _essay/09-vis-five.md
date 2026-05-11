@@ -3,6 +3,7 @@ title: "Liquidation"
 toc_title: "● ● ● ● ●"
 order: 9
 layout: inter_vis
+alt_text: "A timeline with dates spanning from 1915 to 1923 are marked with illustrated figures of a Dutch character from the Miller-Dervant catalog, as text dictates the liquidation of Dutch assets from the Spokane area after natural resources had been extracted."
 ---
 
 {% trigger type: image id: intervis_06_01 action: start %}
