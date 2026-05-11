@@ -1,7 +1,7 @@
 ---
-title: "Visualization Three"
-toc_title: "● ● ●"
-order: 6
+title: "Liquidation"
+toc_title: "● ● ● ● ●"
+order: 9
 layout: inter_vis
 ---
 

@@ -1,7 +1,7 @@
 ---
-title: "Visualization Four"
+title: "Imitation"
 toc_title: "● ● ● ●"
-order: 8
+order: 7
 layout: inter_vis
 ---
 
