@@ -450,27 +450,46 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 
   /* ── Description — absolute, above the square, below the hint ───────────── */
   .intervis-description {
-    /* position:fixed — NOT absolute.
-       The description element is appended to document.body (not inside the
-       frame) to escape the frame's opacity stacking context on desktop.
-       position:absolute on a body-level element resolves relative to the
-       nearest positioned ancestor above body, never the frame — so it ends
-       up off-screen. position:fixed resolves to the viewport, placing it
-       correctly above the visualization square on mobile just as it does
-       in the text column on desktop. */
+    /* position:fixed — NOT absolute. Lives on document.body to escape the
+       frame's opacity stacking context. Fixed resolves to the viewport. */
     position:        fixed  !important;
-    top:    calc(var(--scrolly-header-h, 52px) + 2.2rem) !important;
-    bottom:          auto   !important;
-    left:            1rem   !important;
-    right:           1rem   !important;
-    font-size:       0.92rem  !important;
-    text-align:      center   !important;
-    justify-content: center   !important;
-    align-items:     center   !important;
-    max-height:      3.5rem   !important;
-    overflow:        hidden   !important;
-    transform:       none     !important;
-    transition:      opacity 0.5s ease !important;
+
+    /* ── VERTICAL POSITION DERIVATION ────────────────────────────────────────
+       The layer-container square is centered in the frame:
+         frame top    = var(--scrolly-header-h)
+         frame height = 100vh - header - 2.8rem (footer)
+         square size  = min(96vw, frame_height - 7rem)
+         square center in viewport = header + frame_height / 2
+                                   = (100vh + header - 2.8rem) / 2
+         square top in viewport    = square_center - square_size / 2
+
+       On portrait phones 96vw < (frame_height - 7rem), so square_size = 96vw:
+         square top = (100vh + header - 2.8rem) / 2 - 48vw
+
+       Setting description bottom = square top with 0.5rem gap:
+         bottom_css = 50vh + 48vw + 1.9rem - header / 2
+
+       ── TO FINE-TUNE: if description still overlaps visualization, increase
+          the constant (1.9rem → 2.5rem). If gap is too large, decrease it. ── */
+    top:    calc(var(--scrolly-header-h, 52px) + 0.5rem) !important;
+    bottom: calc(50vh + 48vw + 1.9rem - var(--scrolly-header-h, 52px) / 2) !important;
+
+    left:  1rem !important;
+    right: 1rem !important;
+
+    display:         flex   !important;
+    align-items:     center !important;
+    justify-content: center !important;
+    text-align:      center !important;
+
+    /* ── FONT SIZE: clamp(min, fluid, max) ───────────────────────────────────
+       Scales with viewport width so longer descriptions shrink automatically.
+       Adjust the minimum (0.72rem) if four-sentence descriptions still clip. */
+    font-size: clamp(0.72rem, 2.8vw, 0.92rem) !important;
+
+    overflow:   hidden !important;
+    transform:  none   !important;
+    transition: opacity 0.5s ease !important;
   }
 
   .intervis-description.is-visible { opacity: 1; }
