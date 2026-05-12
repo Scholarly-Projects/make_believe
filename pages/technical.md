@@ -34,21 +34,16 @@ hide-default-footer: true
 
 ## Technical Notes
 <br>
-<p>To support the visual resource-oriented nature of this project, I wanted to develop a digital exhibit template that would allow readers the ability to allow these images to be in dialogue with the research to underpin the historical argument of the thesis. The resulting essay template, named <a href="https://github.com/Scholarly-Projects/textemporal">Textemporal</a>, is an iteration of my colleague Devin Becker's <a href="https://collectionbuilder.github.io/cb-essay/">CB Essay</a> and follows CollectionBuilder's static web hosting approach. The template was specifically designed to support scholarly, proving the reader with just enough information to help them move through the research material while keeping the reading interface minimal and lightweight.</p>
+[Vis-arly](https://github.com/Scholarly-Projects/vis-arly) is a static web essay template designed to support visually-driven scholarly publications in the humanities. The template is an iteration of [CB-Essay](https://collectionbuilder.github.io/cb-essay/) developed by Devin Becker, one of the many versions of [CollectionBuilder](https://collectionbuilder.github.io/) created by the [Center for Digital Inquiry and Learning (CDIL)](https://cdil.lib.uidaho.edu/) at University of Idaho’s library. 
 
-### Template Features
+The project was initially developed to host the author’s Master’s thesis, which examines the history of Dutch financial monopoly in Spokane, Washington and the city’s expressions of exclusionary and aspirational iconography through pageantry, commercial iconography and architecture. To support this visual resource-oriented study that closely analyzes archival images, I wanted to develop a digital framework that allowed the reader to engage seamlessly with the text, features and citations, while still meeting the academic rigour of a traditional thesis.
 
-<ul>
-  <li>Reading interface is designed to set off a series of citation and image triggers, which are set off as the reader progresses through the text.</li>
-  <li>"Sticky" media configuration where images remain static as the text scrolls through vertically, intended for a more concentrated, unified reading experience.</li>
-  <li>Sidebar which generates a text citation following the reader's progress through the material, providing only the most relevant information without cluttering the interface.</li>
-  <li>Programmatic manipulation of how images display, where the author of the template can enter zoom and coordinate data in the essay markdown templates to control how readers view the media as they scroll through the text.</li>
-  <li>Citations and images are informed by CSV data, allowing for automatic generation and editing of Image Credit and Bibliography pages.</li>
-  <li>"Infinite Scroll" function, which allows readers to seamlessly scroll from one chapter to another in the essay section of the site, so they can remain focused on the text, rather than hunting in menu drop downs to progress. Images and citations are triggered identically moving both forward and backwards in the text like an audio recording, which is where the <i>temporal</i> in <code>Textemporal</code> comes from.</li>
-  <li>Scroll state preservation, to ensure that the reader is returned where they left in the chapter, if they engage with the associated item level images or text citations.</li>
-  <li>Light / Dark mode toggle for essay portions of the site.</li>
-  <li>Mobile configuration, which displays images and their associated citations in full.</li>
-  <li>Minimal, horizontally-oriented site design.</li>
-  <li>Dual navigation tracks: readers can quickly use arrow keys to cycle through site level pages (home, browse, map, etc.), or drop down to the item level pages to cycle through that material.</li>
-  <li>Retains CollectionBuilder's database-oriented approach allowing readers to dive deeper into the media that compliments the essay material and make further research connections by visualizing those items chronologically, geographically or thematically.</li>
-</ul>
+Vis-arly follows CollectionBuilder's static hosting approach, generating a lightweight reading interface from CSV-driven metadata and Markdown-formatted essay content with no server side processing. The template's design principle is a minimal, horizontal focus, where essay images and text citations remain “sticky” as they scroll vertically through the text, creating the feeling that no material is buried beneath the interface but you are only seeing the relevant materials you need as you navigate through the project. 
+
+The scrolly-handler Javascript allows authors to place their images and citations strategically in their markdown files, which are triggered as the reader scrolls through the text. Additionally, the liquid commands which trigger images to start and stop within a passage allow the author to set XY coordinates and zoom levels, which adds a dynamic but completely programmatic control over the reading experience. 
+
+An interstitial visualization function was developed which iterates off of the scrollytelling handler concept. The functionality allows users to insert data visualizations between chapter materials that progress as the reader scrolls down, allowing the author to provide additional context without diverting the reader to another area of the site. These “inter-vis” elements automatically adjust to reader display preferences, and a shared alt-text field for each visualization layer offers a creative approach to addressing many of the accessibility challenges associated with data visualizations.
+
+Additional features were developed to reduce friction in the reading experience and foreground the archival material. An “infinite scroll” function allows readers to move seamlessly between essay chapters without navigating drop-down menus. Scroll state preservation ensures that readers who follow a citation or image link out to a collection item are returned to their exact position in the text on return. The site also supports light and dark mode, full mobile adaptability, and a dual keyboard navigation track that allows readers to cycle between site-level pages or drop to item-level pages independently.
+
+Together, these features position Vis-arly as a reusable and adaptable framework for scholars working at the intersection of archival research, digital publication, and public-facing scholarship.
