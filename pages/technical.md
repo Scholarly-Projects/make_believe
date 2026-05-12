@@ -34,7 +34,7 @@ hide-default-footer: true
 
 ## Technical Notes
 <br>
-[Vis-arly](https://github.com/Scholarly-Projects/vis-arly) is a static web essay template designed to support visually-driven scholarly publications in the humanities. The template is an iteration of [CB-Essay](https://collectionbuilder.github.io/cb-essay/) developed by Devin Becker, one of the many versions of [CollectionBuilder](https://collectionbuilder.github.io/) created by the [Center for Digital Inquiry and Learning (CDIL)](https://cdil.lib.uidaho.edu/) at University of Idaho’s library. 
+[Vis-arly](https://github.com/Scholarly-Projects/vis-arly) is a static web essay template currently in active development, designed to support visually-driven scholarly publications in the humanities. The template is an iteration of [CB-Essay](https://collectionbuilder.github.io/cb-essay/) developed by Devin Becker, one of the many versions of [CollectionBuilder](https://collectionbuilder.github.io/) created by the [Center for Digital Inquiry and Learning (CDIL)](https://cdil.lib.uidaho.edu/) at University of Idaho’s library.
 
 The project was initially developed to host the author’s Master’s thesis, which examines the history of Dutch financial monopoly in Spokane, Washington and the city’s expressions of exclusionary and aspirational iconography through pageantry, commercial iconography and architecture. To support this visual resource-oriented study that closely analyzes archival images, I wanted to develop a digital framework that allowed the reader to engage seamlessly with the text, features and citations, while still meeting the academic rigour of a traditional thesis.
 
