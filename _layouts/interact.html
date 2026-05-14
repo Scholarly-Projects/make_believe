@@ -469,8 +469,8 @@ layout: default
     <p class="modal-eyebrow">1906 Miller-Dervant Catalog Visualization</p>
     <h2 id="modal-title">Imitative Identities</h2>
     <p>This visualization highlights the materials from the 1906 catalog of Spokane’s leading costume company.</p>
-    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>; the reverse by <strong>ethnic identity</strong>. Each card represents a category. Drag or select a card to answer. Responses flash <strong>red</strong> for incorrect answers and <strong>green</strong> for correct.</p>
-    <p>Select <strong>Costume Type</strong> or <strong>Ethnic Identity</strong> at the top of the wall, or press <strong>F</strong> to flip between views. <strong>Sort categories</strong> or select <strong>Reveal Answer</strong> button to present the findings.</p>
+    <p>The wall has two faces. The front organizes costumes by <strong>type</strong>; the reverse by <strong>national or ethnic costumes</strong>. Each card represents a category. Drag or select a card to answer. Responses flash <strong>red</strong> for incorrect answers and <strong>green</strong> for correct.</p>
+    <p>Select <strong>Costume Type</strong> or <strong>National or Ethnic Costumes</strong> at the top of the wall, or press <strong>F</strong> to flip between views. <strong>Sort categories</strong> or select <strong>Reveal Answer</strong> button to present the findings.</p>
     <p><strong>Source:</strong> <i>Miller-Dervant Catalog</i>, 1906, Miller-Dervant Company Records, 1896–1955, MsSC 198, Eastern Washington State Historical Society, Northwest Museum of Arts and Culture, Spokane, WA. Population data from the <i>1910 Abstract of the Thirteenth Census, Supplement for Washington State</i>.</p>
     <div class="ctrl-list">
       <span class="ctrl-list-heading">Controls</span>
@@ -577,7 +577,7 @@ layout: default
                 aria-label="Show Costume Type face" aria-pressed="true">Costume Type</button>
         <span class="face-divider-glyph">◆</span>
         <button class="face-toggle-label" id="label-back"
-                aria-label="Show Ethnic Identity face" aria-pressed="false">Ethnic Identity</button>
+                aria-label="Show Ethnic Identity face" aria-pressed="false">National or Ethnic Costumes</button>
         <span class="face-toggle-dot" id="dot-back"></span>
         <span class="face-f-hint">or press <kbd>F</kbd></span>
       </div>
@@ -1500,7 +1500,7 @@ var ETHNIC_RESPONSES = [
       lbImageCol.appendChild(blank);
     }
 
-    lbEyebrow.textContent = faceName === 'front' ? 'Costume Type' : 'Ethnic Identity';
+    lbEyebrow.textContent = faceName === 'front' ? 'Costume Type' : 'National or Ethnic Costumes';
     lbTitle.textContent   = item.title;
 
     lbStatsList.innerHTML = '';

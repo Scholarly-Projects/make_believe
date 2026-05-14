@@ -46,7 +46,7 @@ Jekyll reads `_data/interact_type.csv` and `_data/interact_ethnic.csv` at build 
 Tile sizes are computed algorithmically: the JavaScript runs a binary-search to find a scaling factor such that, when tiles are laid out left-to-right with `sqrt(percentage / max_percentage)` proportional sizing, they fill the square wall without overflow or excess blank space. This means adding a new row to either CSV will automatically reflow the layout — no manual sizing needed.
 
 ### 3D Flip (Desktop)
-The wall uses CSS 3D transforms (`rotateY`) with `perspective: 2000px`. The front face shows **Costume Type** data; the back face (rotated 180° around the Y axis) shows **Ethnic Identity** data. The surrounding orb ring captures pointer-drag events to rotate the card in real time; releasing snaps it to the nearest face.
+The wall uses CSS 3D transforms (`rotateY`) with `perspective: 2000px`. The front face shows **Costume Type** data; the back face (rotated 180° around the Y axis) shows **National or Ethnic Costumes** data. The surrounding orb ring captures pointer-drag events to rotate the card in real time; releasing snaps it to the nearest face.
 
 ### Mobile
 On screens narrower than 768px:
