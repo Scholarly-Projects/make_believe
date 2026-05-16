@@ -1,6 +1,6 @@
 display_name,stub,dropdown_parent
 Home,/
-Make Believe,/essay/01-introduction.html
+Make Believe,/essay/01-vis-one.html
 Interact,/interact.html
 Map,/map.html,
 Subjects,/subjects.html
@@ -9,3 +9,4 @@ Bibliography,/bibliography.html,
 Image Credits,/image.html
 Acknowledgments,/acknowledgements.html,
 Technical Notes,/technical.html,
+About the Author,/author.html
