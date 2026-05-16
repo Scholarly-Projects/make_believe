@@ -17,16 +17,6 @@
 
 
 /* ── Visually-hidden alt text for the full inter_vis section ────────────────── */
-/*
-  A single descriptive sentence covering the entire visualization is more useful
-  to screen-reader and keyboard users than per-layer alt text, which would be
-  too abstract (e.g. "layer image" repeated per PNG). The element is rendered
-  in the DOM but clipped to 1px so it is announced by screen readers without
-  affecting the visual layout.
-
-  Set the text via `alt_text:` in the inter_vis page front matter.
-  The frame receives role="img" and aria-labelledby pointing to this element.
-*/
 .intervis-alt-text {
   position:   absolute;
   width:      1px;
@@ -55,29 +45,6 @@
 
 
 /* ── Layer container ────────────────────────────────────────────────────────── */
-/*
-  SQUARE CONTAINER — critical for coordinate accuracy at all screen sizes.
-
-  The source PNG layers are 1920×1920 (square). translate((x-50)%, (y-50)%)
-  percentages in CSS reference the layer element's OWN dimensions. When the
-  container is rectangular (non-square), object-fit:contain letterboxes the
-  image into the smaller dimension — but translate percentages still reference
-  the full container bounds, not the rendered image content area. This causes
-  coordinate drift as the screen aspect ratio changes:
-
-    Portrait column (42vw < 100vh): letterboxing above/below → y coordinates shift
-    Landscape column (42vw > 100vh): letterboxing left/right  → x coordinates shift
-
-  With a square container matching the 1920×1920 sources, there is zero
-  letterboxing and translate() percentages map identically regardless of
-  whether the viewer is on a standard monitor, wide monitor, or any size in
-  between.
-
-  Size = min(image-column-width, image-column-height)
-       = min(42vw, 100vh - header)
-  Centered via position:absolute + translate(-50%, -50%).
-  The .intervis-frame's overflow:hidden clips everything to the column bounds.
-*/
 .intervis-layer-container {
   position: absolute;
   width:  min(42vw, calc(100vh - var(--scrolly-header-h, 52px)));
@@ -112,7 +79,6 @@ body.light-mode        .intervis-layer { filter: none; }
    DESKTOP OVERLAY ELEMENTS
    All three use position:fixed so they escape .intervis-frame's overflow:hidden
    and appear in the text column (left:56vw to right:10vw).
-   Visibility is driven by .intervis-frame.is-active descendant selectors.
    ───────────────────────────────────────────────────────────────────────────── */
 
 /* ── Scroll hint ────────────────────────────────────────────────────────────── */
@@ -259,10 +225,6 @@ body.light-mode .intervis-description { color: rgba(0, 0, 0, 0.78); }
   max-width:      none;
   margin:         0;
 
-  /* ══════════════════════════════════════════════════════════════════════════
-     SCROLL DISTANCE BETWEEN TRIGGER COMMANDS
-     Desktop: 52vh  |  Mobile override below: 42vh
-     ══════════════════════════════════════════════════════════════════════════ */
   [data-trigger-type] {
     display:    block   !important;
     visibility: hidden  !important;
@@ -328,45 +290,19 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    MOBILE ≤ 992px
-
-   LAYOUT STRATEGY — matches Image 1 exactly:
-   • Frame covers full viewport below header (position:fixed, no flex layout)
-   • Layer container is a SQUARE centered in the frame via position:absolute +
-     transform:translate(-50%,-50%). All overlay elements (hint, description,
-     title) are also position:absolute within the frame, layered on top.
-   • Description sits in the space above the square (toward frame top)
-   • Title sits in the space below the square (toward frame bottom)
-   • The square fills as much of the screen as possible:
-       width = height = min(96vw, frameHeight - 7rem)
-     This leaves ~3.5rem at top for description and ~3.5rem at bottom for title.
-
-   WHY SQUARE MATTERS FOR COORDINATE ACCURACY:
-   Source layers are 1920×1920 (square). translate(tx%, ty%) percentages in CSS
-   reference the layer element's OWN dimensions. With a square container:
-     • All layers render at identical pixel bounds (zero letterboxing)
-     • translate(-32.5%, +22%) maps the same pixels on every layer
-   With a non-square container, each layer still renders its image identically
-   (same letterboxing), but the translate percentages reference different pixel
-   distances horizontally vs vertically — the x and y scales remain consistent
-   because each maps to its respective container dimension. However, object-fit:
-   contain on a non-square container clips the letterboxed areas differently
-   across layers if one layer's image has different content bounds. Using a
-   square eliminates all letterboxing and keeps coordinates 1:1 with desktop.
    ═══════════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 992px) {
 
-  /* ── Full-screen fixed frame — NO flex, NO column layout ────────────────── */
   .intervis-frame {
     position: fixed !important;
     top:    calc(var(--scrolly-header-h, 52px) + env(safe-area-inset-top, 0px)) !important;
     left:   0      !important;
     right:  0      !important;
-    bottom: 2.8rem !important;   /* clear footer nav */
+    bottom: 2.8rem !important;
     width:  100vw  !important;
     height: auto   !important;
     z-index: 200   !important;
     overflow: hidden !important;
-    /* NO display:flex — all children are position:absolute overlays */
     background-color: var(--scrolly-bg-color, #111111);
   }
 
@@ -374,54 +310,23 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
     background-color: #ffffff;
   }
 
-  /* ── KEY MOBILE FIX: fade the frame itself when all layers have ended ────────
-     On desktop .intervis-frame is position:absolute inside the image column and
-     never covers the text column — so .is-cleared only needs to fade layer
-     content (title, hint, description). On mobile the frame is position:fixed
-     z-index:200 covering the ENTIRE viewport including the chapter text column.
-     Its background-color (#111) stays opaque until the IntersectionObserver
-     removes .is-active, which only happens after the FULL trigger block
-     (including padding-bottom) exits the viewport — up to 150vh of scrolling
-     after the last trigger. This rule fades the frame to transparent as soon as
-     .is-cleared is set (when id:all action:end passes viewportCenter), revealing
-     the chapter text immediately rather than after 150vh of masked scrolling. */
   .intervis-frame.is-active.is-cleared {
     opacity:    0 !important;
     transition: opacity 1.5s ease !important;
   }
 
-  /* ── Square layer container — as large as possible, centered ─────────────
-     Both width and height use the SAME computed value so the container is
-     always square regardless of phone dimensions.
-
-     min(96vw, calc(100vh - header - nav - 7rem)):
-       96vw   = 96% of viewport width (small side margins)
-       -7rem  = reserves ~3.5rem top (hint + description) + ~3.5rem bottom (title)
-       header = var(--scrolly-header-h, 52px)
-       nav    = 2.8rem (footer bar)
-
-     position:absolute + left:50% + top:50% + transform:translate(-50%,-50%)
-     centers the square in the frame. The container's own transform is separate
-     from the per-layer translate() transforms applied by JS.
-     ──────────────────────────────────────────────────────────────────────── */
   .intervis-layer-container {
     position: absolute !important;
-
-    /* Compute the square size once and apply to both dimensions */
     width:  min(96vw, calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem - 7rem)) !important;
     height: min(96vw, calc(100vh - var(--scrolly-header-h, 52px) - 2.8rem - 7rem)) !important;
-
-    /* Center in the frame */
     left:   50%  !important;
     top:    50%  !important;
     right:  auto !important;
     bottom: auto !important;
     transform: translate(-50%, -50%) !important;
-
     overflow: hidden !important;
   }
 
-  /* ── Scroll hint — absolute at top of frame, above the square ───────────── */
   .intervis-scroll-hint {
     position:        absolute !important;
     top:             0.6rem   !important;
@@ -432,7 +337,6 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
     letter-spacing:  0.12em   !important;
     align-items:     center   !important;
     justify-content: center   !important;
-    /* Reset desktop translateY */
     transform:       none     !important;
     transition:      opacity 0.6s ease !important;
   }
@@ -448,45 +352,17 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
     transition: opacity 1.5s ease !important;
   }
 
-  /* ── Description — absolute, above the square, below the hint ───────────── */
   .intervis-description {
-    /* position:fixed — NOT absolute. Lives on document.body to escape the
-       frame's opacity stacking context. Fixed resolves to the viewport. */
     position:        fixed  !important;
-
-    /* ── VERTICAL POSITION DERIVATION ────────────────────────────────────────
-       The layer-container square is centered in the frame:
-         frame top    = var(--scrolly-header-h)
-         frame height = 100vh - header - 2.8rem (footer)
-         square size  = min(96vw, frame_height - 7rem)
-         square center in viewport = header + frame_height / 2
-                                   = (100vh + header - 2.8rem) / 2
-         square top in viewport    = square_center - square_size / 2
-
-       On portrait phones 96vw < (frame_height - 7rem), so square_size = 96vw:
-         square top = (100vh + header - 2.8rem) / 2 - 48vw
-
-       Setting description bottom = square top with 0.5rem gap:
-         bottom_css = 50vh + 48vw + 1.9rem - header / 2
-
-       ── TO FINE-TUNE: if description still overlaps visualization, increase
-          the constant (1.9rem → 2.5rem). If gap is too large, decrease it. ── */
     top:    calc(var(--scrolly-header-h, 52px) + 0.5rem) !important;
     bottom: calc(50vh + 48vw + 1.9rem - var(--scrolly-header-h, 52px) / 2) !important;
-
     left:  1rem !important;
     right: 1rem !important;
-
     display:         flex   !important;
     align-items:     center !important;
     justify-content: center !important;
     text-align:      center !important;
-
-    /* ── FONT SIZE: clamp(min, fluid, max) ───────────────────────────────────
-       Scales with viewport width so longer descriptions shrink automatically.
-       Adjust the minimum (0.72rem) if four-sentence descriptions still clip. */
     font-size: clamp(0.72rem, 2.8vw, 0.92rem) !important;
-
     overflow:   hidden !important;
     transform:  none   !important;
     transition: opacity 0.5s ease !important;
@@ -498,7 +374,6 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
     transition: opacity 1.5s ease !important;
   }
 
-  /* ── Title — absolute at bottom of frame, below the square ─────────────── */
   .intervis-sticky-title {
     position:   absolute !important;
     bottom:     0.6rem   !important;
@@ -507,7 +382,6 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
     top:        auto     !important;
     font-size:  1.05rem  !important;
     text-align: center   !important;
-    /* Reset desktop translateY */
     transform:  none     !important;
     transition: opacity 0.7s ease !important;
   }
@@ -523,13 +397,113 @@ body.light-mode .offcanvas-menu .toc-intervis-entry > .scrolly-toc-link {
     transition: opacity 1.5s ease !important;
   }
 
-  /* ── Light mode ──────────────────────────────────────────────────────────── */
   body.light-mode .intervis-scroll-hint  { color: rgba(0, 0, 0, 0.65) !important; }
   body.light-mode .intervis-sticky-title { color: rgba(0, 0, 0, 0.85) !important; }
   body.light-mode .intervis-description  { color: rgba(0, 0, 0, 0.72) !important; }
 
-  /* ── Mobile scroll distance ── */
   .intervis-trigger-block [data-trigger-type] { height: 42vh !important; }
 
   .toc-intervis-entry > .scrolly-toc-link { font-size: 0.82rem; }
+}
+
+
+/* ── Skip visualization button ──────────────────────────────────────────────────
+   position: fixed places this in the lower-right of the VIEWPORT, at the same
+   vertical level as .intervis-sticky-title (see inter_vis.html override for
+   bottom/right values). The button lives OUTSIDE .intervis-frame in the DOM.
+
+   Visibility is controlled via .is-visible (toggled by MutationObserver in
+   inter_vis.html). Default state: opacity 0 / pointer-events none.
+
+   COLOUR SCHEME — matches the essay's two reading modes:
+   ┌─────────────────┬──────────────────────────────────────────────────────┐
+   │ Dark mode       │ Inverted: dark bg + light border + light text        │
+   │ (essay default) │ Hover flips to light bg + dark text                  │
+   ├─────────────────┼──────────────────────────────────────────────────────┤
+   │ Light mode      │ Standard: white bg + dark border + dark text         │
+   │ (body.light-    │ Hover flips to dark bg + light text                  │
+   │  mode)          │                                                      │
+   └─────────────────┴──────────────────────────────────────────────────────┘
+   ──────────────────────────────────────────────────────────────────────────────── */
+.intervis-skip-btn {
+  position:       fixed;
+  bottom:         1.5rem; /* overridden by inter_vis.html <style> block on desktop */
+  right:          1.5rem; /* overridden by inter_vis.html <style> block on desktop */
+  z-index:        250;
+
+  /* Hidden by default; .is-visible added/removed by MutationObserver */
+  opacity:        0;
+  pointer-events: none;
+
+  /* ── Dark mode: inverted (dark bg, light text) ── */
+  background:     rgba(17, 17, 17, 0.88);
+  border:         1px solid rgba(255, 255, 255, 0.35);
+  color:          #e4e4e4;
+
+  font-family:    "Times New Roman", Times, serif;
+  font-size:      0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height:    1;
+  padding:        0.42rem 0.9rem;
+  cursor:         pointer;
+
+  box-shadow:     0 1px 8px rgba(0, 0, 0, 0.5);
+  transition:     opacity      0.4s ease,
+                  background   0.15s,
+                  color        0.15s,
+                  border-color 0.15s,
+                  box-shadow   0.15s;
+
+  &.is-visible {
+    opacity:        1;
+    pointer-events: auto;
+  }
+
+  /* Dark mode hover: flip to light */
+  &:hover,
+  &:focus-visible {
+    background:   #f8f5ee;
+    color:        #0a0a0a;
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow:   2px 2px 0 rgba(255, 255, 255, 0.12);
+    outline:      none;
+  }
+
+  .skip-arrow {
+    display:     inline-block;
+    margin-left: 0.3em;
+    transition:  transform 0.15s;
+  }
+
+  &:hover .skip-arrow,
+  &:focus-visible .skip-arrow {
+    transform: translateX(2px);
+  }
+}
+
+/* ── Light mode: standard (white bg, dark text) ── */
+body.light-mode .intervis-skip-btn {
+  background:   rgba(255, 255, 255, 0.92);
+  border-color: rgba(10, 10, 10, 0.32);
+  color:        #1a1a1a;
+  box-shadow:   0 1px 6px rgba(0, 0, 0, 0.16);
+}
+
+/* Light mode hover: flip to dark */
+body.light-mode .intervis-skip-btn:hover,
+body.light-mode .intervis-skip-btn:focus-visible {
+  background:   #0a0a0a;
+  color:        #f8f5ee;
+  border-color: #0a0a0a;
+  box-shadow:   2px 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 992px) {
+  .intervis-skip-btn {
+    bottom:    2.2rem;
+    right:     1rem;
+    font-size: 0.68rem;
+    padding:   0.38rem 0.75rem;
+  }
 }

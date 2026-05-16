@@ -26,6 +26,27 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
 
 <link rel="stylesheet" href="{{ '/assets/css/scrolly.css' | relative_url }}">
 
+<!-- ── Skip button position override ─────────────────────────────────────────
+     _intervis.scss sets a default position of bottom:1.5rem / right:1.5rem.
+     On desktop the skip button should sit at the same vertical level as
+     .intervis-sticky-title (bottom: calc(2.8rem + 2rem)) and at the right
+     edge of the text column (right: 10vw) — identical values to the title.
+     On mobile (≤ 992px) the full-screen frame layout keeps the original
+     compact position above the footer nav bar.
+     ──────────────────────────────────────────────────────────────────────── -->
+<style>
+.intervis-skip-btn {
+  bottom: calc(2.8rem + 2rem); /* matches .intervis-sticky-title */
+  right:  10vw;                /* matches .intervis-sticky-title right edge */
+}
+@media (max-width: 992px) {
+  .intervis-skip-btn {
+    bottom: 2.2rem;
+    right:  1rem;
+  }
+}
+</style>
+
 <div class="scrolly-container layout-right" id="scrolly-container" data-layout="right">
 
   <aside class="scrolly-toc-sidebar" id="scrolly-toc-sidebar" aria-label="Table of contents">
@@ -71,7 +92,9 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
         <div class="intervis-layer-container" id="intervis-layers-{{ page.order }}"></div>
         <div class="intervis-sticky-title" id="intervis-title-{{ page.order }}">{{ page.title }}</div>
         <div class="intervis-scroll-hint" id="intervis-hint-{{ page.order }}" aria-hidden="true">scroll<span class="scroll-hint-arrow">&#x2193;</span></div>
-        <!-- Description: position:fixed, appears in text column between hint and title -->
+        <!-- Description is moved to document.body by setupInterVisBlock() to escape
+             the frame's opacity stacking context. Placed here in source for template
+             completeness; the handler relocates it before first render. -->
         <div class="intervis-description" id="intervis-desc-{{ page.order }}"></div>
       </div>
     </div>
@@ -98,5 +121,63 @@ window.intervisBasePath = "{{ '/objects/inter_vis/' | relative_url }}";
   </div>
 
 </div>
+
+<!-- ── Skip button ─────────────────────────────────────────────────────────────
+     Outside .intervis-frame so it is not subject to the frame's
+     pointer-events: none or opacity stacking context.
+     position: fixed in _intervis.scss; bottom/right overridden above to
+     align with the sticky title at the right edge of the text column.
+     A MutationObserver mirrors the frame's is-active/is-cleared state
+     via the .is-visible class (opacity + pointer-events).
+     ──────────────────────────────────────────────────────────────────────────── -->
+<button class="intervis-skip-btn"
+        id="intervis-skip-{{ page.order }}"
+        aria-label="Skip visualization and continue to next chapter"
+        title="Skip to next chapter">
+  Skip<span class="skip-arrow" aria-hidden="true">→</span>
+</button>
+
+<script>
+(function () {
+  'use strict';
+
+  var skipBtn = document.getElementById('intervis-skip-{{ page.order }}');
+  var frame   = document.getElementById('intervis-frame-{{ page.order }}');
+  if (!skipBtn || !frame) return;
+
+  /* ── Visibility: mirror the frame's is-active / is-cleared state ── */
+  function syncVisibility() {
+    var active  = frame.classList.contains('is-active');
+    var cleared = frame.classList.contains('is-cleared');
+    skipBtn.classList.toggle('is-visible', active && !cleared);
+  }
+
+  var classObserver = new MutationObserver(syncVisibility);
+  classObserver.observe(frame, { attributes: true, attributeFilter: ['class'] });
+  syncVisibility();
+
+  /* ── Click: scroll past the trigger block bottom ── */
+  skipBtn.addEventListener('click', function () {
+    var chapterPath  = frame.dataset.intervisFor || '';
+    var triggerBlock = null;
+
+    if (chapterPath) {
+      var blocks = document.querySelectorAll('.intervis-trigger-block');
+      for (var i = 0; i < blocks.length; i++) {
+        if ((blocks[i].dataset.chapterPath || '') === chapterPath) {
+          triggerBlock = blocks[i];
+          break;
+        }
+      }
+    }
+
+    if (triggerBlock) {
+      var rect    = triggerBlock.getBoundingClientRect();
+      var targetY = Math.round(window.scrollY + rect.bottom) + 80;
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    }
+  });
+}());
+</script>
 
 {% include essay/footer-scrollytelling.html %}
