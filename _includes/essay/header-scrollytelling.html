@@ -693,3 +693,15 @@ window.updateChapterDisplay = function (data) {
   window.addEventListener('resize', setH, { passive: true });
 }());
 </script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     READING GUIDE MODAL
+     Included here (shared header) so it renders on the first essay
+     page regardless of which layout that page uses. The modal starts
+     hidden; its own JavaScript detects whether this is the first
+     essay page by comparing window.location.pathname against the
+     lowest-order URL in window.allEssays, which is defined in each
+     layout's <script> block and is guaranteed to be populated before
+     DOMContentLoaded fires.
+     ══════════════════════════════════════════════════════════════════ -->
+{%- include essay/intro-guide-modal.html -%}

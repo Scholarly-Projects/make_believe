@@ -1,0 +1,385 @@
+{% comment %}
+  _includes/essay/intro-guide-modal.html
+  ───────────────────────────────────────────────────────────────────────────
+  Reading interface orientation modal. Included once from
+  _includes/essay/header-scrollytelling.html — do not add it to individual
+  layout files.
+
+  DETECTION: The modal div carries rg-hidden (display:none) by default.
+  On DOMContentLoaded the script compares window.location.pathname against
+  the lowest-order URL in window.allEssays (defined synchronously in each
+  layout's body script block, so always populated before DOMContentLoaded
+  fires). The modal is shown only when:
+    (a) this is the first essay page, AND
+    (b) the reader has not previously dismissed it (localStorage flag).
+
+  DISMISSAL: Stored in localStorage key 'readingGuideShown_v1'. Once set
+  the modal never reappears on return visits.
+  ───────────────────────────────────────────────────────────────────────────
+{% endcomment %}
+
+<style>
+/* ============================================================
+   READING GUIDE MODAL  (namespaced .rg- to avoid conflicts)
+   ============================================================ */
+
+#reading-guide-modal {
+  position: fixed; inset: 0;
+  background: rgba(10,10,10,0.86);
+  z-index: 3000;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 3.5rem 2rem 2rem;
+  overflow-y: auto;
+  backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+  -webkit-overflow-scrolling: touch;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+}
+#reading-guide-modal.rg-hidden { display: none; }
+
+/* ── Panel ── */
+.rg-inner {
+  position: relative;
+  max-width: 560px; width: 100%;
+  padding: 2.75rem;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(14,14,14,0.72);
+  color: #f8f5ee;
+  margin-bottom: 2rem;
+}
+.rg-inner::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: -6px; bottom: -6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  pointer-events: none;
+}
+
+/* ── Close ── */
+.rg-close {
+  position: absolute; top: 0.9rem; right: 0.9rem;
+  background: none; border: 1px solid rgba(255,255,255,0.28);
+  color: #f8f5ee;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-size: 1rem; line-height: 1;
+  width: 1.75rem; height: 1.75rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.rg-close:hover, .rg-close:focus-visible {
+  background: rgba(255,255,255,0.14);
+  outline: 1px solid #f8f5ee; outline-offset: 2px;
+}
+
+/* ── Eyebrow + heading ── */
+.rg-eyebrow {
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(248,245,238,0.42); margin: 0 0 0.85rem;
+}
+.rg-inner h2 {
+  font-size: 1.35rem; font-weight: bold; line-height: 1.3;
+  margin: 0 0 1.2rem; padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.16);
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  color: #f8f5ee;
+}
+
+/* ── Intro copy ── */
+.rg-intro {
+  font-size: 0.87rem; line-height: 1.76;
+  color: rgba(248,245,238,0.72); margin: 0 0 1.1rem;
+}
+
+/* ── Feature list ── */
+.rg-feature-list {
+  list-style: none; padding: 0; margin: 0;
+  border: 1px solid rgba(255,255,255,0.11);
+  background: rgba(255,255,255,0.04);
+}
+.rg-feature-item {
+  display: flex; gap: 1rem; align-items: flex-start;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.rg-feature-item:last-child { border-bottom: none; }
+
+.rg-glyph {
+  flex-shrink: 0; width: 1.6rem;
+  padding-top: 0.05rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(248,245,238,0.4);
+  line-height: 1.3;
+  user-select: none;
+}
+
+.rg-feature-text {
+  font-size: 0.78rem; line-height: 1.6;
+  color: rgba(248,245,238,0.6);
+}
+.rg-feature-text strong {
+  display: block;
+  color: rgba(248,245,238,0.88);
+  font-weight: 600;
+  margin-bottom: 0.18rem;
+  letter-spacing: 0.01em;
+}
+
+/* ── Toggle example — inline replica of the header control ── */
+.rg-toggle-example {
+  display:     inline-flex;
+  align-items: center;
+  gap:         0.4rem;
+  margin-top:  0.45rem;
+  padding:     0.32rem 0.55rem;
+  background:  rgba(255,255,255,0.06);
+  border:      1px solid rgba(255,255,255,0.1);
+  border-radius: 3px;
+  user-select: none;
+}
+.rg-sun-demo {
+  width:        12px;
+  height:       12px;
+  fill:         none;
+  stroke:       rgba(202,202,202,0.7);
+  stroke-width: 2;
+  stroke-linecap: round;
+  flex-shrink:  0;
+}
+.rg-toggle-demo {
+  position:      relative;
+  width:         30px;
+  height:        16px;
+  background:    rgba(255,255,255,0.80);
+  border-radius: 8px;
+  flex-shrink:   0;
+}
+.rg-toggle-knob {
+  position:      absolute;
+  top:           2px;
+  left:          2px;
+  width:         12px;
+  height:        12px;
+  background:    #111111;
+  border-radius: 50%;
+}
+.rg-toggle-label {
+  font-size:   0.65rem;
+  color:       rgba(248,245,238,0.35);
+  white-space: nowrap;
+}
+
+/* ── TOC symbol key ── */
+.rg-toc-key {
+  display: flex; gap: 1.1rem; align-items: center;
+  margin-top: 0.45rem; flex-wrap: wrap;
+}
+.rg-toc-sym {
+  display: flex; align-items: center; gap: 0.38rem;
+  font-size: 0.68rem; color: rgba(248,245,238,0.45);
+  line-height: 1;
+}
+.rg-sym-circle {
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1px solid rgba(248,245,238,0.55);
+  background: transparent; flex-shrink: 0;
+}
+.rg-sym-line {
+  width: 18px; height: 2px;
+  background: rgba(248,245,238,0.45); flex-shrink: 0;
+}
+
+/* ── Keyboard shortcut chips ── */
+.rg-keys {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem;
+  align-items: baseline; margin-top: 0.4rem;
+}
+.rg-key-pair { display: flex; align-items: baseline; gap: 0.35rem; }
+.rg-key {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 2px;
+  padding: 0.06rem 0.4rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem; color: rgba(248,245,238,0.8);
+  white-space: nowrap; line-height: 1.5;
+}
+.rg-key-desc {
+  font-size: 0.67rem; color: rgba(248,245,238,0.38); white-space: nowrap;
+}
+
+/* ── Begin button ── */
+.rg-begin {
+  display: block; width: 100%;
+  margin-top: 1.75rem; padding: 0.65rem;
+  background: none; border: 1px solid rgba(248,245,238,0.42);
+  color: #f8f5ee;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.18s, color 0.18s;
+}
+.rg-begin:hover, .rg-begin:focus-visible {
+  background: #f8f5ee; color: #0a0a0a; outline: none;
+}
+
+/* ── Touch dismiss hint ── */
+.rg-tap-hint {
+  display: none; text-align: center;
+  font-size: 0.68rem; font-style: italic;
+  color: rgba(248,245,238,0.32); margin: 0.6rem 0 0;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+}
+@media screen and (max-width: 768px) {
+  .rg-tap-hint { display: block; }
+  .rg-inner { padding: 2rem 1.5rem; }
+}
+</style>
+
+<div id="reading-guide-modal" class="rg-hidden"
+     role="dialog" aria-modal="true" aria-labelledby="rg-title" aria-hidden="true">
+  <div class="rg-inner">
+    <button class="rg-close" id="rg-close-btn"
+            aria-label="Close reading guide">×</button>
+    <p class="rg-eyebrow">Reading Interface Guide</p>
+    <h2 id="rg-title">Navigation</h2>
+    <p class="rg-intro">This essay uses a scrollytelling interface: as you read, the images and text citations respond to your position in the text.</p>
+    <ul class="rg-feature-list" aria-label="Interface features">
+
+      <!-- Light / dark mode — first item -->
+      <li class="rg-feature-item">
+        <div class="rg-glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14"
+               fill="none" stroke="rgba(248,245,238,0.45)"
+               stroke-width="2" stroke-linecap="round"
+               xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="4"/>
+            <line x1="12" y1="2"  x2="12" y2="5"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="4.22"  y1="4.22"  x2="6.34"  y2="6.34"/>
+            <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+            <line x1="2"  y1="12" x2="5"  y2="12"/>
+            <line x1="19" y1="12" x2="22" y2="12"/>
+            <line x1="4.22"  y1="19.78" x2="6.34"  y2="17.66"/>
+            <line x1="17.66" y1="6.34"  x2="19.78" y2="4.22"/>
+          </svg>
+        </div>
+        <div class="rg-feature-text">
+          <strong>Light and Dark Mode</strong>
+          Select the light/dark toggle on the top right side of the reading interface depending on your reading preference.
+        </div>
+      </li>
+
+      <li class="rg-feature-item">
+        <div class="rg-glyph" aria-hidden="true">⊡</div>
+        <div class="rg-feature-text">
+          <strong>Images and Item Pages</strong>
+          Select any image to expand it. Select the "visit item" link in the image caption to visit the full record and learn more.
+        </div>
+      </li>
+      <li class="rg-feature-item">
+        <div class="rg-glyph" aria-hidden="true">↕</div>
+        <div class="rg-feature-text">
+          <strong>Scroll Through Chapters</strong>
+          Scroll past the end of a chapter to continue into the next or select which area you want to read in the sidebar table of contents.
+        </div>
+      </li>
+      <li class="rg-feature-item">
+        <div class="rg-glyph" aria-hidden="true">◫</div>
+        <div class="rg-feature-text">
+          <strong>Interactive Visualizations</strong>
+          Some sections contain interactive displays. Use the <strong>Skip →</strong> button in the lower-right corner to move past a visualization and continue reading.
+        </div>
+      </li>
+      <li class="rg-feature-item">
+        <div class="rg-glyph" aria-hidden="true">≡</div>
+        <div class="rg-feature-text">
+          <strong>Contents Sidebar</strong>
+          The sidebar marks two types of entries. Click any entry to jump directly to that content in the essay.
+          <div class="rg-toc-key" role="list" aria-label="Sidebar symbol key">
+            <div class="rg-toc-sym" role="listitem">
+              <span class="rg-sym-circle" aria-hidden="true"></span>
+              <span>visualization section</span>
+            </div>
+            <div class="rg-toc-sym" role="listitem">
+              <span class="rg-sym-line" aria-hidden="true"></span>
+              <span>sections within a chapter</span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="rg-feature-item">
+        <div class="rg-glyph" aria-hidden="true">⌨</div>
+        <div class="rg-feature-text">
+          <strong>Keyboard Navigation</strong>
+          <div class="rg-keys" aria-label="Keyboard shortcuts">
+            <span class="rg-key-pair">
+              <kbd class="rg-key">← →</kbd>
+              <span class="rg-key-desc">previous / next section</span>
+            </span>
+            <span class="rg-key-pair">
+              <kbd class="rg-key">Esc</kbd>
+              <span class="rg-key-desc">close expanded views</span>
+            </span>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <button class="rg-begin" id="rg-begin-btn">Begin Reading</button>
+    <p class="rg-tap-hint">Tap outside this panel or press Esc to dismiss</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'readingGuideShown_v1';
+  var modal    = document.getElementById('reading-guide-modal');
+  var closeBtn = document.getElementById('rg-close-btn');
+  var beginBtn = document.getElementById('rg-begin-btn');
+  if (!modal || !closeBtn || !beginBtn) return;
+
+  function dismiss() {
+    modal.classList.add('rg-hidden');
+    modal.setAttribute('aria-hidden', 'true');
+    try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+    document.removeEventListener('keydown', onKey);
+  }
+
+  function onKey(e) {
+    if (e.key === 'Escape') { e.preventDefault(); dismiss(); }
+  }
+
+  function isFirstEssayPage() {
+    var essays = window.allEssays;
+    if (!essays || !essays.length) return false;
+
+    var first = essays.slice().sort(function (a, b) {
+      return (a.order || 0) - (b.order || 0);
+    })[0];
+
+    if (!first || !first.url) return false;
+
+    var currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+    var firstPath   = first.url.replace(/\/+$/, '')                || '/';
+    return currentPath === firstPath;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    try { if (localStorage.getItem(STORAGE_KEY)) return; } catch (e) {}
+    if (!isFirstEssayPage()) return;
+
+    modal.classList.remove('rg-hidden');
+    modal.removeAttribute('aria-hidden');
+
+    document.addEventListener('keydown', onKey);
+    closeBtn.addEventListener('click', dismiss);
+    beginBtn.addEventListener('click', dismiss);
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) dismiss();
+    });
+
+    closeBtn.focus();
+  });
+
+}());
+</script>
