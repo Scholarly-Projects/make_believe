@@ -1,0 +1,53 @@
+cff-version: 1.2.0
+message: "If you use this template, please cite it as below."
+type: software
+title: "Vis-arly: A Static Web Essay Template for Visually-Driven Humanities Scholarship"
+abstract: >
+  Vis-arly is a static web essay template designed to support visually-driven
+  scholarly publications in the humanities. Built as an iteration of
+  CollectionBuilder's CB-Essay framework, developed by the Center for Digital
+  Inquiry and Learning (CDIL) at the University of Idaho Library, Vis-arly
+  generates a lightweight reading interface from CSV-driven metadata and
+  Markdown-formatted essay content with no server-side processing. Its design
+  principle is a minimal, horizontal focus in which essay images and text
+  citations remain sticky as readers scroll vertically through the text. Key
+  features include a scrollytelling handler with programmatic XY coordinate and
+  zoom control over archival images, interstitial data visualizations (inter-vis)
+  that progress on scroll with shared alt-text accessibility support, infinite
+  chapter scrolling, scroll-state preservation on outbound citation links,
+  light/dark mode, full mobile adaptability, and dual keyboard navigation tracks
+  for site-level and item-level pages. The template was initially developed to
+  host the author's Master's thesis examining Dutch financial investment in
+  Spokane, Washington and the city's expressions of exclusionary and aspirational
+  iconography through pageantry, commercial iconography, and architecture.
+authors:
+  - family-names: Weymouth
+    given-names: Andrew
+    orcid: "https://orcid.org/0009-0000-3580-0102"
+    website: "https://aweymo.github.io/base/
+    alias: "aweymo-ui"
+repository-code: "https://github.com/Scholarly-Projects/make_believe"
+url: "https://scholarly-projects.github.io/make_believe/"
+license: MIT
+version: 1.0.0
+date-released: 2026-02-22
+keywords:
+  - static web
+  - digital humanities
+  - scrollytelling
+  - digital publishing
+  - archival research
+  - CollectionBuilder
+  - Jekyll
+  - humanities scholarship
+  - public scholarship
+  - digital editions
+references:
+  - type: software
+    title: "CB-Essay"
+    authors:
+      - name: "Center for Digital Inquiry and Learning (CDIL), University of Idaho"
+    url: "https://collectionbuilder.github.io/cb-essay/"
+    notes: >
+      Vis-arly is built as an iteration of the CB-Essay variant of
+      CollectionBuilder, developed by CDIL at the University of Idaho Library.
