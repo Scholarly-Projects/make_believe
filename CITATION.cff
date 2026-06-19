@@ -1,11 +1,10 @@
 cff-version: 1.2.0
 message: "If you use this template, please cite it as below."
 type: software
-title: "Vis-arly: A Static Web Essay Template for Visually-Driven Humanities Scholarship"
+title: "Vis-arly: A Static Scrollytelling Framework for Visual Resource-Driven Scholarship"
 abstract: >
-  Vis-arly is a static web essay template designed to support visually-driven
-  scholarly publications in the humanities. Built as an iteration of
-  CollectionBuilder's CB-Essay framework, developed by the Center for Digital
+  Vis-arly is a static web essay framework built as an iteration of
+  CollectionBuilder's CB-Essay template, developed by the Center for Digital
   Inquiry and Learning (CDIL) at the University of Idaho Library, Vis-arly
   generates a lightweight reading interface from CSV-driven metadata and
   Markdown-formatted essay content with no server-side processing. Its design
